@@ -33,9 +33,10 @@ def main():
           '-basic',str(args.rom_dir.resolve()/'basic-901226-01.bin'),
           '-chargen',str(args.rom_dir.resolve()/'chargen-901225-01.bin'),
           '-autostartprgmode','1','-limitcycles','50000000']
-    expected={1:[0x82,0x80,0x87,0x80,0x89,0x80,0x88,0x80,0x8a],
-              2:[0x82,0x80,0x87],3:[0x82,0x80,0x86,0x80,0x85,0x80,0x87]}
-    for scenario in range(1,4):
+    expected={1:[0x82,0x80,0x87,0x80,0x8f,0x89,0x80,0x88,0x80,0x8a],
+              2:[0x82,0x80,0x87],3:[0x82,0x80,0x86,0x80,0x85,0x80,0x8f,0x87],
+              4:[0x8e,0x80,0x8e,0x80,0x8e,0x80,0x8e,0x80,0x8f,0x8e,0x80,0x8a]}
+    for scenario in range(1,5):
         output=work/('scenario-'+str(scenario))
         syms=labels(output/'test.lbl')
         names=['_test_key_index','_test_error','_test_result','_test_reply_count',
@@ -49,21 +50,26 @@ def main():
         commands=[]
         if scenario==1:
             commands += [f'break exec ${syms["_ui_test_checkpoint"]:04x}','g',
-                f'screenshot "{output / "home.png"}" 2','g',
+                f'screenshot "{output / "home.png"}" 2',
+                f'bsave "{output / "home-bank.bin"}" 0 $4000 $7fff','g',
                 f'screenshot "{output / "browser.png"}" 2','g',
                 f'screenshot "{output / "child.png"}" 2','g','g',
                 f'screenshot "{output / "home-return.png"}" 2','g',
                 f'screenshot "{output / "cached-browser.png"}" 2','delete 1']
         commands += [f'break exec ${syms["_ui_test_finished"]:04x}','g',
-                     f'bsave "{dump}" 0 ${start:04x} ${end:04x}','g']
+                     f'bsave "{dump}" 0 ${start:04x} ${end:04x}','quit']
         script=output/'test.mon';script.write_text('\n'.join(commands)+'\n')
-        timing=['+warp','-limitcycles','18000000'] if scenario==1 else []
+        timing=['+warp','-limitcycles','30000000'] if scenario==1 else []
         cmd=base+timing+['-refreshonbreak','-initbreak','reset','-moncommands',str(script),
                   '-monlog','-monlogname',str(output/'monitor.log'),
                   '-autostart',str(output/'kff2-integration-test.prg'),
                   '-exitscreenshot',str(output/'result.png')]
         r=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=50)
         (output/'vice.log').write_bytes(r.stdout)
+        if scenario==1:
+            expected_bank=bytearray((root/'launcher/build/folder-home/vic-bank.bin').read_bytes())
+            expected_bank[0x2000+19*320:0x2000+20*320]=expected_bank[:320]
+            assert (output/'home-bank.bin').read_bytes()==expected_bank, 'VIC bank differs from the design'
         if not dump.exists():raise RuntimeError(f'Scenario {scenario} did not reach its final checkpoint.')
         data=dump.read_bytes()
         def value(name):return data[syms[name]-start]
@@ -100,7 +106,7 @@ def main():
     commands += ['keybuf "q"','delete 1',f'break exec ${syms["_ui_test_finished"]:04x}',
                  'g',f'bsave "{dump}" 0 ${start:04x} ${end:04x}','delete 1','g']
     script=output/'keyboard.mon';script.write_text('\n'.join(commands)+'\n')
-    r=subprocess.run(base+['+warp','-limitcycles','18000000','-refreshonbreak',
+    r=subprocess.run(base+['+warp','-limitcycles','30000000','-refreshonbreak',
                 '-initbreak','reset','-moncommands',str(script),
                 '-monlog','-monlogname',str(output/'keyboard-monitor.log'),
                 '-autostart',str(output/'kff2-integration-test.prg'),
@@ -112,7 +118,7 @@ def main():
     get=lambda name:data[syms[name]-start]
     offset=syms['_test_replies']-start
     trace=list(data[offset:offset+get('_test_reply_count')])
-    assert get('_test_result')==1 and not get('_test_error') and trace==[0x82,0x80,0x8a],trace
+    assert get('_test_result')==1 and not get('_test_error') and trace==[0x82,0x80,0x8f,0x8a],trace
     keyboard={'passed':True,'reply_trace':trace,'input':'B, F2, B, F2, Q via C64 keyboard buffer'}
     print(json.dumps(keyboard))
     # NTSC startup uses the same interactive harness without injected keys.

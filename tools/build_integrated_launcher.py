@@ -40,7 +40,8 @@ def main():
     (source/'firmware').mkdir(exist_ok=True)
     shutil.copy(args.upstream.resolve()/'firmware/commands.h',source/'firmware/commands.h')
     for patch in ['experiments/launcher-size/compact-launcher.patch',
-                  'experiments/home-integration/home-menu.patch']:
+                  'experiments/home-integration/home-menu.patch',
+                  'experiments/home-integration/folder-home.patch']:
         run(['patch','--batch','--forward','--fuzz=0','-p1','-i',root/patch],env,cwd=source)
     shutil.copytree(root/'launcher/ui',source/'launcher/ui',dirs_exist_ok=True)
     launcher=source/'launcher'
@@ -63,12 +64,9 @@ def main():
         objects.append(cobj(launcher/(name+'.c'),name,True))
     for name in ['disk','ef3usb_loader','launcher_asm']:
         objects.append(aobj(launcher/(name+'.s'),name))
-    for name in ['home','text_plot']:
-        objects.append(cobj(launcher/'ui'/(name+'.c'),name))
-    objects.append(aobj(launcher/'ui/text_plot_asm.s','text_plot_asm'))
-    font=build/'charset.s'
-    run([sys.executable,root/'tools/make_font.py',launcher/'ui/charset.sed',font],env)
-    objects.append(aobj(font,'charset'))
+    for name in ['home']:
+        objects.append(cobj(launcher/'ui'/(name+'.c'),name,True))
+    objects.append(aobj(launcher/'ui/folder_unpack.s','folder_unpack'))
     run(['make','-C',source/'3rd_party/libef3usb'],env)
     image=build/'kff2-integrated-launcher.bin'
     mapfile=build/'launcher.map'
@@ -111,7 +109,14 @@ uint8_t ui_test_row(void) { return dir->selected; }
     # Preserve ../firmware/commands.h for the copied dir.h.
     (work/'firmware').mkdir(exist_ok=True)
     shutil.copy(source/'firmware/commands.h',work/'firmware/commands.h')
-    for scenario in range(4):
+    # VICE-only state lives outside the graphical bank; cc65 CRT banks BASIC out.
+    cfg=Path(env.get('CC65_HOME','/usr/share/cc65'))/'cfg/c64.cfg'
+    harness_cfg=work/'harness.cfg'
+    config=cfg.read_text()
+    config=re.sub(r'BSS:      file = "",[^\n]+',
+                  'BSS:      file = "", start = $8000, size = $1000;',config)
+    harness_cfg.write_text(config)
+    for scenario in range(5):
         output=work/('interactive' if scenario==0 else 'scenario-'+str(scenario))
         output.mkdir()
         flags=[] if scenario==0 else ['-DUI_TEST_AUTORUN','-DUI_TEST_SCENARIO='+str(scenario)]
@@ -123,22 +128,25 @@ uint8_t ui_test_row(void) { return dir->selected; }
             ui_code='#include "mock_backend.h"\n'+ui_code.replace(input_expr,'c = ui_test_key();')
         (test/'ui/home.c').write_text(ui_code)
         sources=[test/(n+'.c') for n in ['main','base','screen','dir','mock_backend']]
-        sources += [test/'ui/home.c',test/'ui/text_plot.c']
+        sources += [test/'ui/home.c']
         objs=[]
         for path in sources:
             obj=output/(path.stem+'.o')
             run(['cl65','-t','c64','-O','-g','-c',
-                 *(['--static-locals'] if path.stem in ['main','base','screen','dir'] else []),
+                 *(['--static-locals'] if path.stem in ['main','base','screen','dir','home'] else []),
                  define,*flags,
                  '-I',test,'-I',source/'3rd_party/libef3usb/src','-o',obj,path],env)
             objs.append(obj)
-        for path in [test/'ui/text_plot_asm.s',font]:
-            obj=output/(path.stem+'.o')
-            run(['ca65','-t','c64','-g','-I',test/'ui','-o',obj,path],env)
-            objs.append(obj)
-        run(['cl65','-t','c64','-Wl','-D,__HIMEM__=0x5c00','-o',output/'kff2-integration-test.prg',
+        unpack=output/'folder_unpack.o'
+        run(['ca65','-t','c64','-g','-o',unpack,test/'ui/folder_unpack.s'],env)
+        objs.append(unpack)
+        run(['cl65','-t','c64','-Wl','-D,__HIMEM__=0xc000','-C',harness_cfg,'-o',output/'kff2-integration-test.prg',
              '-m',output/'test.map','-Ln',output/'test.lbl',*objs,
              source/'3rd_party/libef3usb/libef3usb.lib'],env)
+        prg=(output/'kff2-integration-test.prg').read_bytes()
+        assert int.from_bytes(prg[:2],'little')+len(prg)-2<=0x4000
+        state=re.search(r'^BSS\s+([0-9A-F]+)\s+([0-9A-F]+)',(output/'test.map').read_text(),re.M)
+        assert 0x8000<=int(state[1],16)<=int(state[2],16)<0x9000
     print(json.dumps(result,indent=2))
 
 if __name__=='__main__':main()

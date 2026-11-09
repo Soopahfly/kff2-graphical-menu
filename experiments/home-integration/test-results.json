@@ -9,6 +9,7 @@
         128,
         135,
         128,
+        143,
         137,
         128,
         136,
@@ -41,10 +42,32 @@
         128,
         133,
         128,
+        143,
         135
       ],
       "selected_byte": 22,
       "keys_used": 28
+    },
+    {
+      "scenario": 4,
+      "passed": true,
+      "error": 0,
+      "reply_trace": [
+        142,
+        128,
+        142,
+        128,
+        142,
+        128,
+        142,
+        128,
+        143,
+        142,
+        128,
+        138
+      ],
+      "selected_byte": 3,
+      "keys_used": 15
     }
   ],
   "keyboard": {
@@ -52,12 +75,13 @@
     "reply_trace": [
       130,
       128,
+      143,
       138
     ],
     "input": "B, F2, B, F2, Q via C64 keyboard buffer"
   },
   "ntsc_startup_capture": true,
   "version": "2.G1",
-  "native_image_sha256": "f055f323fecf8f9bc8e0c462a5faf7e2f25678b46c2e2e544fb73511052c2e47",
-  "interactive_prg_sha256": "b77034f2fb8fe80ef35eef38a25d4eca1e6f9bc3b2106e91ca030440c8e60215"
+  "native_image_sha256": "91296e050b4660bca8e77fa16b5b55eba271d319a723b328969f9a298ed6ba0b",
+  "interactive_prg_sha256": "acdac73b69d57a7298927d00630c87d07e408cf613c2950395fff851bb31e78d"
 }

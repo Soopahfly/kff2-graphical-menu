@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 import shutil
 import struct
+import sys
 from build_integrated_launcher import run
 
 
@@ -39,6 +40,10 @@ def main():
     if work.exists():shutil.rmtree(work)
     source=work/'firmware'
     shutil.copytree(args.upstream.resolve()/'firmware',source,ignore=shutil.ignore_patterns('build'))
+    shutil.copy(ui/'source/firmware/commands.h',source/'commands.h')
+    run(['patch','--batch','--forward','--fuzz=0','-p1','-i',
+         root/'experiments/home-integration/folder-arm.patch'],env,cwd=work)
+    route_tests=run([sys.executable,root/'tools/test_arm_folder_routes.py',source/'menu.c'],env)
     options=['version='+version,'LAUNCHER='+str(launcher),'-o',launcher]
     if args.arm_bin:options.append('GCC_PATH='+str(args.arm_bin.resolve()))
     if args.newlib_libdir:options.append('LIBDIR=-L'+str(args.newlib_libdir.resolve()))
@@ -66,7 +71,8 @@ def main():
         'launcher_offset':114688,'launcher_bytes':len(native),'launcher_rom_free':metadata['rom_free'],
         'blank_region_preserved':True,'initial_sp':hex(sp),'reset_vector':hex(reset),
         'sha256':digest(upd),'launcher_sha256':digest(native),
-        'vice_harness_matches_build':True,
+        'vice_harness_matches_build':True,'folder_shortcuts':True,'arm_source_changed':True,
+        'home_graphics_lossless':True,'arm_folder_dispatch_host_tested':True,
         'compiler_warning_kinds':sorted(set(line.strip() for line in log.splitlines() if 'warning:' in line))}
     dest=root/'firmware/experimental'
     dest.mkdir(parents=True,exist_ok=True)

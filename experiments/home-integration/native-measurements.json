@@ -1,9 +1,9 @@
 {
   "rom_start": 32768,
   "rom_limit": 47104,
-  "rom_end_exclusive": 46887,
-  "rom_used_including_padding": 14119,
-  "rom_free": 217,
+  "rom_end_exclusive": 47038,
+  "rom_used_including_padding": 14270,
+  "rom_free": 66,
   "segments": {
     "ZEROPAGE": {
       "start": 2,
@@ -22,23 +22,23 @@
     },
     "CODE": {
       "start": 33024,
-      "end": 43993,
-      "size": 10970
+      "end": 43161,
+      "size": 10138
     },
     "RODATA": {
-      "start": 44032,
-      "end": 46746,
-      "size": 2715
+      "start": 43264,
+      "end": 46921,
+      "size": 3658
     },
     "DATA": {
       "start": 49152,
-      "end": 49291,
-      "size": 140
+      "end": 49267,
+      "size": 116
     },
     "BSS": {
-      "start": 49292,
-      "end": 50492,
-      "size": 1201
+      "start": 49268,
+      "end": 50467,
+      "size": 1200
     },
     "EAPI": {
       "start": 63488,
@@ -58,6 +58,6 @@
   },
   "image_bytes": 16384,
   "version": "2.G1",
-  "cc65": "cc65 V2.19 - Git eebf54a",
+  "cc65": "cc65 V2.18 - Debian 2.19-1",
   "upstream_commit": "9c84d999f4e2f5b2c7688cbc37a127069f5401b0"
 }

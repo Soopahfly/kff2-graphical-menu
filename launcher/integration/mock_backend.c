@@ -13,7 +13,7 @@
 uint8_t test_key_index, test_error, test_result;
 uint8_t test_reply_count, test_replies[48];
 uint8_t test_selected, test_folder, test_page, test_select_count;
-uint8_t test_seen;
+uint8_t test_seen, test_home_mask;
 static uint8_t dialog;
 static uint16_t readpos, writepos;
 static char packet[1024];
@@ -22,6 +22,7 @@ static const char* root_files[] = {
     "Utilities                        dir", "Boulder Dash.prg                  32K",
     "Prince of Persia.crt             512K", "Sam's Journey.crt                  1M"
 };
+static const char* folder_names[] = {"\xa0/Games", "\xa0/Tools", "\xa0/Utilities", "\xa0/Favourites"};
 static const char* child_files[] = {
     "..                               dir", "Impossible Mission.prg            36K",
     "The Last Ninja.d64               171K"
@@ -37,8 +38,10 @@ static uint8_t directory(uint8_t command, uint8_t selected)
     const char* name;
     writepos = readpos = 0;
     if (command == CMD_READ_DIR) {
-        name = dialog == 1 ? " Settings (simulated)" : dialog == 2 ?
-               " Utilities (simulated)" : test_folder ? "\xa0/Games" : "\xa0/";
+        if (dialog==1) name=" Settings (simulated)";
+        else if (dialog==2) name=" Utilities (simulated)";
+        else if (test_folder) name=folder_names[test_folder-1];
+        else name="\xa0/";
         field(name, DIR_NAME_LENGTH);
     }
     count = dialog ? 3 : test_folder ? 3 : test_page ? 7 : MAX_ELEMENTS_PAGE;
@@ -103,6 +106,15 @@ uint8_t kff_send_reply_progress(uint8_t reply)
                 return directory(CMD_READ_DIR,0);
             }
             return CMD_MOUNT_DISK; /* Stop before the real loader; record selection only. */
+        case REPLY_HOME_BROWSE:
+            if (!dialog) return CMD_NONE;
+            dialog=0;
+            return directory(CMD_READ_DIR,0);
+        case REPLY_HOME_FOLDER:
+            if (test_selected >= 4) {test_error=11;return CMD_WAIT_RESET;}
+            test_home_mask |= 1 << test_selected;
+            test_folder=test_selected+1;test_page=dialog=0;
+            return directory(CMD_READ_DIR,0);
         case REPLY_SETTINGS:
             dialog=1;test_seen|=4;
             return directory(CMD_READ_DIR,0);
@@ -130,11 +142,11 @@ void ef3usb_load_and_run(void) { test_error=8; }
 #if UI_TEST_SCENARIO == 1
 static const uint8_t keys[] = {
     'b', CH_ENTER, CH_CURS_DOWN, CH_F2, 'b', CH_F2, 's',
-    CH_F2, 'u', CH_F2, 'q'
+    CH_F2, CH_F3, CH_F2, 'q'
 };
 #elif UI_TEST_SCENARIO == 2
 static const uint8_t keys[] = {'b', CH_CURS_DOWN, CH_CURS_DOWN, CH_CURS_DOWN, CH_SHIFT_ENTER};
-#else
+#elif UI_TEST_SCENARIO == 3
 static const uint8_t keys[] = {
     'b', CH_CURS_DOWN,CH_CURS_DOWN,CH_CURS_DOWN,CH_CURS_DOWN,
     CH_CURS_DOWN,CH_CURS_DOWN,CH_CURS_DOWN,CH_CURS_DOWN,
@@ -143,6 +155,11 @@ static const uint8_t keys[] = {
     CH_CURS_DOWN,CH_CURS_DOWN,CH_CURS_DOWN,CH_CURS_DOWN,
     CH_CURS_DOWN,CH_CURS_DOWN,CH_CURS_DOWN,
     CH_CURS_UP,CH_F2,'b',CH_ENTER
+};
+#else
+static const uint8_t keys[] = {
+    'g',CH_F2,'t',CH_F2,'u',CH_F2,'f',CH_F2,
+    'b',CH_F2,CH_CURS_RIGHT,CH_CURS_DOWN,CH_ENTER,CH_F2,'q'
 };
 #endif
 #endif
@@ -177,9 +194,12 @@ int main(void)
                       test_select_count==1 && test_key_index==sizeof(keys);
 #elif UI_TEST_SCENARIO == 2
         test_result = !test_error && command==CMD_MOUNT_DISK && test_selected==(3|SELECT_FLAG_OPTIONS);
-#else
+#elif UI_TEST_SCENARIO == 3
         test_result = !test_error && command==CMD_MOUNT_DISK && test_selected==22 &&
                       (test_seen & 48)==48;
+#else
+        test_result = !test_error && command==CMD_WAIT_RESET && test_home_mask==15 &&
+                      test_folder==4 && test_key_index==sizeof(keys);
 #endif
         ui_test_finished();
         clrscr();

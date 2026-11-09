@@ -1,10 +1,5 @@
 # KFF2 Graphical Menu
 
-New design experiment: [Folder Home](experiments/folder-home/README.md), with
-Games, Tools, Utilities and Favourites tiles. Includes a standalone PRG preview.
-Folder shortcuts are not connected to storage yet; the v2.G1 firmware below
-still uses the previous Home screen.
-
 An experimental graphical home screen integrated with Kung Fu Flash 2's native
 launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G1**.
 It is built and software-checked, not tested on physical KFF2 hardware.
@@ -13,14 +8,15 @@ It is built and software-checked, not tested on physical KFF2 hardware.
 
 ## Current milestone
 
-**Home > original file browser > Home** is connected. F2 returns Home while
-preserving the folder and selected entry. Settings, Utilities and BASIC map to
-the existing actions. The file browser still has its original text appearance.
+**Games / Tools / Utilities / Favourites > original text browser > Home** is
+connected. F2 returns Home while preserving the folder and selected entry. B
+opens Browse, S opens Settings, F3 opens built-in cart utilities and Q opens BASIC.
+The file browser still has its original text appearance.
 
-The native C64 image remains 16 KB, with **217 bytes free** in its main ROM
+The native C64 image remains 16 KB, with **66 bytes free** in its main ROM
 allocation. The unused 16 KB flash region is not used. The full MCU update is
 128 KB. No original cartridge features were intentionally removed, and the ARM
-firmware source is unchanged. Full compatibility needs hardware testing.
+firmware adds a bounded four-folder dispatcher. Full compatibility needs hardware testing.
 
 Existing autoload and direct PRG/USB, cartridge and disk boot paths remain;
 the home screen appears when the native launcher enters menu mode.
@@ -32,7 +28,7 @@ This runs the patched native menu with a simulated cartridge data source:
 
 - B on Home opens the directory. Cursor keys and Return select.
 - F2 returns Home without clearing the folder or selection.
-- S/U open simulated Settings/Utilities lists.
+- G/T/U/F open the four simulated collections; S/F3 open Settings/cart utilities.
 - Q on Home exits the harness to BASIC.
 
 Directory entries are test data. No SD files or games are loaded. This harness
@@ -48,10 +44,12 @@ or loading. This is an altered development build, not an official release.
 
 ## Build and test
 
-Install cc65, GNU make, patch and Python 3. Obtain the upstream KFF2 source at
+Install cc65, GNU make, patch and Python 3. Generating artwork also needs Pillow and liblz4. Obtain the upstream KFF2 source at
 commit `9c84d999f4e2f5b2c7688cbc37a127069f5401b0`, then:
 
-    python3 tools/build_integrated_launcher.py --upstream /path/to/KungFuFlash2
+    python3 tools/design_folder_home.py
+python3 tools/pack_folder_home.py
+python3 tools/build_integrated_launcher.py --upstream /path/to/KungFuFlash2
 
 This builds the native launcher and interactive/automated VICE harnesses.
 Run the VICE checks with your own C64 ROMs:
@@ -81,7 +79,7 @@ Regenerate the artwork using `python3 tools/make_kicker.py`.
 
 ## Next
 
-Test the experimental build on physical KFF2 hardware, then replace the text
+Read the [recovery guide](firmware/experimental/RECOVERY.md), test the build on physical KFF2 hardware, then replace the text
 browser renderer. Preserve the 23-entry page protocol and selection indexes.
 Favourites and further cartridge features are later work.
 

@@ -12,7 +12,7 @@ artwork drawn for this project, not EasyFlash's original background bitmap.
 ![Folder Home, Games selected](../../preview/folder-home-games.png)
 
 This image is a pixel layout render of the exact C64 bitmap and colour matrix
-used by the PRG. It is not a VICE screenshot. This design is **not in v2.G1**.
+used by the PRG. It is not a VICE screenshot. The revised design is now integrated in the [updated v2.G1 firmware](../../firmware/experimental/README.md).
 
 ## Intended folder mapping
 
@@ -23,15 +23,14 @@ used by the PRG. It is not a VICE screenshot. This design is **not in v2.G1**.
 | Utilities | `/Utilities/` | Your own utility collection |
 | Favourites | `/Favourites/` | A collection you organise yourself |
 
-These are proposed shortcuts to ordinary directories. Tools and Utilities are
+The firmware shortcuts open these ordinary directories. Tools and Utilities are
 separate collections for the user to organise, with no file-type restrictions.
 Favourites initially means copies of files placed in that folder, not a database
 or automatic list. Keep each multi-disk game together in its own subdirectory.
 
 Built-in cartridge utilities stay separate, labelled **Cart utilities** on F3.
 Browse SD (B), Settings (S) and BASIC (Q) remain visible at the bottom.
-Missing-folder handling is still to be implemented; the proposed behaviour is a
-clear message showing the expected path and an option to open Browse SD.
+The firmware shows a missing-folder message and opens the SD root after OK.
 
 ## Try the design
 
@@ -60,8 +59,8 @@ and all four PNG previews. Every RLE stream is checked against its original
 bytes. Coordinates are checked against the 320x200 bitmap bounds.
 
 The PRG compiles with cc65 2.19. Its load address, BASIC SYS entry, linked memory
-range and decompressed stream lengths are checked. It has **not been run in
-VICE or tested on hardware in this iteration**. Keyboard and joystick handlers
+range and decompressed stream lengths are checked. This separate PRG has not been run in VICE. The integrated native-menu harness
+has now been tested in VICE, including byte-exact graphics verification. Keyboard and joystick handlers
 are included, but their operation is not yet verified in an emulator.
 
 The bitmap lives at `$6000-$7f3f`, its matrix at `$5c00-$5fe7`. Program, assets
@@ -70,8 +69,9 @@ on leaving the graphical screen.
 
 This prototype uses a complete compressed static bitmap so the PNGs and PRG
 share the exact layout. Its asset size is recorded in `measurements.json`.
-That is **not a native firmware ROM-fit measurement**. Connecting real folder
-navigation and fitting the design into the native launcher are the next steps.
+That is **not a native firmware ROM-fit measurement**. The native launcher uses a separate LZ4-packed version of the same pixels and
+now fits with 66 bytes spare. The integrated firmware connects folder navigation;
+physical hardware validation remains pending.
 
 Font: Thomas Giesel / EasyFlash 3. Existing copyright and licence remain in
 `launcher/ui/charset.sed` and `launcher/ui/EF3-LICENSE.md`.

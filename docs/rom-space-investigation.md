@@ -1,3 +1,6 @@
+> Current folder Home firmware: 66 bytes free in the native main ROM.
+> Earlier measurements below document the previous layouts. See [current build](https://github.com/Soopahfly/kff2-graphical-menu/tree/main/firmware/experimental).
+
 # ROM space investigation
 
 The graphical UI fits if it is stored separately and copied into C64 RAM.

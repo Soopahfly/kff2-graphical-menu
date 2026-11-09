@@ -1,0 +1,47 @@
+--- a/launcher/main.c
++++ b/launcher/main.c
+@@ -461,11 +461,16 @@
+ static uint8_t showHome(void)
+ {
+     static const uint8_t replies[] = {
+-        REPLY_OK, REPLY_UTILITIES, REPLY_SETTINGS, REPLY_BASIC
++        REPLY_HOME_BROWSE, REPLY_SETTINGS, REPLY_UTILITIES, REPLY_BASIC
+     };
+     uint8_t action = home_run();
+     updateScreen();
+-    return replies[action];
++    if (action < HOME_COUNT) {
++        searchLen = 0; searchBuffer[0] = 0;
++        KFF_SEND_BYTE(action);
++        return REPLY_HOME_FOLDER;
++    }
++    return replies[action - HOME_COUNT];
+ }
+ 
+ static uint8_t menuLoop(void)
+@@ -476,9 +481,11 @@
+     memset(dir, 0, sizeof(Directory));
+ 
+     cmd = CMD_NONE;
+-    kff_send_size_data(searchBuffer, searchLen);
+     reply = showHome();
+-    if (reply == REPLY_OK) reply = REPLY_DIR;
++    if (reply == REPLY_HOME_BROWSE) {
++        kff_send_size_data(searchBuffer, searchLen);
++        reply = REPLY_DIR;
++    }
+ 
+     while (true)
+     {
+--- a/firmware/commands.h
++++ b/firmware/commands.h
+@@ -88,6 +88,9 @@
+     REPLY_RESET,
+ 
+     // Disk replies
++    REPLY_HOME_FOLDER = 0x8e, /* Experimental Home folder index follows. */
++    REPLY_HOME_BROWSE = 0x8f,
++
+     REPLY_LOAD = 0x90,
+     REPLY_SAVE,
+ 
