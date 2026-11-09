@@ -13,7 +13,6 @@
 
 #define REG(a) (*(volatile uint8_t*)(a))
 static uint8_t saved[8];
-static uint8_t title[144];
 static const char* labels[HOME_COUNT] = {
     "Browse SD card", "Utilities", "Settings", "Return to BASIC"
 };
@@ -36,27 +35,22 @@ static void text(uint8_t x, uint8_t y, const char* s)
 {
     text_plot_puts(x, 0, y, s);
 }
-static void pixel(uint16_t x, uint8_t y)
+/* Count/value RLE, written directly into the VIC bitmap without a buffer. */
+static void artwork(uint8_t x, uint8_t y, uint8_t width, const uint8_t* src)
 {
-    P_GFX_BITMAP[(uint16_t)(y >> 3) * 320 + (x >> 3) * 8 + (y & 7)] |= 0x80 >> (x & 7);
-}
-static void heading(void)
-{
-    uint8_t x, y, bits;
-    text(2, 1, "kung fu flash 2");
-    memcpy(title, P_GFX_BITMAP + 336, sizeof(title));
-    memset(P_GFX_BITMAP + 320, 0, 640);
-    /* Double the EF3 proportional font into a 16-pixel-high title. */
-    for (x = 0; x < 144; ++x) {
-        for (y = 0; y < 8; ++y) {
-            bits = title[(x >> 3) * 8 + y];
-            if (bits & (0x80 >> (x & 7))) {
-                pixel(16 + (uint16_t)x * 2, 8 + y * 2);
-                pixel(17 + (uint16_t)x * 2, 8 + y * 2);
-                pixel(16 + (uint16_t)x * 2, 9 + y * 2);
-                pixel(17 + (uint16_t)x * 2, 9 + y * 2);
+    uint8_t count, value;
+    uint16_t column = 0;
+    uint16_t row_bytes = (uint16_t)width * 8;
+    uint8_t* dest = P_GFX_BITMAP + (uint16_t)y * 320 + x * 8;
+    while ((count = *src++) != 0) {
+        value = *src++;
+        do {
+            *dest++ = value;
+            if (++column == row_bytes) {
+                column = 0;
+                dest += 320 - row_bytes;
             }
-        }
+        } while (--count);
     }
 }
 void home_select(uint8_t selected)
@@ -86,7 +80,7 @@ void home_enter(void)
     REG(0x0291) = 0x80; /* lock character-set toggle while bitmap is active */
     memset(P_GFX_BITMAP, 0, 8000);
     memset(P_GFX_COLOR, 0x10, 1000);
-    heading();
+    artwork(2, 1, TITLE_TILE_COLS, title_rle);
     colors(2, 1, 36, 2, 0x30);
     text(2, 4, "GRAPHICAL LAUNCHER / DEVELOPMENT PREVIEW");
     colors(2, 4, 36, 1, 0xc0);
@@ -95,13 +89,8 @@ void home_enter(void)
         text(3, y, shortcuts[i]);
         text(6, y, labels[i]);
     }
-    /* 64x88 upright high-kick silhouette, copied in native VIC-II tile order. */
-    for (y = 0; y < KICKER_TILE_ROWS; ++y) {
-        for (i = 0; i < 8; ++i) {
-            memcpy(P_GFX_BITMAP + (uint16_t)(y + 7) * 320 + (i + 29) * 8,
-                   kicker_bitmap + (uint16_t)y * 64 + i * 8, 8);
-        }
-    }
+    /* The same native pixels, stored as a compact stream. */
+    artwork(29, 7, KICKER_TILE_COLS, kicker_rle);
     colors(29, 7, 8, KICKER_TILE_ROWS, 0x30);
 
     text(2, 23, "CURSOR / JOY 2: MOVE    RETURN / FIRE: OPEN");

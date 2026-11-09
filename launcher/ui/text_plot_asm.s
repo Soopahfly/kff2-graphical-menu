@@ -29,10 +29,9 @@
 ; Data import
 .import _text_plot_x
 .import _text_plot_addr
-; Removed unused EF3 declaration in this altered version.
+; Altered version: packed font pointers, compact pixel loop, unused fill removed.
 
-.import charset_tab_lo
-.import charset_tab_hi
+.import charset_offset_lo, charset_offset_hi, charset_data
 
 ; usage of tmp space in this module
 ptr1_char_addr          = ptr1
@@ -93,11 +92,35 @@ next_char:
 :
         inc tmp4_str_offset
 
-        ; get address of character bitmap
+        ; Altered layout: 256 low offsets and 64 packed high-offset bytes.
+        ; Propagate the base+low carry before decoding the extra high bits.
         tay
-        lda charset_tab_lo, y
+        lda charset_offset_lo, y
+        clc
+        adc #<charset_data
         sta ptr1_char_addr
-        lda charset_tab_hi, y
+        lda #>charset_data
+        adc #0
+        sta ptr1_char_addr + 1
+        tya
+        and #3
+        tax
+        tya
+        lsr
+        lsr
+        tay
+        lda charset_offset_hi, y
+        cpx #0
+        beq @offset_ready
+@offset_shift:
+        lsr
+        lsr
+        dex
+        bne @offset_shift
+@offset_ready:
+        and #3
+        clc
+        adc ptr1_char_addr + 1
         sta ptr1_char_addr + 1
 
         ldy #0
@@ -108,7 +131,7 @@ next_char:
 
         ldy #0                          ; relative Y, 0..7
         ldx tmp3_mask
-.repeat 8, n
+@pixel_row:
         ror tmp1_pixel_col              ; next bit (pixel) into C
         bcc :+                          ; no pixel => skip
         txa
@@ -116,7 +139,8 @@ next_char:
         sta (ptr2_pixel_addr), y
 :
         iny
-.endrep
+        cpy #8
+        bne @pixel_row
         lsr tmp3_mask                   ; update mask for next row
         bne :+
         jsr new_target_byte
@@ -144,35 +168,4 @@ new_target_byte:
         bcc :+
         inc ptr2_pixel_addr + 1
 :
-        rts
-
-; =============================================================================
-;
-; void __fastcall__ text_fill_line_color(uint16_t len_col);
-;
-; Fill len bytes from text_plot_addr with color.
-;
-; in:
-;       AX => len in X, color in A
-;
-; out:
-;   -
-;
-; =============================================================================
-.code
-.export _text_fill_line_color
-_text_fill_line_color:
-        ldy _text_plot_addr
-        sty ptr1
-        ldy _text_plot_addr + 1
-        sty ptr1 + 1
-
-        stx tmp1
-        ldy tmp1
-        beq @ret
-@fill:
-        dey
-        sta (ptr1), y
-        bne @fill
-@ret:
         rts

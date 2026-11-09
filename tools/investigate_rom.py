@@ -87,8 +87,9 @@ def main():
             run(['ca65','-t','c64','-o',obj,asm],env)
             objects.append(obj)
         asm_text=(ui/'text_plot_asm.s').read_text()
-        font_text=(ui/'charset.sed').read_text().replace('#','1').replace('-','0')
-        font_text=re.sub(r'^([01]{2})',r'.byte %\1',font_text,flags=re.M)
+        font_asm=dest/'font-generated.s'
+        run(['python3',root/'tools/make_font.py',ui/'charset.sed',font_asm],env)
+        font_text=font_asm.read_text()
         for stem,text in [('text_plot_asm',asm_text),('charset',font_text)]:
             if kind=='ram_payload':
                 text=text.replace('.rodata','.segment "UIRODATA"').replace('.code','.segment "UICODE"')

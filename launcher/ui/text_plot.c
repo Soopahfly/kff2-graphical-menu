@@ -29,6 +29,8 @@
 #include "memcfg.h"
 #include "text_plot.h"
 
+/* Altered version: unused colour-fill helper removed. */
+
 /* These are also used by text_plot_asm */
 uint16_t text_plot_x;
 uint8_t* text_plot_addr;
@@ -50,16 +52,5 @@ void __fastcall__ text_plot_puts(
     text_plot_x = 8 * x_pos + x_offset;
     text_plot_addr = P_GFX_BITMAP + y_pos * 320 + x_pos * 8;
     text_plot_str(str);
-}
-
-/******************************************************************************/
-/**
- * Set the color of 16 blocks at position x/y.
- */
-void __fastcall__ text_set_line_color(
-        uint8_t x_pos, uint8_t y_pos, uint8_t color)
-{
-    text_plot_addr = P_GFX_COLOR + y_pos * 40 + x_pos;
-    text_fill_line_color((16 << 8) | color);
 }
 

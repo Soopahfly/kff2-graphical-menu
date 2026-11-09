@@ -67,16 +67,16 @@
   },
   "inline": {
     "link_succeeded": false,
-    "diagnostic": "<project>/launcher/build/rom-investigation/inline/layout.cfg:10: Warning: Segment \u2018RODATA\u2019 overflows memory area \u2018ROM\u2019 by 3058 bytes\nruntime/sp-compat.s:16: Warning: Assertion failed: Symbol 'sp' is deprecated - please use 'c_sp' instead\nld65: Error: Cannot generate most of the files due to memory area overflow",
-    "rom_required_including_padding": 17563,
-    "total_overflow_including_data": 3227
+    "diagnostic": "<project>/launcher/build/rom-investigation/inline/layout.cfg:10: Warning: Segment \u2018RODATA\u2019 overflows memory area \u2018ROM\u2019 by 2142 bytes\nruntime/sp-compat.s:16: Warning: Assertion failed: Symbol 'sp' is deprecated - please use 'c_sp' instead\nld65: Error: Cannot generate most of the files due to memory area overflow",
+    "rom_required_including_padding": 16647,
+    "total_overflow_including_data": 2311
   },
   "ram_payload": {
     "rom_start": 32768,
     "rom_limit": 47104,
-    "rom_end_exclusive": 46434,
-    "rom_used_including_padding": 13666,
-    "rom_free": 670,
+    "rom_end_exclusive": 46178,
+    "rom_used_including_padding": 13410,
+    "rom_free": 926,
     "segments": {
       "ZEROPAGE": {
         "start": 2,
@@ -85,13 +85,13 @@
       },
       "UICODE": {
         "start": 4096,
-        "end": 6052,
-        "size": 1957
+        "end": 5635,
+        "size": 1540
       },
       "UIRODATA": {
-        "start": 6053,
-        "end": 8157,
-        "size": 2105
+        "start": 5636,
+        "end": 7336,
+        "size": 1701
       },
       "LOWCODE": {
         "start": 32768,
@@ -110,12 +110,12 @@
       },
       "CODE": {
         "start": 33024,
-        "end": 44832,
-        "size": 11809
+        "end": 44729,
+        "size": 11706
       },
       "RODATA": {
-        "start": 45056,
-        "end": 46264,
+        "start": 44800,
+        "end": 46008,
         "size": 1209
       },
       "DATA": {
@@ -125,8 +125,8 @@
       },
       "BSS": {
         "start": 49321,
-        "end": 49747,
-        "size": 427
+        "end": 49603,
+        "size": 283
       },
       "EAPI": {
         "start": 63488,
@@ -145,9 +145,9 @@
       }
     },
     "link_succeeded": true,
-    "ui_payload_used": 4062,
+    "ui_payload_used": 3241,
     "ui_payload_capacity": 16384,
-    "ui_payload_free": 12322,
+    "ui_payload_free": 13143,
     "resident_image_bytes": 16384,
     "padded_payload_bytes": 16384
   },

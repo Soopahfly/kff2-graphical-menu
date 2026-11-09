@@ -28,7 +28,7 @@ and its cartridge protocol are unchanged.
 
 ## Build
 
-Install cc65, GNU make and sed. In the KFF2 checkout:
+Install cc65, GNU make and Python 3. In the KFF2 checkout:
 
     make -C launcher/preview
 
@@ -40,7 +40,7 @@ will need its original ARM toolchain when integration is ready.
 
 ## Implementation and memory
 
-- `ui/kicker.h`: 64x88 upright one-bit silhouette, 704 bytes in VIC-II tile order.
+- `ui/kicker.h`: 64x88 upright silhouette and doubled title, losslessly packed as count/value streams.
 - `tools/make_kicker.py`: reproducible code-native icon generator.
 - `ui/home.c`: shared home renderer and input loop, no cartridge register access.
 - `ui/text_plot*` and `ui/charset.sed`: EF3 proportional font renderer and font.
@@ -59,7 +59,7 @@ RODATA ends at $B2B8, but DATA initializers occupy ROM through $B349.
 The actual remaining space is 1,206 bytes. The prototype's renderer, font
 and screen logic require more space than that. Integration needs a deliberate
 ROM/RAM layout change or a smaller renderer/font. A link-only investigation
-has now confirmed a separate 4,062-byte UI payload fits in a proposed layout;
+has now confirmed a separate 3,241-byte UI payload fits in a proposed layout;
 see [the ROM-space investigation](../../docs/rom-space-investigation.md).
 The firmware transfer and integrated boot are still pending.
 
@@ -76,6 +76,13 @@ Once the memory layout is settled, the home actions map to existing operations:
 | HOME_BASIC | REPLY_BASIC |
 
 Favourites and KERNAL replacement are outside this first prototype.
+
+## Size optimisation
+
+The split UI payload is 3,241 bytes (previously 4,062). The PRG is 7,576
+bytes (previously 8,565). The title and icon pixels are unchanged. Font pointers
+use packed offsets while retaining all 256 mappings. See
+[the optimisation notes](../../docs/ui-size-reduction.md).
 
 ## Verification, 9 November 2026
 

@@ -56,21 +56,21 @@ are stored in ROM. Counting only the RODATA end overstates the remaining room.
 | Original launcher main ROM allocation | 14,336 bytes |
 | Original launcher used, including padding and DATA initializers | 13,130 bytes |
 | Original launcher free | **1,206 bytes** |
-| Original launcher plus current UI, all in ROM | 17,563 bytes required |
-| Actual excess, including DATA initializers | **3,227 bytes** |
+| Original launcher plus current UI, all in ROM | 16,647 bytes required |
+| Actual excess, including DATA initializers | **2,311 bytes** |
 | Original launcher plus UI linked to separate C64 RAM payload | **Links successfully** |
-| Separate UI code, text renderer, font and artwork | **4,062 bytes** |
+| Separate UI code, text renderer, font and artwork | **3,241 bytes** |
 | Payload allocation in the proposed flash/RAM layout | 16,384 bytes |
-| Remaining payload capacity before new headers or browser code | **12,322 bytes** |
-| Resident ROM remaining in this experiment | **670 bytes** |
+| Remaining payload capacity before new headers or browser code | **13,143 bytes** |
+| Resident ROM remaining in this experiment | **926 bytes** |
 
-The first failing linker diagnostic reports a RODATA overflow of 3,058 bytes.
+The first failing linker diagnostic reports a RODATA overflow of 2,142 bytes.
 That excludes the later DATA initializers. A second, explicitly sizing-only
-link measures the complete 3,227-byte excess. Its relaxed address layout is
+link measures the complete 2,311-byte excess. Its relaxed address layout is
 not executable firmware and must not be treated as a fix.
 
-The successful experiment places UI code at `$1000-$17A4` and UI constants at
-`$17A5-$1FDD`. It leaves the existing launcher, disk routines and USB loading
+The successful experiment places UI code at `$1000-$1603` and UI constants at
+`$1604-$1CA8`. It leaves the existing launcher, disk routines and USB loading
 support in cartridge ROM. It does not yet transfer the payload or call its UI.
 
 ## How EasyFlash 3 manages it
@@ -111,7 +111,7 @@ Store a UI payload in the existing blank 16 KB region, keeping the launcher at
 its existing offset. Deliver the payload through KFF2's existing buffered data
 interface and load it into C64 RAM before opening the graphical menu.
 
-The shared data buffer is 64 KB, so the current roughly 4 KB payload fits.
+The shared data buffer is 64 KB, so the current roughly 3.2 KB payload fits.
 This approach does not require adding work to each timing-sensitive cartridge
 ROM read. It also need not change the 128 KB update length or the version
 string's offset. It does require matching changes on the ARM and C64 sides.
@@ -123,7 +123,7 @@ Implementation still needs:
    same 16 KB capacity.
 2. An explicitly numbered command for transferring it before normal menu
    traffic. Existing command numbers must not shift.
-3. A small resident receiver and dispatch bridge. The measured 670 bytes
+3. A small resident receiver and dispatch bridge. The measured 926 bytes
    remaining are before this code is added.
 4. Graphics-aware drawing for the file list, search and progress display,
    plus display restoration for existing dialogs, text reader and loaders.
@@ -134,8 +134,8 @@ load over the menu's low-RAM area after it exits. Its callbacks must not retain
 pointers to temporary UI code or data.
 
 The current ROM launcher also has a small upper-RAM working area. In the
-RAM-payload link, DATA plus BSS occupies 596 bytes at `$C000`, leaving about
-1.4 KB for heap before the reserved 2 KB C stack. The existing directory
+RAM-payload link, DATA plus BSS occupies 452 bytes at `$C000`, leaving about
+1.5 KB for heap before the reserved 2 KB C stack. The existing directory
 structure already consumes 963 bytes before allocator overhead. New UI buffers
 should use explicitly reserved low RAM or reuse the existing directory data,
 not add large allocations to that heap.
@@ -149,6 +149,13 @@ not add large allocations to that heap.
 | Load UI from the SD card | Can avoid embedded asset storage, but adds an external file dependency and recovery behaviour. |
 | Compress the existing single-bank image | Compression does not save ROM unless the output is unpacked somewhere; resident disk callbacks complicate that design. |
 | Trim features or shrink font/artwork | May reclaim space, but would trade away functionality or appearance and leaves less room for the browser. |
+
+## Size reduction
+
+The first measured UI was 4,062 bytes. Lossless artwork packing, packed font
+pointers and smaller drawing routines reduce the current payload to 3,241
+bytes. See [the optimisation notes](ui-size-reduction.md) for the comparison
+and pixel-equivalence checks. The figures above describe the optimised build.
 
 ## Reproduce
 

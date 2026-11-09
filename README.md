@@ -23,7 +23,7 @@ does not contain flashable firmware, C64 ROMs or games.
 
 ## Build
 
-Install cc65, GNU make and sed, then run:
+Install cc65, GNU make and Python 3, then run:
 
     make -C launcher/preview
 
@@ -45,10 +45,16 @@ A prebuilt copy, screenshot and source archive are under `preview/`.
 The detailed memory map, test notes and integration plan are in
 [launcher/preview/README.md](launcher/preview/README.md).
 
+## UI size reduction
+
+The UI payload is now **3,241 bytes**, down from 4,062 bytes (20.2% smaller).
+The home screen and all font mappings render identically in VICE. Details are
+in [the optimisation notes](docs/ui-size-reduction.md).
+
 ## ROM-space findings
 
 The stock launcher has 1,206 bytes free. Adding the current UI directly exceeds
-its allocation by 3,227 bytes. A separate 4,062-byte UI payload links
+its allocation by 2,311 bytes. A separate 3,241-byte UI payload links
 successfully and could use the existing blank 16 KB region in the update.
 The transfer and startup integration are still to be implemented.
 
