@@ -54,8 +54,10 @@ Joystick input and real KFF2 hardware remain untested.
 
 The improved UI still does not fit alongside the existing launcher in the
 stock ROM allocation. It remains 2,311 bytes over in the inline experiment.
-The flash-to-RAM payload plan is still recommended and still needs its
-transfer, startup and firmware integration implemented.
+A separate [resident-launcher experiment](../experiments/launcher-size/README.md)
+now makes an inline link fit with 249 bytes spare. That optional patch does
+not change the UI measurements above. Integration and hardware testing are
+still pending, with the flash-to-RAM approach retained as an alternative.
 
 The current [reproduction script](../tools/investigate_rom.py) writes the
 updated [measurements](rom-space-measurements.json). Asset sources are

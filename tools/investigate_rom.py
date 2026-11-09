@@ -2,7 +2,7 @@
 """Reproduce launcher space measurements without modifying upstream sources.
 
 Requires cc65, make and a KFF2 checkout. Runs two link-only UI experiments:
-1. Put the current UI into the existing ROM (expected overflow).
+1. Put the current UI into the existing ROM and report fit or overflow.
 2. Link UI code/font into a separate C64 RAM payload, keeping the launcher in ROM.
 Neither experiment changes firmware or produces a flashable update.
 """
@@ -45,6 +45,7 @@ def main():
     ap.add_argument('--upstream', type=Path, required=True)
     ap.add_argument('--cc65-home', type=Path)
     ap.add_argument('--easyflash-upstream', type=Path)
+    ap.add_argument('--launcher-patch', type=Path, help='Optional experimental patch for the copied launcher')
     args=ap.parse_args()
     root=Path(__file__).resolve().parents[1]
     up=args.upstream.resolve()
@@ -64,6 +65,8 @@ def main():
     shutil.copytree(up/'3rd_party/libef3usb', source/'3rd_party/libef3usb',dirs_exist_ok=True,ignore=ignore)
     (source/'firmware').mkdir(exist_ok=True)
     shutil.copy(up/'firmware/commands.h',source/'firmware/commands.h')
+    if args.launcher_patch:
+        run(['patch','--batch','--forward','-p1','-i',args.launcher_patch.resolve()],env,cwd=source)
     launcher=source/'launcher'
     baseline=run(['make','version=2.07'],env,cwd=launcher)
     (work/'baseline.log').write_text(baseline.stdout)
@@ -71,6 +74,10 @@ def main():
     result={'toolchain':run(['cc65','--version'],env).stdout.strip(),
             'upstream_commit':run(['git','-C',up,'rev-parse','HEAD'],env).stdout.strip(),
             'baseline':rom_usage(base_map)}
+    if args.launcher_patch:
+        import hashlib
+        result['experimental_patch']={'file':args.launcher_patch.name,
+            'sha256':hashlib.sha256(args.launcher_patch.read_bytes()).hexdigest()}
     original=[launcher/'build'/f'{x}.o' for x in
               ['crt0.crt','main','base','screen','dir','kff_data','disk','ef3usb_loader','launcher_asm']]
     lib=source/'3rd_party/libef3usb/libef3usb.lib'
@@ -111,19 +118,21 @@ def main():
                '--lib',lib,'--lib','c64.lib'],env,allow_failure=(kind=='inline'))
         (dest/'link.log').write_text(r.stdout)
         if kind=='inline':
-            assert r.returncode != 0, 'Inline UI unexpectedly fits: update this investigation.'
-            result[kind]={'link_succeeded':False,'diagnostic':r.stdout.strip().replace(str(root),'<project>')}
-            # Sizing only: relax the ROM area to measure DATA as well. This
-            # deliberately overlaps the CPU's normal RAM range, so it is not
-            # a usable layout or candidate firmware image.
-            relaxed=dest/'sizing-only.cfg'
-            relaxed.write_text(cfg.replace('size = $3800','size = $5800'))
-            sizing_map=dest/'sizing-only.map'
-            run(['ld65','-o',dest/'sizing-only.bin','-m',sizing_map,'-C',relaxed,
-                 *original,*objects,'--lib',lib,'--lib','c64.lib'],env)
-            measured=rom_usage(sizing_map)
+            result[kind]={'link_succeeded':r.returncode==0,
+                'diagnostic':r.stdout.strip().replace(str(root),'<project>')}
+            if r.returncode:
+                # Sizing only: deliberately relaxed allocation, not runnable.
+                relaxed=dest/'sizing-only.cfg'
+                relaxed.write_text(cfg.replace('size = $3800','size = $5800'))
+                sizing_map=dest/'sizing-only.map'
+                run(['ld65','-o',dest/'sizing-only.bin','-m',sizing_map,'-C',relaxed,
+                     *original,*objects,'--lib',lib,'--lib','c64.lib'],env)
+                measured=rom_usage(sizing_map)
+            else:
+                measured=rom_usage(mapfile)
             result[kind]['rom_required_including_padding']=measured['rom_used_including_padding']
-            result[kind]['total_overflow_including_data']=-measured['rom_free']
+            result[kind]['total_overflow_including_data']=max(0,-measured['rom_free'])
+            result[kind]['rom_free']=max(0,measured['rom_free'])
         else:
             result[kind]=rom_usage(mapfile)
             seg=result[kind]['segments']

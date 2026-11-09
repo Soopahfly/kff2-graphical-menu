@@ -105,7 +105,19 @@ banks. KFF2's current launcher read handler simply reads `crt_ptr[addr &
 0x3fff]`, so that mode has no equivalent general-purpose menu bank selector.
 EasyFlash game emulation and the native launcher are separate modes.
 
-## Recommended approach
+## Follow-up: a smaller resident launcher
+
+A subsequent [optional patch experiment](../experiments/launcher-size/README.md)
+reduces the original launcher by 2,560 bytes. With that patch and the current UI,
+the inline link fits in the original allocation with 249 bytes spare. The UI is
+still not called by the patched launcher. This makes a one-bank integration
+worth trying before adding payload transfer, although the margin is small.
+
+The baseline and payload measurements above still describe the unmodified
+upstream launcher. The experiment has its own results and is not silently
+included in those figures.
+
+## Separate-payload approach
 
 Store a UI payload in the existing blank 16 KB region, keeping the launcher at
 its existing offset. Deliver the payload through KFF2's existing buffered data

@@ -1,0 +1,30 @@
+{
+  "baseline": {
+    "rom_used": 13130,
+    "rom_free": 1206,
+    "data": 145,
+    "bss": 271,
+    "code": 11406
+  },
+  "static-directory": {
+    "rom_used": 12325,
+    "rom_free": 2011,
+    "data": 135,
+    "bss": 1234,
+    "code": 10635
+  },
+  "bounded-formatting": {
+    "rom_used": 11375,
+    "rom_free": 2961,
+    "data": 126,
+    "bss": 225,
+    "code": 9857
+  },
+  "both": {
+    "rom_used": 10570,
+    "rom_free": 3766,
+    "data": 116,
+    "bss": 1188,
+    "code": 9086
+  }
+}

@@ -51,12 +51,23 @@ The UI payload is now **3,241 bytes**, down from 4,062 bytes (20.2% smaller).
 The home screen and all font mappings render identically in VICE. Details are
 in [the optimisation notes](docs/ui-size-reduction.md).
 
+## Further launcher savings
+
+Optional experiments remove 2,560 bytes from the original launcher by replacing
+its general formatter and its single heap allocation. With both patches, the
+existing launcher plus the current UI links in the original ROM allocation,
+with **249 bytes spare**. The UI is not yet wired into that launcher.
+
+See [the patches and measurements](experiments/launcher-size/README.md).
+
 ## ROM-space findings
 
 The stock launcher has 1,206 bytes free. Adding the current UI directly exceeds
 its allocation by 2,311 bytes. A separate 3,241-byte UI payload links
 successfully and could use the existing blank 16 KB region in the update.
-The transfer and startup integration are still to be implemented.
+That result is for the unmodified upstream launcher. The optional compact
+launcher experiment now also provides a possible one-bank route; integration
+and hardware tests remain pending.
 
 See the [ROM-space investigation](docs/rom-space-investigation.md) and
 [reproduction script](tools/investigate_rom.py) for measured results and the

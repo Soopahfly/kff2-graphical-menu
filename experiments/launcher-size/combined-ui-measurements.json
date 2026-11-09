@@ -1,0 +1,149 @@
+{
+  "toolchain": "cc65 V2.19 - Git eebf54a",
+  "upstream_commit": "9c84d999f4e2f5b2c7688cbc37a127069f5401b0",
+  "baseline": {
+    "rom_start": 32768,
+    "rom_limit": 47104,
+    "rom_end_exclusive": 43338,
+    "rom_used_including_padding": 10570,
+    "rom_free": 3766,
+    "segments": {
+      "ZEROPAGE": {
+        "start": 2,
+        "end": 27,
+        "size": 26
+      },
+      "LOWCODE": {
+        "start": 32768,
+        "end": 32787,
+        "size": 20
+      },
+      "ONCE": {
+        "start": 32788,
+        "end": 32799,
+        "size": 12
+      },
+      "CODE": {
+        "start": 33024,
+        "end": 42109,
+        "size": 9086
+      },
+      "RODATA": {
+        "start": 42240,
+        "end": 43221,
+        "size": 982
+      },
+      "DATA": {
+        "start": 49152,
+        "end": 49267,
+        "size": 116
+      },
+      "BSS": {
+        "start": 49268,
+        "end": 50455,
+        "size": 1188
+      },
+      "EAPI": {
+        "start": 63488,
+        "end": 64081,
+        "size": 594
+      },
+      "ULTIMAX": {
+        "start": 64256,
+        "end": 64301,
+        "size": 46
+      },
+      "VECTORS": {
+        "start": 65530,
+        "end": 65535,
+        "size": 6
+      }
+    }
+  },
+  "experimental_patch": {
+    "file": "compact-launcher.patch",
+    "sha256": "1a6f129acaf29ec81f026a08e9ae77cbf64b3b48d02e8405d76418d87f7661c4"
+  },
+  "inline": {
+    "link_succeeded": true,
+    "diagnostic": "runtime/sp-compat.s:16: Warning: Assertion failed: Symbol 'sp' is deprecated - please use 'c_sp' instead",
+    "rom_required_including_padding": 14087,
+    "total_overflow_including_data": 0,
+    "rom_free": 249
+  },
+  "ram_payload": {
+    "rom_start": 32768,
+    "rom_limit": 47104,
+    "rom_end_exclusive": 43618,
+    "rom_used_including_padding": 10850,
+    "rom_free": 3486,
+    "segments": {
+      "ZEROPAGE": {
+        "start": 2,
+        "end": 27,
+        "size": 26
+      },
+      "UICODE": {
+        "start": 4096,
+        "end": 5635,
+        "size": 1540
+      },
+      "UIRODATA": {
+        "start": 5636,
+        "end": 7336,
+        "size": 1701
+      },
+      "LOWCODE": {
+        "start": 32768,
+        "end": 32787,
+        "size": 20
+      },
+      "ONCE": {
+        "start": 32788,
+        "end": 32799,
+        "size": 12
+      },
+      "CODE": {
+        "start": 33024,
+        "end": 42398,
+        "size": 9375
+      },
+      "RODATA": {
+        "start": 42496,
+        "end": 43477,
+        "size": 982
+      },
+      "DATA": {
+        "start": 49152,
+        "end": 49291,
+        "size": 140
+      },
+      "BSS": {
+        "start": 49292,
+        "end": 50491,
+        "size": 1200
+      },
+      "EAPI": {
+        "start": 63488,
+        "end": 64081,
+        "size": 594
+      },
+      "ULTIMAX": {
+        "start": 64256,
+        "end": 64301,
+        "size": 46
+      },
+      "VECTORS": {
+        "start": 65530,
+        "end": 65535,
+        "size": 6
+      }
+    },
+    "link_succeeded": true,
+    "ui_payload_used": 3241,
+    "ui_payload_capacity": 16384,
+    "ui_payload_free": 13143,
+    "resident_image_bytes": 16384,
+    "padded_payload_bytes": 16384
+  }
+}

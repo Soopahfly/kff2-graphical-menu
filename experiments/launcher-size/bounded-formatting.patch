@@ -1,0 +1,105 @@
+--- a/launcher/main.c
++++ b/launcher/main.c
+@@ -94,6 +94,22 @@
+ static const char programBar[] = {"          " KUNG_FU_FLASH_VER "           "};
+ static const char menuBar[] =    {"          " KUNG_FU_FLASH_VER "  <F1> Help"};
+ 
++/* Size experiment: bounded fields replace the general formatter. */
++static void format_line(const char *prefix, const char *text, uint8_t width)
++{
++    char *out = linebuffer;
++    while (*prefix) *out++ = *prefix++;
++    while (width--) *out++ = *text ? *text++ : ' ';
++    *out++ = ' ';
++    *out = 0;
++}
++static void print_hex(uint8_t value)
++{
++    static const char digits[] = "0123456789abcdef";
++    if (value >= 16) cputc(digits[value >> 4]);
++    cputc(digits[value & 15]);
++}
++
+ int main(void)
+ {
+     uint8_t i, tmp, tst;
+@@ -131,7 +147,7 @@
+             if (EF_RAM_TEST != tst)
+             {
+                 showMessage("Communication with cartridge failed.", ERRORC);
+-                cprintf("Check hardware");
++                cputs("Check hardware");
+                 while (true);
+             }
+             EF_RAM_TEST = tst = 1<<i;
+@@ -170,7 +186,8 @@
+         else
+         {
+             showMessage("Received unsupported command.", ERRORC);
+-            cprintf("Command: %s", cmd);
++            cputs("Command: ");
++            cputs(cmd);
+             ef3usb_send_str("etyp");
+         }
+ 
+@@ -191,7 +208,8 @@
+         {
+             cmd_wait = 0;
+             showMessage("Waiting for command from cartridge.", ERRORC);
+-            cprintf("Command: %x", cmd);
++            cputs("Command: ");
++            print_hex(cmd);
+         }
+     }
+ 
+@@ -216,7 +234,7 @@
+             case CMD_FLASH_MESSAGE:
+                 showKFFMessage(TEXTC);
+                 textcolor(ERRORC);
+-                cprintf("PLEASE DO NOT POWER OFF OR RESET");
++                cputs("PLEASE DO NOT POWER OFF OR RESET");
+                 reply = kff_sync();
+                 break;
+ 
+@@ -261,7 +279,8 @@
+ 
+             default:
+                 showMessage("Communication with cartridge failed.", ERRORC);
+-                cprintf("Unexpected command: %x", cmd);
++                cputs("Unexpected command: ");
++                print_hex(cmd);
+                 break;
+         }
+ 
+@@ -294,7 +313,7 @@
+ static void showKFFCancel(void)
+ {
+     const char *text = kff_receive_text(DIR_NAME_LENGTH);
+-    sprintf(linebuffer, "%-39s ", text);
++    format_line("", text, 39);
+     showFrame(linebuffer);
+ 
+     textcolor(TEXTC);
+@@ -814,7 +833,7 @@
+             }
+         }
+ 
+-        sprintf(linebuffer, " Search: %s ", inputBuffer);
++        format_line(" Search: ", inputBuffer, 30);
+         cputsxy(0, 0, linebuffer);
+ 
+         cursor_delay = 0;
+@@ -892,11 +911,11 @@
+ 
+     if (searchBuffer[0] && *dir->name != ' ')
+     {
+-        sprintf(linebuffer, " Search: %-30s ", searchBuffer);
++        format_line(" Search: ", searchBuffer, 30);
+     }
+     else
+     {
+-        sprintf(linebuffer, " %-38s ", dir->name+1);
++        format_line(" ", dir->name+1, 38);
+     }
+ 
+     textcolor(BACKC);

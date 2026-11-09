@@ -1,0 +1,139 @@
+diff --git a/launcher/main.c b/launcher/main.c
+index 0c6a21a..f7a622b 100644
+--- a/launcher/main.c
++++ b/launcher/main.c
+@@ -81,6 +81,7 @@ static char searchBuffer[SEARCH_LENGTH+1];
+ static uint8_t searchLen = 0;
+ static uint8_t *bigBuffer = NULL;
+ static uint16_t *pageBuffer = NULL;
++static Directory directory;
+ static Directory *dir = NULL;
+ 
+ #define KUNG_FU_FLASH_VER "Kung Fu Flash v" ## KFF_VER
+@@ -94,21 +95,31 @@ const char programNameVer[FW_NAME_SIZE] = KUNG_FU_FLASH_VER;
+ static const char programBar[] = {"          " KUNG_FU_FLASH_VER "           "};
+ static const char menuBar[] =    {"          " KUNG_FU_FLASH_VER "  <F1> Help"};
+ 
++/* Size experiment: bounded fields replace the general formatter. */
++static void format_line(const char *prefix, const char *text, uint8_t width)
++{
++    char *out = linebuffer;
++    while (*prefix) *out++ = *prefix++;
++    while (width--) *out++ = *text ? *text++ : ' ';
++    *out++ = ' ';
++    *out = 0;
++}
++static void print_hex(uint8_t value)
++{
++    static const char digits[] = "0123456789abcdef";
++    if (value >= 16) cputc(digits[value >> 4]);
++    cputc(digits[value & 15]);
++}
++
+ int main(void)
+ {
+     uint8_t i, tmp, tst;
+     initScreen(COLOR_BLACK, COLOR_BLACK, TEXTC);
+ 
+-    dir = (Directory *)malloc(sizeof(Directory));
++    dir = &directory;
+     bigBuffer = (uint8_t *)dir;
+     pageBuffer = (uint16_t *)dir;
+ 
+-    if (dir == NULL)
+-    {
+-        showMessage("Failed to allocate memory.", ERRORC);
+-        while (true);
+-    }
+-
+     if (joy_install(&joy_static_stddrv) != JOY_ERR_OK)
+     {
+         showMessage("Failed to install joystick driver.", ERRORC);
+@@ -131,7 +142,7 @@ int main(void)
+             if (EF_RAM_TEST != tst)
+             {
+                 showMessage("Communication with cartridge failed.", ERRORC);
+-                cprintf("Check hardware");
++                cputs("Check hardware");
+                 while (true);
+             }
+             EF_RAM_TEST = tst = 1<<i;
+@@ -141,7 +152,6 @@ int main(void)
+         mainLoopEF3();
+     }
+ 
+-    free(dir);
+     return 0;
+ }
+ 
+@@ -170,7 +180,8 @@ static void mainLoopEF3(void)
+         else
+         {
+             showMessage("Received unsupported command.", ERRORC);
+-            cprintf("Command: %s", cmd);
++            cputs("Command: ");
++            cputs(cmd);
+             ef3usb_send_str("etyp");
+         }
+ 
+@@ -191,7 +202,8 @@ static void mainLoopKFF(void)
+         {
+             cmd_wait = 0;
+             showMessage("Waiting for command from cartridge.", ERRORC);
+-            cprintf("Command: %x", cmd);
++            cputs("Command: ");
++            print_hex(cmd);
+         }
+     }
+ 
+@@ -216,7 +228,7 @@ static void mainLoopKFF(void)
+             case CMD_FLASH_MESSAGE:
+                 showKFFMessage(TEXTC);
+                 textcolor(ERRORC);
+-                cprintf("PLEASE DO NOT POWER OFF OR RESET");
++                cputs("PLEASE DO NOT POWER OFF OR RESET");
+                 reply = kff_sync();
+                 break;
+ 
+@@ -261,7 +273,8 @@ static void mainLoopKFF(void)
+ 
+             default:
+                 showMessage("Communication with cartridge failed.", ERRORC);
+-                cprintf("Unexpected command: %x", cmd);
++                cputs("Unexpected command: ");
++                print_hex(cmd);
+                 break;
+         }
+ 
+@@ -294,7 +307,7 @@ static void showKFFMessage(uint8_t color)
+ static void showKFFCancel(void)
+ {
+     const char *text = kff_receive_text(DIR_NAME_LENGTH);
+-    sprintf(linebuffer, "%-39s ", text);
++    format_line("", text, 39);
+     showFrame(linebuffer);
+ 
+     textcolor(TEXTC);
+@@ -814,7 +827,7 @@ static uint8_t search(uint8_t c)
+             }
+         }
+ 
+-        sprintf(linebuffer, " Search: %s ", inputBuffer);
++        format_line(" Search: ", inputBuffer, 30);
+         cputsxy(0, 0, linebuffer);
+ 
+         cursor_delay = 0;
+@@ -892,11 +905,11 @@ static void showDir(void)
+ 
+     if (searchBuffer[0] && *dir->name != ' ')
+     {
+-        sprintf(linebuffer, " Search: %-30s ", searchBuffer);
++        format_line(" Search: ", searchBuffer, 30);
+     }
+     else
+     {
+-        sprintf(linebuffer, " %-38s ", dir->name+1);
++        format_line(" ", dir->name+1, 38);
+     }
+ 
+     textcolor(BACKC);

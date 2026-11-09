@@ -69,7 +69,8 @@
     "link_succeeded": false,
     "diagnostic": "<project>/launcher/build/rom-investigation/inline/layout.cfg:10: Warning: Segment \u2018RODATA\u2019 overflows memory area \u2018ROM\u2019 by 2142 bytes\nruntime/sp-compat.s:16: Warning: Assertion failed: Symbol 'sp' is deprecated - please use 'c_sp' instead\nld65: Error: Cannot generate most of the files due to memory area overflow",
     "rom_required_including_padding": 16647,
-    "total_overflow_including_data": 2311
+    "total_overflow_including_data": 2311,
+    "rom_free": 0
   },
   "ram_payload": {
     "rom_start": 32768,

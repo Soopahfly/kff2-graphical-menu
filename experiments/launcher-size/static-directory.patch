@@ -1,0 +1,35 @@
+--- a/launcher/main.c
++++ b/launcher/main.c
+@@ -81,6 +81,7 @@
+ static uint8_t searchLen = 0;
+ static uint8_t *bigBuffer = NULL;
+ static uint16_t *pageBuffer = NULL;
++static Directory directory;
+ static Directory *dir = NULL;
+ 
+ #define KUNG_FU_FLASH_VER "Kung Fu Flash v" ## KFF_VER
+@@ -99,15 +100,9 @@
+     uint8_t i, tmp, tst;
+     initScreen(COLOR_BLACK, COLOR_BLACK, TEXTC);
+ 
+-    dir = (Directory *)malloc(sizeof(Directory));
++    dir = &directory;
+     bigBuffer = (uint8_t *)dir;
+     pageBuffer = (uint16_t *)dir;
+-
+-    if (dir == NULL)
+-    {
+-        showMessage("Failed to allocate memory.", ERRORC);
+-        while (true);
+-    }
+ 
+     if (joy_install(&joy_static_stddrv) != JOY_ERR_OK)
+     {
+@@ -141,7 +136,6 @@
+         mainLoopEF3();
+     }
+ 
+-    free(dir);
+     return 0;
+ }
+ 
