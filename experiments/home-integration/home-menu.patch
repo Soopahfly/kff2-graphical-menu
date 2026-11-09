@@ -1,0 +1,77 @@
+--- a/launcher/main.c
++++ b/launcher/main.c
+@@ -46,6 +46,7 @@
+ #include "ef3usb_loader.h"
+ #include "disk.h"
+ #include "launcher_asm.h"
++#include "ui/home.h"
+ 
+ /* declarations */
+ static void mainLoopEF3(void);
+@@ -54,6 +55,7 @@
+ static uint8_t menuLoop(void);
+ 
+ static void updateScreen(void);
++static uint8_t showHome(void);
+ static void help(void);
+ static bool isSearchChar(uint8_t c);
+ static uint8_t search(uint8_t c);
+@@ -93,7 +95,7 @@
+ #pragma rodata-name (pop)
+ 
+ static const char programBar[] = {"          " KUNG_FU_FLASH_VER "           "};
+-static const char menuBar[] =    {"          " KUNG_FU_FLASH_VER "  <F1> Help"};
++static const char menuBar[] = {" " KUNG_FU_FLASH_VER " F1 Help F2 Home"};
+ 
+ /* Size experiment: bounded fields replace the general formatter. */
+ static void format_line(const char *prefix, const char *text, uint8_t width)
+@@ -455,17 +457,28 @@
+     showDir();
+ }
+ 
++/* Graphical home dispatch; existing browser and protocol remain resident. */
++static uint8_t showHome(void)
++{
++    static const uint8_t replies[] = {
++        REPLY_OK, REPLY_UTILITIES, REPLY_SETTINGS, REPLY_BASIC
++    };
++    uint8_t action = home_run();
++    updateScreen();
++    return replies[action];
++}
++
+ static uint8_t menuLoop(void)
+ {
+     uint8_t c, last_selected = 0;
+     uint8_t data, cmd, reply;
+ 
+     memset(dir, 0, sizeof(Directory));
+-    updateScreen();
+ 
+     cmd = CMD_NONE;
+     kff_send_size_data(searchBuffer, searchLen);
+-    reply = REPLY_DIR;
++    reply = showHome();
++    if (reply == REPLY_OK) reply = REPLY_DIR;
+ 
+     while (true)
+     {
+@@ -639,6 +652,10 @@
+ 
+             case CH_F1:
+                 help();
++                break;
++
++            case CH_F2:
++                reply = showHome();
+                 break;
+ 
+             case CH_F3:
+@@ -946,6 +963,7 @@
+     cputsxy(0, 16, "<F8>                Kill");
+     cputsxy(0, 17, "<RUN/STOP>          Reset");
+ 
++    cputsxy(0, 18, "<F2>                Home screen");
+     cputsxy(0, 19, "Use joystick in port 2");
+ 
+     textcolor(COLOR_RED);

@@ -117,6 +117,12 @@ The baseline and payload measurements above still describe the unmodified
 upstream launcher. The experiment has its own results and is not silently
 included in those figures.
 
+The subsequent [home integration](../experiments/home-integration/README.md)
+now connects Home/Browse/Home and maps the existing menu actions. That build
+has 217 bytes free and also packages into a complete experimental v2.G1 update.
+VICE checks use a simulated cartridge interface; physical operation remains
+untested. The separate-payload plan below is retained as an alternative.
+
 ## Separate-payload approach
 
 Store a UI payload in the existing blank 16 KB region, keeping the launcher at

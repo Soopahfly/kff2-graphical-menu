@@ -1,0 +1,63 @@
+{
+  "rom_start": 32768,
+  "rom_limit": 47104,
+  "rom_end_exclusive": 46887,
+  "rom_used_including_padding": 14119,
+  "rom_free": 217,
+  "segments": {
+    "ZEROPAGE": {
+      "start": 2,
+      "end": 27,
+      "size": 26
+    },
+    "LOWCODE": {
+      "start": 32768,
+      "end": 32787,
+      "size": 20
+    },
+    "ONCE": {
+      "start": 32788,
+      "end": 32799,
+      "size": 12
+    },
+    "CODE": {
+      "start": 33024,
+      "end": 43993,
+      "size": 10970
+    },
+    "RODATA": {
+      "start": 44032,
+      "end": 46746,
+      "size": 2715
+    },
+    "DATA": {
+      "start": 49152,
+      "end": 49291,
+      "size": 140
+    },
+    "BSS": {
+      "start": 49292,
+      "end": 50492,
+      "size": 1201
+    },
+    "EAPI": {
+      "start": 63488,
+      "end": 64081,
+      "size": 594
+    },
+    "ULTIMAX": {
+      "start": 64256,
+      "end": 64301,
+      "size": 46
+    },
+    "VECTORS": {
+      "start": 65530,
+      "end": 65535,
+      "size": 6
+    }
+  },
+  "image_bytes": 16384,
+  "version": "2.G1",
+  "cc65": "cc65 V2.19 - Git eebf54a",
+  "upstream_commit": "9c84d999f4e2f5b2c7688cbc37a127069f5401b0"
+}

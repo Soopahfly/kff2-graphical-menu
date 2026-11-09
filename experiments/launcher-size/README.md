@@ -81,3 +81,7 @@ That is replacement opportunity, not another saving already achieved.
 No firmware flashing, real KFF2 test, complete menu-protocol emulation or
 integrated graphical boot is claimed. A one-bank integration now looks worth
 trying; the separate payload design remains available if growth requires it.
+
+The later [home integration](../home-integration/README.md) applies these
+changes and connects the UI, with 217 bytes free in the main ROM allocation.
+The figures in this document remain the earlier size-only experiments.

@@ -1,0 +1,23 @@
+{
+  "version": "2.G1",
+  "experimental": true,
+  "hardware_tested": false,
+  "upstream_commit": "9c84d999f4e2f5b2c7688cbc37a127069f5401b0",
+  "arm_compiler": "arm-none-eabi-gcc (15:13.2.rel1-2) 13.2.1 20231009",
+  "cc65": "cc65 V2.19 - Git eebf54a",
+  "update_bytes": 131072,
+  "arm_binary_bytes": 53680,
+  "launcher_offset": 114688,
+  "launcher_bytes": 16384,
+  "launcher_rom_free": 217,
+  "blank_region_preserved": true,
+  "initial_sp": "0x20020000",
+  "reset_vector": "0x80002b1",
+  "sha256": "46e624866144e40fb237dd52d84d80cb6ef93f0fd2386bee9cfb64f94534784b",
+  "launcher_sha256": "f055f323fecf8f9bc8e0c462a5faf7e2f25678b46c2e2e544fb73511052c2e47",
+  "vice_harness_matches_build": true,
+  "compiler_warning_kinds": [
+    "stm32h7b0xx/c64_interface.h:465:41: warning: array subscript 0 is outside array bounds of 'u32[0]' {aka 'long unsigned int[]'} [-Warray-bounds=]",
+    "stm32h7b0xx/c64_interface.h:468:17: warning: array subscript 0 is outside array bounds of 'u32[0]' {aka 'long unsigned int[]'} [-Warray-bounds=]"
+  ]
+}

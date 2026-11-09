@@ -1,97 +1,93 @@
 # KFF2 Graphical Menu
 
-An experimental graphical menu for Kung Fu Flash 2, inspired by EasyFlash 3.
+An experimental graphical home screen integrated with Kung Fu Flash 2's native
+launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G1**.
+It is built and software-checked, not tested on physical KFF2 hardware.
 
-The current milestone is a standalone C64 PRG for testing the interface in VICE.
-It has not yet been integrated into the KFF2 firmware.
+![Graphical home](preview/integration-home.png)
 
-![Menu running in VICE](preview/home.png)
+## Current milestone
 
-## Try the preview
+**Home > original file browser > Home** is connected. F2 returns Home while
+preserving the folder and selected entry. Settings, Utilities and BASIC map to
+the existing actions. The file browser still has its original text appearance.
 
-Download [kff2-menu-preview.prg](preview/kff2-menu-preview.prg), then autostart it
-in VICE's C64 emulator (`x64sc`). No KFF2 emulation is required.
+The native C64 image remains 16 KB, with **217 bytes free** in its main ROM
+allocation. The unused 16 KB flash region is not used. The full MCU update is
+128 KB. No original cartridge features were intentionally removed, and the ARM
+firmware source is unchanged. Full compatibility needs hardware testing.
 
-- Cursor keys move the highlight. Return selects.
-- B opens the sample browser. F2 or Run/Stop returns home.
-- U and S show Utilities and Settings placeholders.
-- Q returns to BASIC.
-- Joystick support uses port 2, but physical joystick input remains untested.
+Existing autoload and direct PRG/USB, cartridge and disk boot paths remain;
+the home screen appears when the native launcher enters menu mode.
 
-The sample browser does not access an SD card or load games. This repository
-does not contain flashable firmware, C64 ROMs or games.
+## Try it in VICE
 
-## Build
+Autostart [kff2-integration-test.prg](preview/kff2-integration-test.prg) in x64sc.
+This runs the patched native menu with a simulated cartridge data source:
 
-Install cc65, GNU make and Python 3, then run:
+- B on Home opens the directory. Cursor keys and Return select.
+- F2 returns Home without clearing the folder or selection.
+- S/U open simulated Settings/Utilities lists.
+- Q on Home exits the harness to BASIC.
 
-    make -C launcher/preview
+Directory entries are test data. No SD files or games are loaded. This harness
+does not emulate the cartridge's ARM hardware, disk drive, USB or REU.
+The earlier [visual-only preview](preview/kff2-menu-preview.prg) remains available.
 
-The compiled program is `launcher/build/preview/kff2-menu-preview.prg`.
-Regenerate the one-bit kicking icon with:
+## Experimental firmware
 
-    python3 tools/make_kicker.py
+The complete update, checksum and build report are under
+[firmware/experimental](firmware/experimental/README.md). The software checks
+verify layout and menu routing; they do not validate physical cartridge timing
+or loading. This is an altered development build, not an official release.
 
-A prebuilt copy, screenshot and source archive are under `preview/`.
+## Build and test
 
-## Current state
+Install cc65, GNU make, patch and Python 3. Obtain the upstream KFF2 source at
+commit `9c84d999f4e2f5b2c7688cbc37a127069f5401b0`, then:
 
-- Hires bitmap home screen with the EF3 proportional font.
-- Cyan selection panels, contextual hints and keyboard shortcuts.
-- Upright kicking silhouette based on the supplied visual reference.
-- Working keyboard navigation, selection wraparound and exit to BASIC.
-- VICE checks for PAL/NTSC startup and normal display restoration.
+    python3 tools/build_integrated_launcher.py --upstream /path/to/KungFuFlash2
 
-The detailed memory map, test notes and integration plan are in
-[launcher/preview/README.md](launcher/preview/README.md).
+This builds the native launcher and interactive/automated VICE harnesses.
+Run the VICE checks with your own C64 ROMs:
 
-## UI size reduction
+    python3 tools/test_integrated_launcher.py --vice /path/to/x64sc \
+        --rom-dir /path/to/vice/C64
 
-The UI payload is now **3,241 bytes**, down from 4,062 bytes (20.2% smaller).
-The home screen and all font mappings render identically in VICE. Details are
-in [the optimisation notes](docs/ui-size-reduction.md).
+With a configured GNU Arm Embedded toolchain and newlib development files:
 
-## Further launcher savings
+    python3 tools/build_firmware.py --upstream /path/to/KungFuFlash2
 
-Optional experiments remove 2,560 bytes from the original launcher by replacing
-its general formatter and its single heap allocation. With both patches, the
-existing launcher plus the current UI links in the original ROM allocation,
-with **249 bytes spare**. The UI is not yet wired into that launcher.
+The packaging script checks that the software-test hashes match the launcher.
+See [integration notes](experiments/home-integration/README.md) and
+[firmware notes](firmware/experimental/README.md) for inputs, outputs and limits.
 
-See [the patches and measurements](experiments/launcher-size/README.md).
+The older standalone UI can be built with `make -C launcher/preview`.
+Regenerate the artwork using `python3 tools/make_kicker.py`.
 
-## ROM-space findings
+## Size work
 
-The stock launcher has 1,206 bytes free. Adding the current UI directly exceeds
-its allocation by 2,311 bytes. A separate 3,241-byte UI payload links
-successfully and could use the existing blank 16 KB region in the update.
-That result is for the unmodified upstream launcher. The optional compact
-launcher experiment now also provides a possible one-bank route; integration
-and hardware tests remain pending.
+- The UI payload was reduced from 4,062 to **3,241 bytes**, with identical pixels
+  and all font mappings retained. See [optimisation notes](docs/ui-size-reduction.md).
+- Replacing general formatting and a single heap allocation saves **2,560 bytes**
+  in the native launcher. See [optional patches](experiments/launcher-size/README.md).
+- The initial [ROM investigation](docs/rom-space-investigation.md) also documents
+  the separate-payload option if future growth makes it useful.
 
-See the [ROM-space investigation](docs/rom-space-investigation.md) and
-[reproduction script](tools/investigate_rom.py) for measured results and the
-comparison with EasyFlash 3.
+## Next
 
-## Next steps
-
-1. Implement the flash-to-RAM UI transfer described in the ROM investigation.
-2. Connect the graphical browser to real KFF2 directory data.
-3. Test loading, utilities and settings on physical KFF2 hardware.
-4. Consider favourites and additional features after the browser works.
+Test the experimental build on physical KFF2 hardware, then replace the text
+browser renderer. Preserve the 23-entry page protocol and selection indexes.
+Favourites and further cartridge features are later work.
 
 ## Upstream and credits
 
-This repository contains the new UI and the KFF2 input code needed to build the
-standalone preview. The complete upstream firmware and EF3 toolsets remain in
-their respective repositories:
+This repository contains the UI, build tools and patches. Native builds use:
 
 - [Kung Fu Flash 2](https://codeberg.org/KimJorgensen/KungFuFlash2),
-  Kim Jørgensen, baseline commit `9c84d99` (one commit after v2.07).
+  Kim Jørgensen, baseline `9c84d99` (one commit after v2.07).
 - [EasyFlash 3 menu](https://github.com/easyflash-mirror/easyflash3-bootimage),
-  Thomas Giesel, baseline commit `bf89562`. Supplies the proportional bitmap
-  font and text renderer used here.
+  Thomas Giesel, baseline `bf89562`, providing the proportional font and renderer.
 
-Original licence notices are retained. See [LICENSE](LICENSE) and
-[EF3-LICENSE.md](launcher/ui/EF3-LICENSE.md). This is an altered development
-version, not an official KFF2 or EasyFlash release.
+Original notices are retained. See [LICENSE](LICENSE) and
+[EF3-LICENSE.md](launcher/ui/EF3-LICENSE.md). No C64 ROMs or games are distributed.

@@ -63,3 +63,7 @@ The current [reproduction script](../tools/investigate_rom.py) writes the
 updated [measurements](rom-space-measurements.json). Asset sources are
 [make_kicker.py](../tools/make_kicker.py),
 [make_font.py](../tools/make_font.py) and the retained EF3 `charset.sed`.
+
+The [home integration](../experiments/home-integration/README.md) now adds the
+menu dispatch, leaving 217 bytes free. A complete experimental MCU update has
+been built; hardware compatibility is not yet verified.
