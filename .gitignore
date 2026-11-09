@@ -1,0 +1,4 @@
+launcher/build/
+*.o
+*.lib
+.DS_Store
