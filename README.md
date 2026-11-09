@@ -1,5 +1,10 @@
 # KFF2 Graphical Menu
 
+New design experiment: [Folder Home](experiments/folder-home/README.md), with
+Games, Tools, Utilities and Favourites tiles. Includes a standalone PRG preview.
+Folder shortcuts are not connected to storage yet; the v2.G1 firmware below
+still uses the previous Home screen.
+
 An experimental graphical home screen integrated with Kung Fu Flash 2's native
 launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G1**.
 It is built and software-checked, not tested on physical KFF2 hardware.

@@ -1,0 +1,10 @@
+{
+  "cards": [
+    {"label": "Games", "key": "G", "path": "/Games/", "hint": "Programs, disks and cartridges", "x": 2, "y": 7},
+    {"label": "Tools", "key": "T", "path": "/Tools/", "hint": "Editors, diagnostics and useful programs", "x": 21, "y": 7},
+    {"label": "Utilities", "key": "U", "path": "/Utilities/", "hint": "Your SD card utility collection", "x": 2, "y": 13},
+    {"label": "Favourites", "key": "F", "path": "/Favourites/", "hint": "Your hand-picked favourites", "x": 21, "y": 13}
+  ],
+  "width": 17,
+  "height": 5
+}
