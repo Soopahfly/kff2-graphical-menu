@@ -45,9 +45,20 @@ A prebuilt copy, screenshot and source archive are under `preview/`.
 The detailed memory map, test notes and integration plan are in
 [launcher/preview/README.md](launcher/preview/README.md).
 
+## ROM-space findings
+
+The stock launcher has 1,206 bytes free. Adding the current UI directly exceeds
+its allocation by 3,227 bytes. A separate 4,062-byte UI payload links
+successfully and could use the existing blank 16 KB region in the update.
+The transfer and startup integration are still to be implemented.
+
+See the [ROM-space investigation](docs/rom-space-investigation.md) and
+[reproduction script](tools/investigate_rom.py) for measured results and the
+comparison with EasyFlash 3.
+
 ## Next steps
 
-1. Resolve the production launcher's ROM-space limit.
+1. Implement the flash-to-RAM UI transfer described in the ROM investigation.
 2. Connect the graphical browser to real KFF2 directory data.
 3. Test loading, utilities and settings on physical KFF2 hardware.
 4. Consider favourites and additional features after the browser works.

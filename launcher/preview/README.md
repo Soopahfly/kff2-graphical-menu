@@ -55,10 +55,13 @@ will need its original ARM toolchain when integration is ready.
 ## Firmware integration still to do
 
 The current launcher links into a $3800-byte ROM area at $8000. Its baseline
-link map ends at $B2B8, leaving roughly 1.3 KB. The prototype's renderer, font
+RODATA ends at $B2B8, but DATA initializers occupy ROM through $B349.
+The actual remaining space is 1,206 bytes. The prototype's renderer, font
 and screen logic require more space than that. Integration needs a deliberate
-ROM/RAM layout change or a smaller renderer/font; this preview does not assume
-that additional ROM space is available.
+ROM/RAM layout change or a smaller renderer/font. A link-only investigation
+has now confirmed a separate 4,062-byte UI payload fits in a proposed layout;
+see [the ROM-space investigation](../../docs/rom-space-investigation.md).
+The firmware transfer and integrated boot are still pending.
 
 The firmware also sends 23 entries per page. A taller graphical browser header
 requires coordinated paging changes, or a C64-side scrolling viewport.
