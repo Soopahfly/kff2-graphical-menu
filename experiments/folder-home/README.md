@@ -1,7 +1,13 @@
 # Folder Home design preview
 
 A proposed replacement for the large high-kick figure and vertical button list.
-Four folder tiles fill the main area, with the existing system actions below.
+Four folder panels fill the main area, with the existing system actions below.
+
+The revised design takes cues from EasyFlash 3's colourful framing and shaded
+menu panels: a purple geometric surround, cyan selection edges, bevelled black
+panels, coloured gamepad/wrench/disk/star icons, and a small spectrum accent.
+The paths appear only in the context line. The surround and icons are new
+artwork drawn for this project, not EasyFlash's original background bitmap.
 
 ![Folder Home, Games selected](../../preview/folder-home-games.png)
 

@@ -22,9 +22,9 @@ for name,body in re.findall(r'static const uint8_t (folder_\w+)\[\d+\] = \{([^}]
     raw=[int(n,16) for n in re.findall(r'0x([0-9a-f]{2})',body)]
     assert raw[-1]==0 and 0 not in raw[:-1:2]
     size=sum(raw[:-1:2])
-    assert size==(8000 if name=='folder_bitmap' else 1000 if name=='folder_colors' else 320),(name,size)
+    assert size==(8000 if name=='folder_bitmap' else 1000 if name.startswith('folder_colors_') else 320),(name,size)
     checked+=1
-assert checked==6
+assert checked==9
 path=root/'experiments/folder-home/measurements.json'
 report=json.loads(path.read_text())
 report.update(prg_bytes=len(prg),prg_load=hex(load),prg_end_exclusive=hex(end),basic_sys=entry,

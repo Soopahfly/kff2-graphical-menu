@@ -24,10 +24,7 @@ static void unpack(uint8_t* dest, const uint8_t* src)
 
 static void select_card(void)
 {
-    uint8_t i,y;
-    for (i=0;i<4;++i)
-        for (y=card_y[i];y<card_y[i]+5;++y)
-            memset(P_GFX_COLOR+(uint16_t)y*40+card_x[i],i==selected?0x03:0xfb,17);
+    unpack(P_GFX_COLOR,folder_palettes[selected]);
     unpack(P_GFX_BITMAP+19*320,folder_hints[selected]);
 }
 
@@ -40,7 +37,6 @@ static void enter(void)
     REG(0xd011)=saved[0]&0x6f;
     REG(0xd015)=0; REG(0x0291)=0x80;
     unpack(P_GFX_BITMAP,folder_bitmap);
-    unpack(P_GFX_COLOR,folder_colors);
     select_card();
     REG(0xdd02)=saved[4]|3;
     REG(0xdd00)=(saved[3]&0xfc)|2;
