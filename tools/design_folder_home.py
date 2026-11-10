@@ -158,7 +158,7 @@ def main():
         line(255+shift,24,243+shift,36)
     for y in (5*8+4,22*8+3):
         for x in range(16,304):pixel(x,y)
-    descriptions=['Load and play','Make and explore','Manage your C64','Your best picks']
+    descriptions=['Load and play','Utilities and Diags','Manage your C64','Your best picks']
     for i,c in enumerate(SPEC['cards']):
         x,y=c['x'],c['y']
         rect(x*8+1,y*8+1,SPEC['width']*8-2,SPEC['height']*8-2)

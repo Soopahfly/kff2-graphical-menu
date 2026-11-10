@@ -92,6 +92,6 @@
   },
   "ntsc_startup_capture": true,
   "version": "2.G2",
-  "native_image_sha256": "417843de8f0b5c2c3746cfbd361064be6ed8f5af84aed65798f21e7f7645488c",
-  "interactive_prg_sha256": "20dd6a06fb4c69c412714371118a4fadaf1ec29b3d282fa00884bcb1cc985b98"
+  "native_image_sha256": "aa5b57e7d848177871f4eddefd233b4a1ddad5b635f053661e88a970dd815d08",
+  "interactive_prg_sha256": "fc0bccdd6712b39180a4bd16780045e3cb6ef1b39a39295ef0b806388fe3a5b5"
 }

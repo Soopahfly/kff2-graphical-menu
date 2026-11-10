@@ -1,7 +1,7 @@
 # Home-screen integration, experimental v2.G2
 
 The graphical home now dispatches into the original compact launcher.
-The native C64 launcher links into the original 16 KB image, with 89 bytes
+The native C64 launcher links into the original 16 KB image, with 129 bytes
 free in its main 14 KB allocation. The complete MCU update is also built;
 see [firmware/experimental](../../firmware/experimental/README.md).
 
@@ -115,4 +115,4 @@ Its 23-row page protocol needs a viewport if the graphical list displays fewer
 rows. Any change must preserve selected entry indexes and existing menu replies.
 
 The spare 16 KB flash region is not used by this build. The single-bank route
-now includes the home dispatch and fits, although its 89-byte margin is small.
+now includes the home dispatch and fits, although its 129-byte margin is small.

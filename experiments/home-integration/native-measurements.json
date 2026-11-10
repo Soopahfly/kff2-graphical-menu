@@ -1,9 +1,9 @@
 {
   "rom_start": 32768,
   "rom_limit": 47104,
-  "rom_end_exclusive": 47015,
-  "rom_used_including_padding": 14247,
-  "rom_free": 89,
+  "rom_end_exclusive": 46975,
+  "rom_used_including_padding": 14207,
+  "rom_free": 129,
   "segments": {
     "ZEROPAGE": {
       "start": 2,
@@ -27,8 +27,8 @@
     },
     "RODATA": {
       "start": 43197,
-      "end": 46898,
-      "size": 3702
+      "end": 46858,
+      "size": 3662
     },
     "DATA": {
       "start": 49152,

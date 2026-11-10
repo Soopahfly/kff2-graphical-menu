@@ -39,8 +39,8 @@ original page alignment and the image layout below are retained.
 
 ## Changes and checks
 
-The native C64 launcher remains 16 KB with **89 bytes free** in its 14 KB main
-ROM allocation. The graphics are stored as a 2,688-byte raw LZ4 block and decoded
+The native C64 launcher remains 16 KB with **129 bytes free** in its 14 KB main
+ROM allocation. The graphics are stored as a 2,648-byte raw LZ4 block and decoded
 into the scratch VIC bank at `$4000-$7fff` while the screen is blank. Its stored
 font and graphics pixels are unchanged from the approved design.
 

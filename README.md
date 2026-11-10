@@ -18,7 +18,7 @@ connected. F2 returns Home while preserving the folder and selected entry. B
 opens Browse, S opens Settings, F3 opens built-in cart utilities and Q opens BASIC.
 The file browser still has its original text appearance.
 
-The native C64 image remains 16 KB, with **89 bytes free** in its main ROM
+The native C64 image remains 16 KB, with **129 bytes free** in its main ROM
 allocation. The unused 16 KB flash region is not used. The full MCU update is
 128 KB. No original cartridge features were intentionally removed, and the ARM
 firmware adds folder dispatch and random selection. Full compatibility needs hardware testing.

@@ -70,7 +70,7 @@ on leaving the graphical screen.
 This prototype uses a complete compressed static bitmap so the PNGs and PRG
 share the exact layout. Its asset size is recorded in `measurements.json`.
 That is **not a native firmware ROM-fit measurement**. The native launcher uses a separate LZ4-packed version of the same pixels and
-now fits with 89 bytes spare. The integrated firmware connects folder navigation;
+now fits with 129 bytes spare. The integrated firmware connects folder navigation;
 physical hardware validation remains pending.
 
 Font: Thomas Giesel / EasyFlash 3. Existing copyright and licence remain in
