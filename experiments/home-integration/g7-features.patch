@@ -1,0 +1,100 @@
+--- a/firmware/main.c
++++ b/firmware/main.c
+@@ -32,6 +32,8 @@
+ #include "fatfs.c"
+ #include "filesystem.c"
+ #include "file_types.c"
++#include "g7_settings.c"
++#include "favourites.c"
+ #include "launch_history.c"
+ #include "cartridge.c"
+ #include "commands.c"
+--- a/firmware/loader.c
++++ b/firmware/loader.c
+@@ -453,7 +453,7 @@
+     }
+     else
+     {
+-        result = true;
++        result = g7_autoboot_enabled();
+     }
+ 
+     if (cfg_file.boot_type != CFG_DIAG)
+--- a/firmware/cartridges/reu.c
++++ b/firmware/cartridges/reu.c
+@@ -33,7 +33,8 @@
+ #define REU_REG_SHADOW  (REU_REG + 0x20)
+ #define REU_REG_MASK    (REU_REG + 0x40)
+ 
+-#define REU_BASE_MASK   (0xfffff) // 1MB of RAM
++static u32 reu_base_mask=0xfffff;
++#define REU_BASE_MASK (reu_base_mask)
+ 
+ typedef struct
+ {
+@@ -421,6 +422,7 @@
+ 
+ static void reu_handler_init(void (c64_handler) (void))
+ {
++    reu_base_mask=g7_reu_mask();
+     REU->c64_handler = c64_handler;
+ 
+     // Set registers to default values
+--- a/firmware/menu_settings.c
++++ b/firmware/menu_settings.c
+@@ -19,6 +19,7 @@
+  */
+ 
+ static u8 settings_flags;
++static u8 settings_g7;
+ 
+ static u8 settings_refresh(OPTIONS_ELEMENT *element, const char *text)
+ {
+@@ -109,6 +110,7 @@
+ static u8 settings_save(OPTIONS_STATE *state, OPTIONS_ELEMENT *element, u8 flags)
+ {
+     cfg_file.flags = settings_flags;
++    g7_save_options(settings_g7);
+ 
+     sd_send_prg_message("Saving settings.");
+     save_cfg();
+@@ -117,13 +119,18 @@
+     return CMD_NONE;
+ }
+ 
++#include "g7_menu_settings.inc"
++
+ static u8 handle_settings(void)
+ {
+     settings_flags = cfg_file.flags;
++    settings_g7 = g7_options();
+ 
+     OPTIONS_STATE *options = options_init("Settings");
+     options_add_text_element(options, settings_basic_change, settings_basic_text());
+     options_add_text_element(options, settings_expansion_change, settings_expansion_text());
++    options_add_text_element(options, settings_reu_size_change, settings_reu_size_text());
++    options_add_text_element(options, settings_autoboot_change, settings_autoboot_text());
+     options_add_text_element(options, settings_autostart_change, settings_autostart_text());
+     options_add_text_element(options, settings_device_change, settings_device_text());
+     options_add_text_element(options, settings_save, "Save");
+--- a/firmware/menu.c
++++ b/firmware/menu.c
+@@ -30,6 +30,7 @@
+ #include "menu_d64.c"
+ #include "menu_t64.c"
+ #include "menu_options.c"
++#include "menu_favourites.c"
+ #include "menu_utilities.c"
+ #include "menu_settings.c"
+ #include "random_game.c"
+@@ -297,6 +298,10 @@
+     {
+         options_add_select(options, "Delete", SELECT_FLAG_DELETE, element_no);
+     }
++    if (menu==&sd_menu && favourite_supported(file_type)) {
++        options_add_text_element(options,favourite_copy,"Copy to Favourites");
++        options_add_text_block(options,"For multi-file games, copy the game folder instead of one file.");
++    }
+     options_add_dir(options, "Cancel");
+ 
+     return handle_options();

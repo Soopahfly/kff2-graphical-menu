@@ -22,12 +22,14 @@ static void ui_uniform_menu(const char *title,uint8_t count,uint8_t selected)
 void ui_test_uniform(void)
 {
     uint8_t before;
-    ui_uniform_menu("Settings",6,1);
+    ui_uniform_menu("Settings",8,1);
     strcpy(dir->elements[0]+1," Persist BASIC selection: yes");
     strcpy(dir->elements[1]+1,"     RAM expansion (REU): yes");
-    strcpy(dir->elements[2]+1,"   Autostart disk image: yes");
-    strcpy(dir->elements[3]+1,"     Disk device number: 8");
-    strcpy(dir->elements[4]+1,"Save");strcpy(dir->elements[5]+1,"Cancel");
+    strcpy(dir->elements[2]+1,"               REU size: 512 KB");
+    strcpy(dir->elements[3]+1,"Autoboot last selection: no");
+    strcpy(dir->elements[4]+1,"   Autostart disk image: yes");
+    strcpy(dir->elements[5]+1,"     Disk device number: 8");
+    strcpy(dir->elements[6]+1,"Save");strcpy(dir->elements[7]+1,"Cancel");
     showDir();test_seen=1;ui_uniform_checkpoint();
     ui_uniform_menu("Cartridge utilities",5,0);
     strcpy(dir->elements[0]+1,"Sort directory");
@@ -39,6 +41,7 @@ void ui_test_uniform(void)
     ui_uniform_menu("File options / long menu",23,2);
     dir->elements[0][0]=TEXT_ELEMENT;dir->elements[1][0]=TEXT_ELEMENT;dir->text_elements=2;
     strcpy(dir->elements[0]+1,"Read-only information");
+    strcpy(dir->elements[2]+1,"Copy to Favourites");
     showDir();test_seen=3;ui_uniform_checkpoint();
     dir->selected=20;updateDir(2);test_seen=4;ui_uniform_checkpoint();
     test_seen=5;help();

@@ -1,9 +1,21 @@
 # KFF2 Graphical Menu
 
 An experimental graphical home screen integrated with Kung Fu Flash 2's native
-launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G6**.
-G6 needs physical KFF2 testing. G5 Home and file-browser rendering have been
+launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G7**.
+G7 needs physical KFF2 testing. G5 Home and file-browser rendering have been
 checked by the user on hardware.
+
+## G7 additions
+
+- Shift+Return file/folder options: **Copy to Favourites**, keeping originals.
+- Settings: **REU size**, choosing 1 MB, 512 KB or 256 KB.
+- Settings: **Autoboot last selection**, choosing whether startup returns to Home.
+
+Based on upstream **v2.07 plus one documentation commit**, not an unrelated
+community fork. Existing settings keep their defaults and configuration layout.
+Read [operation, limits and test coverage](docs/g7-features.md).
+
+![G7 example settings in VICE, simulated values](preview/g7-settings.png)
 
 ![Graphical home](preview/integration-home.png)
 

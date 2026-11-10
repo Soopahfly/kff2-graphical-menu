@@ -1,13 +1,20 @@
-# Experimental firmware v2.G6, shared appearance
+# Experimental firmware v2.G7, favourites and REU/startup settings
 
-[KungFuFlash_v2.G6.upd](KungFuFlash_v2.G6.upd) is a complete 128 KB KFF2 update.
-It is an altered development build, not an official release. G6 has not been
+[KungFuFlash_v2.G7.upd](KungFuFlash_v2.G7.upd) is a complete 128 KB KFF2 update.
+It is an altered development build, not an official release. G7 has not been
 flashed on a physical KFF2. The user previously checked G5 Home and folder-browser
 rendering on real hardware.
 
-![Settings in VICE, simulated values](../../preview/g6-settings.png)
+![G7 Settings in VICE, example values](../../preview/g7-settings.png)
 
-G6 extends the existing patterned border, masthead, font and cyan selection to
+G7 adds **Copy to Favourites** in Shift+Return SD file/folder options, plus
+**REU size** (256 KB / 512 KB / 1 MB) and **Autoboot last selection** in Settings.
+Save commits settings; existing cards retain 1 MB and autoboot enabled. The original
+1,024-byte configuration layout is retained. Read [G7 operation and limits](../../docs/g7-features.md).
+
+The base is upstream **v2.07 plus one documentation commit**, `9c84d99`.
+
+G6 introduced the existing patterned border, masthead, font and cyan selection to
 Settings/REU, F3 cartridge utilities, file options, Help and search. Cartridge
 messages, warnings, progress and the text reader also keep the frame once assets
 are available. Early startup diagnostics retain native text. See
@@ -20,7 +27,7 @@ The separate reserved 16 KB flash region is still blank.
 ## Install and recover
 
 Read [RECOVERY.md](RECOVERY.md) before flashing. Put the update on a FAT32 SD card
-and select it using the working launcher. Keep G5 or an official update available
+and select it using the working launcher. Keep G6 or an official update available
 for rollback. Upstream documents USB DFU and SWD recovery if the launcher fails.
 
 Use `/Games`, `/Tools`, `/Utilities` and `/Favourites` for the four Home cards.
@@ -41,7 +48,8 @@ and random launches are logged after loader preparation, before C64 handoff.
 History writes are best effort. See [random rules](../../docs/random-game.md) and
 [history/export](../../docs/launch-history.md).
 
-G6 changes presentation and text-reader page geometry. Existing storage, loader,
+G7 retains G6 presentation and text-reader page geometry, adding ARM-side copies
+and settings. REU address wrapping changes to match the selected capacity. Existing storage, loader,
 cartridge emulation, USB, REU and boot implementations are retained. Compatibility
 across those features still needs hardware testing. FAT32 remains required;
 exFAT is not enabled.
@@ -54,14 +62,19 @@ styled screens, long-menu scrolling, warnings/progress without extra cartridge
 requests, reader forward/back pages, wide-character wrapping and startup fallback.
 Firmware packaging checks both suites against the exact launcher hash.
 
+G7 additionally checks real FAT32 file/folder copies, collisions, read-only media,
+interrupted-copy protection and failures, configuration size/offsets and actual
+settings/autoboot callbacks. Actual REU read/write/swap/compare callbacks are
+host-tested at all three capacities.
+
 ARM dispatcher, random/history, real FatFs and graphics-transfer host tests run
 before packaging. Layout checks cover update size, reset/stack vectors, embedded
 launcher and blank reserved space. Current numbers and SHA256 are in
 [build-report.json](build-report.json) and [SHA256SUMS](SHA256SUMS).
 
 The harness simulates cartridge packets. It does not validate physical bus timing,
-SD game loading, USB, REU or CRT readability. Test Settings changes and Save,
-file options, Help/search, a warning, long text paging and game loading on hardware.
+SD game loading, USB, REU or CRT readability. Test Settings changes and Save, both autoboot values, REU software at each
+capacity, copying a small file and a complete game folder, and game loading on hardware.
 
 ## Reproduce
 

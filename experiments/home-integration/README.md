@@ -1,4 +1,4 @@
-# Native menu integration, v2.G6
+# Native menu integration, v2.G7
 
 The graphical Home, file browser and built-in menus share the original 16 KB
 C64 launcher. G6 extends the frame to Settings, options, Help, search, messages
@@ -6,7 +6,8 @@ and text reading. See [screen map and limits](../../docs/uniform-ui.md).
 
 Apply patches in the order used by `tools/build_integrated_launcher.py`: compact
 launcher, Home, collection dispatch, text-browser predecessor, bitmap browser,
-then uniform UI. Shared renderer sources are copied from `launcher/ui`.
+then uniform UI. ARM packaging applies the separate G7 features patch after the
+existing Home/history/asset patches. Shared renderer sources are copied from `launcher/ui`.
 The upstream checkout is never edited. Baseline:
 `9c84d999f4e2f5b2c7688cbc37a127069f5401b0`.
 
@@ -42,3 +43,7 @@ change the native cartridge memory layout.
 Native C64 image: 16 KB, 630 bytes free in its main allocation. Graphics/font bank:
 16 KB supplied by the existing ARM reply. Full update: 128 KB with the reserved
 16 KB gap preserved. Asset bytes and loader/emulation implementations are unchanged.
+
+G7 adds native options/settings entirely on the ARM side. See
+[G7 features and compatibility](../../docs/g7-features.md). The base is v2.07
+plus its documentation-only commit 9c84d99.

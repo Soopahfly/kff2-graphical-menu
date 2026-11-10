@@ -20,7 +20,7 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--upstream',type=Path,required=True)
     ap.add_argument('--cc65-home',type=Path)
-    ap.add_argument('--version',default='2.G6',help='Four-character experimental v2 version')
+    ap.add_argument('--version',default='2.G7',help='Four-character experimental v2 version')
     args=ap.parse_args()
     if not re.fullmatch(r'2\.[A-Za-z0-9]{2}',args.version):
         raise ValueError('Version must fit the 20-byte launcher identifier, for example 2.G1')
