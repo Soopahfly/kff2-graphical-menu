@@ -1,7 +1,7 @@
 # KFF2 Graphical Menu
 
 An experimental graphical home screen integrated with Kung Fu Flash 2's native
-launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G3**.
+launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G4**.
 It is built and software-checked, not tested on physical KFF2 hardware.
 
 ![Graphical home](preview/integration-home.png)
@@ -15,12 +15,16 @@ G3 retains the disk-image/context fixes and makes Random disk autostart explicit
 even when ordinary image autostart is disabled.
 Do not use the older G1 image for new testing.
 
-**Games / Tools / Utilities / Favourites > original text browser > Home** is
+**Games / Tools / Utilities / Favourites > styled file browser > Home** is
 connected. F2 returns Home while preserving the folder and selected entry. B
 opens Browse, S opens Settings, F3 opens built-in cart utilities and Q opens BASIC.
-The file browser still has its original text appearance.
+The browser now uses white filenames, cyan selection, a purple frame and a
+17-row viewport. F4 also runs Random directly from the browser.
+See [browser design and CRT testing](docs/browser.md).
 
-The native C64 image remains 16 KB, with **129 bytes free** in its main ROM
+![Working G4 browser in VICE](preview/integration-browser.png)
+
+The native C64 image remains 16 KB, with **132 bytes free** in its main ROM
 allocation. The unused 16 KB flash region is not used. The full MCU update is
 128 KB. No original cartridge features were intentionally removed, and the ARM
 firmware adds folder dispatch, random selection and a persistent launch journal. Full compatibility needs hardware testing.

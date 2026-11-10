@@ -1,12 +1,26 @@
-# Experimental firmware v2.G3, history-aware Random game
+# Experimental firmware v2.G4, styled file browser
 
-[KungFuFlash_v2.G3.upd](KungFuFlash_v2.G3.upd) is a complete 128 KB KFF2 update
+[KungFuFlash_v2.G4.upd](KungFuFlash_v2.G4.upd) is a complete 128 KB KFF2 update
 with the revised graphical Games, Tools, Utilities and Favourites screen.
-Use G3 for new testing. The retained G1 image has known disk-image-exit and
+Use G4 for new testing. The retained G1 image has known disk-image-exit and
 cart-utilities context bugs, fixed in G2. This is **not an official release and has not been tested
 on physical KFF2 hardware**.
 
 ![Folder Home running in VICE](../../preview/integration-home.png)
+
+## G4 browser
+
+![G4 browser in VICE, sample entries](../../preview/integration-browser.png)
+
+White filenames, cyan selection, purple edges, standard C64 character font and
+17 visible entries. The existing 23-entry transfer pages and selected indexes
+are preserved. Scrolling reveals entries below the viewport. SD entries with
+three-letter extensions show those extensions instead of sizes; other entries
+retain size labels. Disk/tape contents and cartridge dialogs retain their
+original information and controls.
+
+The display keeps rows 0 and 24 free of essential browser text. It has **not
+been checked on a physical CRT**. See [browser details and CRT checks](../../docs/browser.md).
 
 ## Install and recover
 
@@ -21,7 +35,7 @@ not a shortcut database. Keep multi-disk games together in their own directory.
 
 Missing folders produce a message showing the expected path. OK opens SD root.
 B opens the regular SD browser; S opens Settings; F3 opens built-in cart utilities;
-Q starts BASIC. F2 in the text browser returns Home. Browse preserves its cached
+Q starts BASIC. F2 in the file browser returns Home. Browse preserves its cached
 folder/selection; opening a named collection switches to that folder.
 
 ## Launch history
@@ -39,7 +53,7 @@ block a prepared launch. See [history rules, safety limits and CSV export](../..
 
 ## Random game
 
-**F4 on Home** scans `/Games` and its subfolders and starts a randomly selected
+**F4 on Home or in the browser** scans `/Games` and its subfolders and starts a randomly selected
 CRT, PRG, P00, supported disk image or T64. Updates/text/hidden files are excluded.
 Random disk images autostart regardless of the normal autostart preference. Selection is per file, so duplicates, auxiliary programs
 and secondary disks can also be picked. Missing or empty collections show a

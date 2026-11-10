@@ -1,0 +1,223 @@
+--- a/launcher/main.c
++++ b/launcher/main.c
+@@ -56,6 +56,10 @@
+ 
+ static void updateScreen(void);
+ static uint8_t showHome(void);
++static void browserDetail(void);
++static uint8_t browserTop;
++#define BROWSER_ROWS 17
++#define IS_BROWSER (*dir->name != ' ')
+ static void help(void);
+ static bool isSearchChar(uint8_t c);
+ static uint8_t search(uint8_t c);
+@@ -446,14 +450,6 @@
+ 
+ static void updateScreen(void)
+ {
+-    clrscr();
+-    revers(0);
+-    textcolor(BACKC);
+-    drawFrame();
+-    revers(1);
+-    cputsxy(0, BOTTOM, menuBar);
+-    revers(0);
+-
+     showDir();
+ }
+ 
+@@ -669,6 +665,11 @@
+                 reply = showHome();
+                 break;
+ 
++            case CH_F4:
++                KFF_SEND_BYTE(isC128 ? SELECT_FLAG_C128 : 0);
++                reply = REPLY_HOME_RANDOM;
++                break;
++
+             case CH_F3:
+                 reply = REPLY_UTILITIES;
+                 break;
+@@ -940,10 +941,25 @@
+         format_line(" ", dir->name+1, 38);
+     }
+ 
++    clrscr();
++    revers(0);
+     textcolor(BACKC);
+-    revers(1);
+-    cputsxy(0, 0, linebuffer);
+-
++    drawFrame();
++    if (IS_BROWSER) {
++        textcolor(COLOR_CYAN);
++        cputsxy(1, 1, "kung fu flash 2     F1 Help");
++        cputsxy(1, 3, "--------------------------------------");
++        cputsxy(1, 21, "--------------------------------------");
++        textcolor(COLOR_GRAY3);
++        cputsxy(1, 23, "RET Open DEL Up F2 Home F4 Random");
++        textcolor(COLOR_WHITE);
++        cputsxy(0, 2, linebuffer);
++        browserTop = dir->selected < BROWSER_ROWS ? 0 : dir->selected-BROWSER_ROWS+1;
++    } else {
++        revers(1);
++        cputsxy(0, 0, linebuffer);
++        cputsxy(0, BOTTOM, menuBar);
++    }
+     revers(0);
+     printDirPage();
+ }
+@@ -952,35 +968,24 @@
+ {
+     clrscr();
+     revers(0);
++    textcolor(COLOR_CYAN);
++    cputsxy(1, 0, programBar);
+     textcolor(TEXTC);
+-    cputsxy(0, 0, programBar);
+-    textcolor(BACKC);
+-    cputsxy(10, 1, "\xa3\xa3\xa3\xa3\xa3\xa3\xa3\xa3\xa3\xa3\xa3\xa3\xa3\xa3\xa3\xa3\xa3\xa3\xa3");
+-
+-    cputsxy(1, 2, "codeberg.org/KimJorgensen/KungFuFlash2");
+-
+-    textcolor(TEXTC);
+-    cputsxy(0, 5, "<CRSR> or Joy       Change selection");
+-    cputsxy(0, 6, "<RETURN> or Fire    Run/Change Dir");
+-    cputsxy(0, 7, " + <SHIFT> or Hold  Options");
+-    cputsxy(0, 8, "<HOME>              Root Dir");
+-    cputsxy(0, 9, "<DEL> or Fire left  Dir Up");
+-    cputsxy(0, 10, "<A-Z> or Fire up    Search");
+-    cputsxy(0, 11, "<F1>                Help");
+-    cputsxy(0, 12, "<F3> or Fire down   Utilities");
+-    cputsxy(0, 13, "<F5> or Fire right  Settings");
+-    cputsxy(0, 14, "<F6>                C128 Mode");
+-    cputsxy(0, 15, "<F7>                BASIC (Cart Active)");
+-    cputsxy(0, 16, "<F8>                Kill");
+-    cputsxy(0, 17, "<RUN/STOP>          Reset");
+-
+-    cputsxy(0, 18, "<F2>                Home screen");
+-    cputsxy(0, 19, "Use joystick in port 2");
+-
+-    textcolor(COLOR_RED);
+-    cputsxy(0, 21, "KUNG FU FLASH COMES WITH NO WARRANTY.");
+-    textcolor(COLOR_LIGHTRED);
+-    cputsxy(0, 22, "USE AT YOUR OWN RISK!");
++    cputsxy(1, 2,
++        "CRSR/Joy Select   RETURN/Fire Open\r\n"
++        " SHIFT-RETURN/Hold fire Options\r\n"
++        " HOME Root  DEL/Fire left Up\r\n"
++        " A-Z/Fire up Search\r\n"
++        " F1 Help    F2 Home\r\n"
++        " F3/Fire down Cart utilities\r\n"
++        " F4 Random game (/Games)\r\n"
++        " F5/Fire right Settings\r\n"
++        " F6 C128    F7 BASIC (cart active)\r\n"
++        " F8 Kill    RUN/STOP Reset\r\n"
++        "\r\n"
++        " Joystick port 2");
++    textcolor(ERRORC);
++    cputsxy(1, 21, "NO WARRANTY. USE AT YOUR OWN RISK!");
+ 
+     gotoxy(0, 24);
+     waitKey();
+@@ -990,50 +995,54 @@
+ 
+ static void updateDir(uint8_t last_selected)
+ {
+-    printElement(last_selected);
+-    printElement(dir->selected);
++    if (IS_BROWSER && (dir->selected < browserTop ||
++                       dir->selected >= browserTop+BROWSER_ROWS)) {
++        browserTop = dir->selected < browserTop ? dir->selected : dir->selected-BROWSER_ROWS+1;
++        printDirPage();
++    } else {
++        printElement(last_selected);
++        printElement(dir->selected);
++        browserDetail();
++    }
++}
++
++static void browserDetail(void)
++{
++    if (IS_BROWSER) {
++        revers(0);
++        textcolor(COLOR_CYAN);
++        cclearxy(1, 22, 38);
++        if (dir->selected < dir->no_of_elements)
++            cputsxy(1, 22, dir->elements[dir->selected]+1);
++    }
+ }
+ 
+ static void printDirPage(void)
+ {
+-    uint8_t element_no = 0;
+-
+-    for (;element_no < dir->no_of_elements; element_no++)
+-    {
+-        printElement(element_no);
+-    }
+-
+-    // clear empty lines
+-    for (;element_no < DIRH; element_no++)
+-    {
+-        cputsxy(1, 1+element_no, "                                      ");
+-    }
++    uint8_t row, index;
++    uint8_t count = IS_BROWSER ? BROWSER_ROWS : DIRH;
++    for (row=0; row<count; ++row) {
++        index = row + (IS_BROWSER ? browserTop : 0);
++        if (index < dir->no_of_elements) printElement(index);
++        else cclearxy(1, row+(IS_BROWSER ? 4 : 1), 38);
++    }
++    browserDetail();
+ }
+ 
+ static void printElement(uint8_t element_no)
+ {
+-    char *element;
+-
+-    element = dir->elements[element_no];
+-    if (*element++ == TEXT_ELEMENT)
+-    {
+-        textcolor(WARNC);
+-    }
+-    else
+-    {
+-        textcolor(TEXTC);
+-    }
+-
+-    if (element_no == dir->selected)
+-    {
++    char *element = dir->elements[element_no];
++    uint8_t row = element_no+1;
++    if (IS_BROWSER) {
++        if (element_no < browserTop || element_no >= browserTop+BROWSER_ROWS) return;
++        row = element_no-browserTop+4;
++    }
++    textcolor(*element == TEXT_ELEMENT ? WARNC : IS_BROWSER ? COLOR_WHITE : TEXTC);
++    if (element_no == dir->selected) {
++        if (IS_BROWSER) textcolor(COLOR_CYAN);
+         revers(1);
+-    }
+-    else
+-    {
+-        revers(0);
+-    }
+-
+-    cputsxy(1, 1+element_no, element);
++    } else revers(0);
++    cputsxy(1, row, element+1);
+     revers(0);
+ }
+ 
+--- a/launcher/ld.crt.cfg
++++ b/launcher/ld.crt.cfg
+@@ -20,7 +20,7 @@
+     LOWCODE:  load = ROM,            type = ro,                optional = yes;
+     ONCE:     load = ROM,            type = ro,                optional = yes;
+     INIT:     load = ROM,            type = ro,  define = yes, optional = yes;
+-    CODE:     load = ROM,            type = ro,  define = yes, align = $100;
++    CODE:     load = ROM,            type = ro,  define = yes, align = $01;
+     RODATA:   load = ROM,            type = ro,  define = yes, align = $01;
+     DATA:     load = ROM, run = RAM, type = rw,  define = yes;
+     BSS:      load = RAM,            type = bss, define = yes;

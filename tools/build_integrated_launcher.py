@@ -20,7 +20,7 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--upstream',type=Path,required=True)
     ap.add_argument('--cc65-home',type=Path)
-    ap.add_argument('--version',default='2.G3',help='Four-character experimental v2 version')
+    ap.add_argument('--version',default='2.G4',help='Four-character experimental v2 version')
     args=ap.parse_args()
     if not re.fullmatch(r'2\.[A-Za-z0-9]{2}',args.version):
         raise ValueError('Version must fit the 20-byte launcher identifier, for example 2.G1')
@@ -41,7 +41,8 @@ def main():
     shutil.copy(args.upstream.resolve()/'firmware/commands.h',source/'firmware/commands.h')
     for patch in ['experiments/launcher-size/compact-launcher.patch',
                   'experiments/home-integration/home-menu.patch',
-                  'experiments/home-integration/folder-home.patch']:
+                  'experiments/home-integration/folder-home.patch',
+                  'experiments/home-integration/browser.patch']:
         run(['patch','--batch','--forward','--fuzz=0','-p1','-i',root/patch],env,cwd=source)
     shutil.copytree(root/'launcher/ui',source/'launcher/ui',dirs_exist_ok=True)
     launcher=source/'launcher'
@@ -116,7 +117,7 @@ uint8_t ui_test_row(void) { return dir->selected; }
     config=re.sub(r'BSS:      file = "",[^\n]+',
                   'BSS:      file = "", start = $8000, size = $1000;',config)
     harness_cfg.write_text(config)
-    for scenario in range(6):
+    for scenario in range(7):
         output=work/('interactive' if scenario==0 else 'scenario-'+str(scenario))
         output.mkdir()
         flags=[] if scenario==0 else ['-DUI_TEST_AUTORUN','-DUI_TEST_SCENARIO='+str(scenario)]

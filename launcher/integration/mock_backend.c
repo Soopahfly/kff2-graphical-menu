@@ -19,13 +19,13 @@ static uint16_t readpos, writepos;
 static char packet[1024];
 static const char* root_files[] = {
     "Games                            dir", "Demos                            dir",
-    "Utilities                        dir", "Boulder Dash.prg                  32K",
-    "Prince of Persia.crt             512K", "Sam's Journey.crt                  1M"
+    "Utilities                        dir", "Boulder Dash.prg                  PRG",
+    "Prince of Persia.crt              CRT", "Sam's Journey.crt                 CRT"
 };
 static const char* folder_names[] = {"\xa0/Games", "\xa0/Tools", "\xa0/Utilities", "\xa0/Favourites"};
 static const char* child_files[] = {
-    "..                               dir", "Impossible Mission.prg            36K",
-    "The Last Ninja.d64               171K"
+    "..                               dir", "Impossible Mission.prg            PRG",
+    "The Last Ninja.d64                D64"
 };
 
 static void field(const char* value, uint8_t size)
@@ -51,7 +51,7 @@ static uint8_t directory(uint8_t command, uint8_t selected)
                           "Simulated cartridge action" : "F2 opens the home screen";
         else if (test_folder) name = child_files[i];
         else if (!test_page && i<6) name = root_files[i];
-        else name = "Sample entry.prg                  32K";
+        else name = "Sample entry.prg                  PRG";
         field(name, ELEMENT_LENGTH-1);
     }
     if (count<MAX_ELEMENTS_PAGE) {
@@ -164,6 +164,8 @@ static const uint8_t keys[] = {
     'g',CH_F2,'t',CH_F2,'u',CH_F2,'f',CH_F2,
     'b',CH_F2,CH_CURS_RIGHT,CH_CURS_DOWN,CH_ENTER,CH_F2,'q'
 };
+#elif UI_TEST_SCENARIO == 6
+static const uint8_t keys[] = {'g',CH_F4};
 #else
 static const uint8_t keys[] = {CH_F4};
 #endif

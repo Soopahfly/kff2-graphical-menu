@@ -33,6 +33,8 @@ def main():
     assert tests['native_image_sha256']==digest(native),'VICE results do not match this launcher build'
     assert tests['interactive_prg_sha256']==digest((ui/'interactive/kff2-integration-test.prg').read_bytes())
     assert all(r['passed'] and not r['error'] for r in tests['scenarios']) and tests['keyboard']['passed']
+    assert {r['scenario'] for r in tests['scenarios']}==set(range(1,7))
+    assert all(r.get('browser_screen_checked') for r in tests['scenarios'] if r['scenario'] in (3,6))
     env=os.environ.copy()
     if args.newlib_include:
         env['C_INCLUDE_PATH']=str(args.newlib_include.resolve())+(os.pathsep+env['C_INCLUDE_PATH'] if env.get('C_INCLUDE_PATH') else '')
@@ -44,6 +46,7 @@ def main():
     run(['patch','--batch','--forward','--fuzz=0','-p1','-i',
          root/'experiments/home-integration/folder-arm.patch'],env,cwd=work)
     run(['patch','--batch','--forward','--fuzz=0','-p1','-i',root/'experiments/home-integration/history-hooks.patch'],env,cwd=work)
+    run(['patch','--batch','--forward','--fuzz=0','-p1','-i',root/'experiments/home-integration/browser-arm.patch'],env,cwd=work)
     for name in ['random_game.c','menu_home.c','launch_history.c']:
         shutil.copy(root/'firmware'/name,source/name)
     route_tests=run([sys.executable,root/'tools/test_home_features.py','--upstream',args.upstream.resolve()],env)
@@ -81,7 +84,7 @@ def main():
         'launcher_offset':114688,'launcher_bytes':len(native),'launcher_rom_free':metadata['rom_free'],
         'blank_region_preserved':True,'initial_sp':hex(sp),'reset_vector':hex(reset),
         'sha256':digest(upd),'launcher_sha256':digest(native),
-        'vice_harness_matches_build':True,'folder_shortcuts':True,'arm_source_changed':True,
+        'vice_harness_matches_build':True,'browser_visible_rows':17,'browser_f4_random':True,'sd_extension_labels':True,'folder_shortcuts':True,'arm_source_changed':True,
         'home_graphics_lossless':True,'random_game_f4':True,'persistent_history':True,'history_real_fatfs_tested':True,'recent_distinct_window':10,'menu_context_regressions_tested':True,'arm_folder_dispatch_host_tested':True,
         'compiler_warning_kinds':sorted(set(line.strip() for line in log.splitlines() if 'warning:' in line))}
     dest=root/'firmware/experimental'

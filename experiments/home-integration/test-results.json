@@ -46,7 +46,8 @@
         135
       ],
       "selected_byte": 22,
-      "keys_used": 28
+      "keys_used": 28,
+      "browser_screen_checked": true
     },
     {
       "scenario": 4,
@@ -78,6 +79,19 @@
       ],
       "selected_byte": 0,
       "keys_used": 1
+    },
+    {
+      "scenario": 6,
+      "passed": true,
+      "error": 0,
+      "reply_trace": [
+        142,
+        128,
+        155
+      ],
+      "selected_byte": 0,
+      "keys_used": 2,
+      "browser_screen_checked": true
     }
   ],
   "keyboard": {
@@ -91,7 +105,7 @@
     "input": "B, F2, B, F2, Q via C64 keyboard buffer"
   },
   "ntsc_startup_capture": true,
-  "version": "2.G3",
-  "native_image_sha256": "c32daafdca6abee1a3bfca72c15930019075656c8a702697d35edb03a5da3ee8",
-  "interactive_prg_sha256": "19ff0a8b2aab5a1f224bb6a0e307e6cba2a118aae809df1a2a8e81592955e1f0"
+  "version": "2.G4",
+  "native_image_sha256": "2d49cac2f2b1340f3fd032a3c67b2d4e6b2fa3cebfd0b162732aaa2e8df1d4c0",
+  "interactive_prg_sha256": "8a2df628b1ec973461e13630a83299a29c154663f02cf54b778831798e179f68"
 }

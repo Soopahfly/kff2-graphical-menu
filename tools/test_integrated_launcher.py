@@ -35,8 +35,8 @@ def main():
           '-autostartprgmode','1','-limitcycles','50000000']
     expected={1:[0x82,0x80,0x87,0x80,0x8f,0x89,0x80,0x9a,0x80,0x8a],
               2:[0x82,0x80,0x87],3:[0x82,0x80,0x86,0x80,0x85,0x80,0x8f,0x87],
-              4:[0x8e,0x80,0x8e,0x80,0x8e,0x80,0x8e,0x80,0x8f,0x8e,0x80,0x8a],5:[0x9b]}
-    for scenario in range(1,6):
+              4:[0x8e,0x80,0x8e,0x80,0x8e,0x80,0x8e,0x80,0x8f,0x8e,0x80,0x8a],5:[0x9b],6:[0x8e,0x80,0x9b]}
+    for scenario in range(1,7):
         output=work/('scenario-'+str(scenario))
         syms=labels(output/'test.lbl')
         names=['_test_key_index','_test_error','_test_result','_test_reply_count',
@@ -56,8 +56,12 @@ def main():
                 f'screenshot "{output / "child.png"}" 2','g','g',
                 f'screenshot "{output / "home-return.png"}" 2','g',
                 f'screenshot "{output / "cached-browser.png"}" 2','delete 1']
-        commands += [f'break exec ${syms["_ui_test_finished"]:04x}','g',
-                     f'bsave "{dump}" 0 ${start:04x} ${end:04x}','quit']
+        commands += [f'break exec ${syms["_ui_test_finished"]:04x}','g']
+        if scenario in (3,6):
+            commands += [f'bsave "{output / "screen.bin"}" 0 $0400 $07e7',
+                         f'bsave "{output / "colors.bin"}" 0 $d800 $dbe7',
+                         f'screenshot "{output / "browser-final.png"}" 2']
+        commands += [f'bsave "{dump}" 0 ${start:04x} ${end:04x}','quit']
         script=output/'test.mon';script.write_text('\n'.join(commands)+'\n')
         timing=['+warp','-limitcycles','30000000'] if scenario==1 else []
         cmd=base+timing+['-refreshonbreak','-initbreak','reset','-moncommands',str(script),
@@ -81,6 +85,20 @@ def main():
                 'selected_byte':value('_test_selected'),'keys_used':value('_test_key_index')}
         assert result['passed'] and not result['error'],result
         assert trace==expected[scenario],result
+        if scenario in (3,6):
+            screen=(output/'screen.bin').read_bytes()
+            colors=bytes(c&15 for c in (output/'colors.bin').read_bytes())
+            assert len(screen)==len(colors)==1000
+            assert screen[:40]==b' '*40 and screen[24*40:]==b' '*40, 'Overscan margin contains text'
+            assert all(c==1 for c in colors[2*40+1:2*40+38]), 'Path must be white'
+            selected_row=20 if scenario==3 else 4
+            selected=screen[selected_row*40+1:selected_row*40+39]
+            assert all(c&128 for c in selected), 'Selection must fill the row'
+            assert colors[selected_row*40+1:selected_row*40+39]==bytes([3])*38, 'Selection must be cyan'
+            if scenario==3:
+                assert not any(screen[4*40+1:20*40+39][i]&128
+                               for i in range(16*40) if i%40<38), 'Stale selection after viewport scroll'
+            result['browser_screen_checked']=True
         results.append(result)
         print(json.dumps(result))
     # Exercise the uninstrumented input paths with real C64 keyboard-buffer bytes.
