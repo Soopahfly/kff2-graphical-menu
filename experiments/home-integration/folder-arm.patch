@@ -1,41 +1,31 @@
 --- a/firmware/menu.c
 +++ b/firmware/menu.c
-@@ -97,6 +97,38 @@
+@@ -32,6 +32,8 @@
+ #include "menu_options.c"
+ #include "menu_utilities.c"
+ #include "menu_settings.c"
++#include "random_game.c"
++#include "menu_home.c"
+ 
+ static void menu_loop(void)
+ {
+@@ -95,6 +97,19 @@
+             case REPLY_SELECT:
+                 data = c64_receive_byte();
                  cmd = menu->select(menu->state, data & 0xc0, data & 0x3f);
++                break;
++
++            case REPLY_HOME_BROWSE:
++                cmd = home_browse();
++                break;
++            case REPLY_HOME_FOLDER:
++                cmd = home_folder(c64_receive_byte());
++                break;
++            case REPLY_HOME_UTILITIES:
++                cmd = home_utilities();
++                break;
++            case REPLY_HOME_RANDOM:
++                cmd = home_random(c64_receive_byte());
                  break;
  
-+            case REPLY_HOME_BROWSE:
-+                if (menu == &sd_menu) cmd = CMD_NONE;
-+                else { menu = &sd_menu; cmd = sd_handle_dir(&sd_state); }
-+                break;
-+
-+            /* Altered version: bounded four-folder shortcut from graphical Home. */
-+            case REPLY_HOME_FOLDER:
-+            {
-+                static const char *const paths[] = {
-+                    "/Games", "/Tools", "/Utilities", "/Favourites"
-+                };
-+                data = c64_receive_byte();
-+                if (data >= 4) { cmd = CMD_NONE; break; }
-+                menu = &sd_menu;
-+                if (sd_crt_updated(&sd_state))
-+                {
-+                    cmd = handle_unsaved_crt(cfg_file.file, sd_handle_save_updated_crt);
-+                    break;
-+                }
-+                sd_state.search[0] = 0;
-+                cfg_file.file[0] = 0;
-+                if (!dir_change(paths[data]))
-+                {
-+                    if (!dir_change("/")) fail_to_read_sd();
-+                    cmd = handle_unsupported_ex("Folder not found",
-+                        "Create this folder on the SD card", paths[data]);
-+                    break;
-+                }
-+                cmd = sd_handle_dir(&sd_state);
-+                break;
-+            }
-+
              case REPLY_UTILITIES:
-                 cmd = handle_utilities();
-                 break;

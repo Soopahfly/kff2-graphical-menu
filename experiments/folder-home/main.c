@@ -69,6 +69,7 @@ static uint8_t run_home(void)
         else if (c=='b' || c==CH_F2 || c==CH_STOP) { action=4;break; }
         else if (c=='s' || c==CH_F5) { action=5;break; }
         else if (c==CH_F3) { action=6;break; }
+        else if (c==CH_F4) { action=8;break; }
         else if (c=='q' || c==CH_F7) { action=7;break; }
         else continue;
         select_card();
@@ -87,7 +88,8 @@ int main(void)
         if (action<4) cputsxy(2,3,folder_paths[action]);
         else if (action==4) cputsxy(2,3,"SD CARD BROWSER");
         else if (action==5) cputsxy(2,3,"SETTINGS");
-        else cputsxy(2,3,"BUILT-IN CART UTILITIES");
+        else if (action==6) cputsxy(2,3,"BUILT-IN CART UTILITIES");
+        else cputsxy(2,3,"RANDOM GAME FROM /GAMES");
         textcolor(COLOR_WHITE);
         cputsxy(2,7,"FOLDER HOME / DESIGN PREVIEW");
         cputsxy(2,10,"Folder routing is not connected yet.");

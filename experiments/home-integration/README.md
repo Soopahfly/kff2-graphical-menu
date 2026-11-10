@@ -1,7 +1,7 @@
-# Home-screen integration, experimental v2.G1
+# Home-screen integration, experimental v2.G2
 
 The graphical home now dispatches into the original compact launcher.
-The native C64 launcher links into the original 16 KB image, with 66 bytes
+The native C64 launcher links into the original 16 KB image, with 89 bytes
 free in its main 14 KB allocation. The complete MCU update is also built;
 see [firmware/experimental](../../firmware/experimental/README.md).
 
@@ -24,7 +24,7 @@ Shift+Return options and other function-key routes are retained.
 
 Native disk, USB, EAPI and startup assembly are copied from upstream without
 source changes. The allocator and formatter patches remain the only other
-changes to the original launcher C source. The ARM folder dispatcher is added by `folder-arm.patch`; original storage/emulation code is retained.
+changes to the original launcher C source. The ARM Home/random modules are included by `folder-arm.patch`; original storage/emulation code is retained.
 
 ## Try the VICE harness
 
@@ -35,6 +35,7 @@ in VICE's C64 emulator.
 - Cursor keys and Return use the original launcher menu code.
 - F2 returns Home, preserving the directory and selection.
 - G/T/U/F open the four simulated collections; S/F3 open Settings/cart utilities.
+- F4 records the random-game request, stopping before any real loader.
 - Q on Home exits the harness to BASIC.
 
 The entries are built-in test data, not files on an SD card. Selecting a program
@@ -59,13 +60,13 @@ Requires Python 3, Pillow, liblz4, cc65, make, patch and an upstream KFF2 checko
     python3 tools/build_integrated_launcher.py --upstream /path/to/KungFuFlash2
 
 An unpacked cc65 build can be selected using `--cc65-home /path/to/cc65`.
-The default identifier is v2.G1, which fits the original 20-byte version field.
+The default identifier is v2.G2, which fits the original 20-byte version field.
 
 Outputs under ignored `launcher/build/integration/`:
 
 - `native/kff2-integrated-launcher.bin`: C64 launcher only, not an MCU update.
 - `interactive/kff2-integration-test.prg`: interactive simulated-cartridge harness.
-- `scenario-1` through `scenario-4`: automated harness variants.
+- `scenario-1` through `scenario-5`: automated harness variants.
 - `source/launcher/main.c`: patched native source for inspection.
 - `native-measurements.json`: native ROM/RAM measurements.
 
@@ -90,7 +91,8 @@ Verified in VICE 3.7.1:
    Exact folder reply sequence and all four indexes checked.
 5. Use B, F2, B, F2, Q through the C64 keyboard buffer in the interactive build.
    No extra directory reload occurs during the Home/Browse returns.
-6. NTSC startup screenshot inspected. The full navigation scenarios ran as PAL.
+6. F4 sends the random-game reply and C128 flag without entering a loader.
+7. NTSC startup screenshot inspected. The full navigation scenarios ran as PAL.
 
 The first full VIC bank is dumped from VICE and compared byte for byte with the
 generated design, including the active matrix and selected description. The native
@@ -113,4 +115,4 @@ Its 23-row page protocol needs a viewport if the graphical list displays fewer
 rows. Any change must preserve selected entry indexes and existing menu replies.
 
 The spare 16 KB flash region is not used by this build. The single-bank route
-now includes the home dispatch and fits, although its 66-byte margin is small.
+now includes the home dispatch and fits, although its 89-byte margin is small.

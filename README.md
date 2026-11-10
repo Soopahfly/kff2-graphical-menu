@@ -1,22 +1,27 @@
 # KFF2 Graphical Menu
 
 An experimental graphical home screen integrated with Kung Fu Flash 2's native
-launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G1**.
+launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G2**.
 It is built and software-checked, not tested on physical KFF2 hardware.
 
 ![Graphical home](preview/integration-home.png)
 
 ## Current milestone
 
+**F4: Random game** picks a supported file from `/Games` and its subfolders,
+then uses the original loader. See [behaviour and limits](docs/random-game.md).
+G2 also fixes leaving disk images and opening cart utilities from Settings.
+Do not use the older G1 image for new testing.
+
 **Games / Tools / Utilities / Favourites > original text browser > Home** is
 connected. F2 returns Home while preserving the folder and selected entry. B
 opens Browse, S opens Settings, F3 opens built-in cart utilities and Q opens BASIC.
 The file browser still has its original text appearance.
 
-The native C64 image remains 16 KB, with **66 bytes free** in its main ROM
+The native C64 image remains 16 KB, with **89 bytes free** in its main ROM
 allocation. The unused 16 KB flash region is not used. The full MCU update is
 128 KB. No original cartridge features were intentionally removed, and the ARM
-firmware adds a bounded four-folder dispatcher. Full compatibility needs hardware testing.
+firmware adds folder dispatch and random selection. Full compatibility needs hardware testing.
 
 Existing autoload and direct PRG/USB, cartridge and disk boot paths remain;
 the home screen appears when the native launcher enters menu mode.
@@ -29,6 +34,7 @@ This runs the patched native menu with a simulated cartridge data source:
 - B on Home opens the directory. Cursor keys and Return select.
 - F2 returns Home without clearing the folder or selection.
 - G/T/U/F open the four simulated collections; S/F3 open Settings/cart utilities.
+- F4 records a random-game request in the harness; it does not scan or load SD files.
 - Q on Home exits the harness to BASIC.
 
 Directory entries are test data. No SD files or games are loaded. This harness

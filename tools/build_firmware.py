@@ -43,7 +43,9 @@ def main():
     shutil.copy(ui/'source/firmware/commands.h',source/'commands.h')
     run(['patch','--batch','--forward','--fuzz=0','-p1','-i',
          root/'experiments/home-integration/folder-arm.patch'],env,cwd=work)
-    route_tests=run([sys.executable,root/'tools/test_arm_folder_routes.py',source/'menu.c'],env)
+    for name in ['random_game.c','menu_home.c']:
+        shutil.copy(root/'firmware'/name,source/name)
+    route_tests=run([sys.executable,root/'tools/test_home_features.py','--upstream',args.upstream.resolve()],env)
     options=['version='+version,'LAUNCHER='+str(launcher),'-o',launcher]
     if args.arm_bin:options.append('GCC_PATH='+str(args.arm_bin.resolve()))
     if args.newlib_libdir:options.append('LIBDIR=-L'+str(args.newlib_libdir.resolve()))
@@ -72,14 +74,14 @@ def main():
         'blank_region_preserved':True,'initial_sp':hex(sp),'reset_vector':hex(reset),
         'sha256':digest(upd),'launcher_sha256':digest(native),
         'vice_harness_matches_build':True,'folder_shortcuts':True,'arm_source_changed':True,
-        'home_graphics_lossless':True,'arm_folder_dispatch_host_tested':True,
+        'home_graphics_lossless':True,'random_game_f4':True,'menu_context_regressions_tested':True,'arm_folder_dispatch_host_tested':True,
         'compiler_warning_kinds':sorted(set(line.strip() for line in log.splitlines() if 'warning:' in line))}
     dest=root/'firmware/experimental'
     dest.mkdir(parents=True,exist_ok=True)
     filename='KungFuFlash_v'+version+'.upd'
     (dest/filename).write_bytes(upd)
     (dest/'build-report.json').write_text(json.dumps(result,indent=2)+'\n')
-    (dest/'SHA256SUMS').write_text(digest(upd)+'  '+filename+'\n')
+    (dest/'SHA256SUMS').write_text(''.join(digest(p.read_bytes())+'  '+p.name+'\n' for p in sorted(dest.glob('*.upd'))))
     print(json.dumps(result,indent=2))
 
 if __name__=='__main__':main()

@@ -1,15 +1,19 @@
 --- a/launcher/main.c
 +++ b/launcher/main.c
-@@ -461,11 +461,16 @@
+@@ -461,11 +461,20 @@
  static uint8_t showHome(void)
  {
      static const uint8_t replies[] = {
 -        REPLY_OK, REPLY_UTILITIES, REPLY_SETTINGS, REPLY_BASIC
-+        REPLY_HOME_BROWSE, REPLY_SETTINGS, REPLY_UTILITIES, REPLY_BASIC
++        REPLY_HOME_BROWSE, REPLY_SETTINGS, REPLY_HOME_UTILITIES, REPLY_BASIC
      };
      uint8_t action = home_run();
      updateScreen();
 -    return replies[action];
++    if (action == HOME_RANDOM) {
++        KFF_SEND_BYTE(isC128 ? SELECT_FLAG_C128 : 0);
++        return REPLY_HOME_RANDOM;
++    }
 +    if (action < HOME_COUNT) {
 +        searchLen = 0; searchBuffer[0] = 0;
 +        KFF_SEND_BYTE(action);
@@ -19,7 +23,7 @@
  }
  
  static uint8_t menuLoop(void)
-@@ -476,9 +481,11 @@
+@@ -476,9 +485,11 @@
      memset(dir, 0, sizeof(Directory));
  
      cmd = CMD_NONE;
@@ -45,3 +49,25 @@
      REPLY_LOAD = 0x90,
      REPLY_SAVE,
  
+@@ -100,7 +103,9 @@
+ 
+     REPLY_LISTEN,
+     REPLY_UNLISTEN,
+-    REPLY_RECEIVE_BYTE
++    REPLY_RECEIVE_BYTE,
++    REPLY_HOME_UTILITIES = 0x9a,
++    REPLY_HOME_RANDOM = 0x9b
+ } COMMAND_TYPE;
+ 
+ typedef enum
+--- a/launcher/ld.crt.cfg
++++ b/launcher/ld.crt.cfg
+@@ -21,7 +21,7 @@
+     ONCE:     load = ROM,            type = ro,                optional = yes;
+     INIT:     load = ROM,            type = ro,  define = yes, optional = yes;
+     CODE:     load = ROM,            type = ro,  define = yes, align = $100;
+-    RODATA:   load = ROM,            type = ro,  define = yes, align = $100;
++    RODATA:   load = ROM,            type = ro,  define = yes, align = $01;
+     DATA:     load = ROM, run = RAM, type = rw,  define = yes;
+     BSS:      load = RAM,            type = bss, define = yes;
+     HEAP:     load = RAM,            type = bss, optional = yes; # must sit just below stack

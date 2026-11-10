@@ -12,7 +12,7 @@ artwork drawn for this project, not EasyFlash's original background bitmap.
 ![Folder Home, Games selected](../../preview/folder-home-games.png)
 
 This image is a pixel layout render of the exact C64 bitmap and colour matrix
-used by the PRG. It is not a VICE screenshot. The revised design is now integrated in the [updated v2.G1 firmware](../../firmware/experimental/README.md).
+used by the PRG. It is not a VICE screenshot. F4 now selects a random game in the integrated firmware. The revised design is now integrated in the [updated v2.G2 firmware](../../firmware/experimental/README.md).
 
 ## Intended folder mapping
 
@@ -70,7 +70,7 @@ on leaving the graphical screen.
 This prototype uses a complete compressed static bitmap so the PNGs and PRG
 share the exact layout. Its asset size is recorded in `measurements.json`.
 That is **not a native firmware ROM-fit measurement**. The native launcher uses a separate LZ4-packed version of the same pixels and
-now fits with 66 bytes spare. The integrated firmware connects folder navigation;
+now fits with 89 bytes spare. The integrated firmware connects folder navigation;
 physical hardware validation remains pending.
 
 Font: Thomas Giesel / EasyFlash 3. Existing copyright and licence remain in

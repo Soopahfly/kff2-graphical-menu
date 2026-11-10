@@ -169,8 +169,8 @@ def main():
         # Key caps are small, not entire highlighted panels.
         text(x+1,y+3,c['key'])
         text(x+3,y+3,descriptions[i])
-    text(2,20,'B  Browse SD      S  Settings')
-    text(2,21,'F3  Cart utilities      Q  BASIC')
+    text(2,20,'F4 Random game    B Browse SD')
+    text(2,21,'S Settings  F3 Cart tools  Q BASIC')
     text(2,23,'CURSOR / JOY 2: MOVE    RETURN / FIRE: OPEN')
     base=bytes(BITMAP)
     hints=[]

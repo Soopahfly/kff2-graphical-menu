@@ -68,6 +68,7 @@ uint8_t home_run(void)
         else if (c=='b' || c==CH_F2 || c==CH_STOP) { action=4;break; }
         else if (c=='s' || c==CH_F5) { action=5;break; }
         else if (c==CH_F3) { action=6;break; }
+        else if (c==CH_F4) { action=HOME_RANDOM;break; }
         else if (c=='q' || c==CH_F7) { action=7;break; }
         else continue;
         home_select(selected);

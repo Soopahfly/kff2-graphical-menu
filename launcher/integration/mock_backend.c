@@ -110,6 +110,8 @@ uint8_t kff_send_reply_progress(uint8_t reply)
             if (!dialog) return CMD_NONE;
             dialog=0;
             return directory(CMD_READ_DIR,0);
+        case REPLY_HOME_RANDOM:
+            return CMD_MOUNT_DISK; /* Capture request; scanner is host-tested separately. */
         case REPLY_HOME_FOLDER:
             if (test_selected >= 4) {test_error=11;return CMD_WAIT_RESET;}
             test_home_mask |= 1 << test_selected;
@@ -118,6 +120,7 @@ uint8_t kff_send_reply_progress(uint8_t reply)
         case REPLY_SETTINGS:
             dialog=1;test_seen|=4;
             return directory(CMD_READ_DIR,0);
+        case REPLY_HOME_UTILITIES:
         case REPLY_UTILITIES:
             dialog=2;test_seen|=8;
             return directory(CMD_READ_DIR,0);
@@ -156,11 +159,13 @@ static const uint8_t keys[] = {
     CH_CURS_DOWN,CH_CURS_DOWN,CH_CURS_DOWN,
     CH_CURS_UP,CH_F2,'b',CH_ENTER
 };
-#else
+#elif UI_TEST_SCENARIO == 4
 static const uint8_t keys[] = {
     'g',CH_F2,'t',CH_F2,'u',CH_F2,'f',CH_F2,
     'b',CH_F2,CH_CURS_RIGHT,CH_CURS_DOWN,CH_ENTER,CH_F2,'q'
 };
+#else
+static const uint8_t keys[] = {CH_F4};
 #endif
 #endif
 void ui_test_checkpoint(void) { }
@@ -197,9 +202,12 @@ int main(void)
 #elif UI_TEST_SCENARIO == 3
         test_result = !test_error && command==CMD_MOUNT_DISK && test_selected==22 &&
                       (test_seen & 48)==48;
-#else
+#elif UI_TEST_SCENARIO == 4
         test_result = !test_error && command==CMD_WAIT_RESET && test_home_mask==15 &&
                       test_folder==4 && test_key_index==sizeof(keys);
+#else
+        test_result = !test_error && command==CMD_MOUNT_DISK && test_selected==0 &&
+                      test_key_index==sizeof(keys);
 #endif
         ui_test_finished();
         clrscr();

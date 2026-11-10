@@ -1,14 +1,14 @@
 {
   "bitmap_raw": 8000,
-  "bitmap_rle": 4547,
+  "bitmap_rle": 4631,
   "hints_rle": 1452,
   "matrix_rle": 1248,
   "firmware_integrated": false,
   "vice_tested": false,
-  "prg_bytes": 9644,
+  "prg_bytes": 9789,
   "prg_load": "0x801",
-  "prg_end_exclusive": "0x2dab",
+  "prg_end_exclusive": "0x2e3c",
   "basic_sys": 2061,
-  "prg_sha256": "5ac0716dccafad7951c9083a492fb18fc367f47519d1a3649c31a8fee9bbf05c",
+  "prg_sha256": "deca65686a1be99a937e504337c28719837abb60aa019ff795ebc39165e77d0c",
   "stream_lengths_checked": true
 }
