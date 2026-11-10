@@ -1,0 +1,19 @@
+{
+  "native_resolution": [
+    320,
+    200
+  ],
+  "preview_only": true,
+  "integrated_firmware": false,
+  "border_bitmap_and_palette_identical_to_home": true,
+  "masthead_art_identical": true,
+  "visible_rows": 12,
+  "font": "Existing EF3 / Home font, Thomas Giesel",
+  "details_and_counts": "Sample design data, not an implemented firmware stats feature",
+  "prg_bytes": 30529,
+  "prg_sha256": "8d1e6ac0283a77d5728b68fdc89ecb14f6a89acc681a616ee1e79164adf8c6fa",
+  "vice_verified": true,
+  "hardware_tested": false,
+  "vice_memory_matches_design": true,
+  "space_restores_display_registers": true
+}

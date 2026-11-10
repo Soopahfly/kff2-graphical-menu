@@ -6,6 +6,12 @@ It is built and software-checked, not tested on physical KFF2 hardware.
 
 ![Graphical home](preview/integration-home.png)
 
+## Browser layout revision
+
+The next browser layout keeps Home's exact patterned border and masthead.
+[See the native-resolution layout and standalone VICE preview](experiments/browser-border/README.md).
+This is a static design experiment; the G4 firmware below remains unchanged.
+
 ## Current milestone
 
 **F4: Random game** picks a supported file from `/Games` and its subfolders,
