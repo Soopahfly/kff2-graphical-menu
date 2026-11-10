@@ -35,6 +35,10 @@ def main():
     assert all(r['passed'] and not r['error'] for r in tests['scenarios']) and tests['keyboard']['passed']
     assert {r['scenario'] for r in tests['scenarios']}==set(range(1,9))
     assert all(r.get('browser_screen_checked') for r in tests['scenarios'] if r['scenario'] in (3,6,7))
+    uniform=json.loads((ui/'uniform-results.json').read_text())
+    assert uniform['native_image_sha256']==digest(native),'Uniform UI checks do not match this launcher'
+    assert len(uniform['screens'])==12 and all(r['passed'] for r in uniform['screens'])
+    assert uniform['reader_forward_back'] and uniform['native_fallback']
     env=os.environ.copy()
     if args.newlib_include:
         env['C_INCLUDE_PATH']=str(args.newlib_include.resolve())+(os.pathsep+env['C_INCLUDE_PATH'] if env.get('C_INCLUDE_PATH') else '')
@@ -90,6 +94,7 @@ def main():
         'blank_region_preserved':True,'initial_sp':hex(sp),'reset_vector':hex(reset),
         'sha256':digest(upd),'launcher_sha256':digest(native),
         'vice_harness_matches_build':True,'ui_bank_sha256':metadata['ui_bank_sha256'],'arm_supplied_home_font_bank':True,'browser_visible_rows':12,'browser_home_border_exact':True,'browser_f4_random':True,'sd_extension_labels':True,'folder_shortcuts':True,'arm_source_changed':True,
+        'uniform_menus_help_search':True,'cached_message_frame':True,'reader_columns':32,'reader_rows':16,'uniform_ui_checked_screens':12,'startup_text_fallback':True,
         'home_graphics_lossless':True,'random_game_f4':True,'persistent_history':True,'history_real_fatfs_tested':True,'recent_distinct_window':10,'menu_context_regressions_tested':True,'arm_folder_dispatch_host_tested':True,
         'compiler_warning_kinds':sorted(set(line.strip() for line in log.splitlines() if 'warning:' in line))}
     dest=root/'firmware/experimental'

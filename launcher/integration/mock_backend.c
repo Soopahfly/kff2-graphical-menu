@@ -9,6 +9,8 @@
 #include "base.h"
 #include "dir.h"
 #include "launcher_asm.h"
+#pragma code-name ("MOCK_CODE")
+#pragma rodata-name ("MOCK_CODE")
 
 uint8_t test_key_index, test_error, test_result;
 uint8_t test_reply_count, test_replies[48];
@@ -20,6 +22,7 @@ void unpack_home_fixture(void);
 static uint8_t dialog;
 static uint16_t readpos, writepos;
 static char packet[1024];
+uint16_t ui_mock_read_ptr;
 static const char* root_files[] = {
     "Games                              dir", "Demos                              dir",
     "Utilities                          dir", "Boulder Dash.prg                   PRG",
@@ -35,6 +38,39 @@ static void field(const char* value, uint8_t size)
 {
     while (size--) packet[writepos++] = *value ? *value++ : ' ';
 }
+#pragma code-name (push, "MOCK_CODE")
+#pragma rodata-name (push, "MOCK_CODE")
+uint8_t ui_mock_read_byte(void)
+{
+    if (ui_mock_read_ptr>=writepos) {test_error=24;return 0;}
+    return packet[ui_mock_read_ptr++];
+}
+void ui_mock_text(void)
+{
+    uint8_t i;
+    writepos=0;
+    field("Text reader check",DIR_NAME_LENGTH);
+    field("",2);
+    field("WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW",40);
+    field("\r\n",2);
+    for(i=0;i<28;++i) {
+        field("Reader line ",12);
+        packet[writepos++]='A'+i;
+        field(" with words.\r\n",14);
+    }
+    packet[writepos++]=0;
+}
+void ui_mock_cancel(void)
+{
+    const char *text="Sorting directory.\r\nScanned/sorted: 0 / 0";
+    uint8_t size=strlen(text);
+    writepos=readpos=0;
+    field("/Games",DIR_NAME_LENGTH);
+    packet[writepos++]=size;packet[writepos++]=0;
+    field(text,size);
+}
+#pragma rodata-name (pop)
+#pragma code-name (pop)
 static uint8_t directory(uint8_t command, uint8_t selected)
 {
     uint8_t i, count;
@@ -166,7 +202,9 @@ void ef3usb_load_and_run(void) { test_error=8; }
 #ifndef UI_TEST_SCENARIO
 #define UI_TEST_SCENARIO 1
 #endif
-#if UI_TEST_SCENARIO == 1
+#if UI_TEST_SCENARIO == 9
+static const uint8_t keys[] = {CH_ENTER,CH_ENTER};
+#elif UI_TEST_SCENARIO == 1
 static const uint8_t keys[] = {
     'b', CH_ENTER, CH_CURS_DOWN, CH_F2, 'b', CH_F2, 's',
     CH_F2, CH_F3, CH_F2, 'q'
@@ -205,6 +243,9 @@ uint8_t ui_test_key(void)
     /* Give VICE time to draw a complete frame before each checkpoint. */
     for (delay=0;delay<5000;++delay);
     ui_test_checkpoint();
+#if UI_TEST_SCENARIO == 9
+    if (test_seen==5 || test_seen==6) ui_uniform_checkpoint();
+#endif
 #if UI_TEST_SCENARIO == 1
     if (test_key_index==5 && (ui_test_row()!=1 || test_folder!=1)) test_error=10;
 #endif
@@ -219,6 +260,9 @@ int main(void)
 {
     uint8_t command;
     ui_test_init();
+#if defined(UI_TEST_SCENARIO) && UI_TEST_SCENARIO == 9
+    ui_test_uniform();
+#endif
     while (1) {
         command = ui_test_menu();
 #ifdef UI_TEST_AUTORUN

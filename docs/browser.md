@@ -1,4 +1,4 @@
-# G5 patterned bitmap browser
+# Patterned bitmap browser, introduced in G5
 
 ![Working G5 browser in VICE](../preview/integration-browser.png)
 
@@ -22,8 +22,10 @@ not shown. G3's journal and PC report are unchanged.
 
 The 23-entry transfer-page protocol remains. A twelve-row local viewport shows
 all entries as you scroll. Cursor left/right still page; DEL or fire-left goes
-up. F2 returns Home, F4 uses the existing /Games random runner. Search, Settings,
-options, warnings and the text reader switch to native text mode as needed.
+up. F2 returns Home, F4 uses the existing /Games random runner. G6 extends this frame to Settings,
+options, Help, search input, warnings and the text reader. See
+[the shared appearance notes](uniform-ui.md). Early startup diagnostics retain
+native text until graphics are available.
 No on-disk graphics pack or new configuration file is required.
 
 ## Graphics and memory

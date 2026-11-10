@@ -20,7 +20,7 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--upstream',type=Path,required=True)
     ap.add_argument('--cc65-home',type=Path)
-    ap.add_argument('--version',default='2.G5',help='Four-character experimental v2 version')
+    ap.add_argument('--version',default='2.G6',help='Four-character experimental v2 version')
     args=ap.parse_args()
     if not re.fullmatch(r'2\.[A-Za-z0-9]{2}',args.version):
         raise ValueError('Version must fit the 20-byte launcher identifier, for example 2.G1')
@@ -45,7 +45,8 @@ def main():
                   'experiments/home-integration/home-menu.patch',
                   'experiments/home-integration/folder-home.patch',
                   'experiments/home-integration/browser.patch',
-                  'experiments/home-integration/bitmap-browser.patch']:
+                  'experiments/home-integration/bitmap-browser.patch',
+                  'experiments/home-integration/uniform-ui.patch']:
         run(['patch','--batch','--forward','--fuzz=0','-p1','-i',root/patch],env,cwd=source)
     shutil.copytree(root/'launcher/ui',source/'launcher/ui',dirs_exist_ok=True)
     launcher=source/'launcher'
@@ -103,13 +104,18 @@ void ui_test_init(void) {
 uint8_t ui_test_menu(void) { return menuLoop(); }
 uint8_t ui_test_row(void) { return dir->selected; }
 """
+    patched += '\n#if defined(UI_TEST_SCENARIO) && UI_TEST_SCENARIO == 9\n#include "uniform_checks.inc"\n#endif\n'
     # The mock definitions affect only this copied test header.
     header=(test/'kff_data.h').read_text()
     header=header.replace('#define KFF_SEND_BYTE(data) KFF_DATA = (data)',
                           '#define KFF_SEND_BYTE(data) ui_mock_send_byte(data)')
+    header=header.replace('#define KFF_DATA        *((volatile uint8_t*) 0xde00)',
+                          '#define KFF_DATA ui_mock_read_byte()')
+    header=header.replace('#define KFF_READ_PTR    *((volatile uint16_t*) 0xde04)',
+                          '#define KFF_READ_PTR ui_mock_read_ptr')
     header='#include "mock_backend.h"\n'+header
     (test/'kff_data.h').write_text(header)
-    for f in ['mock_backend.c','mock_backend.h']:
+    for f in ['mock_backend.c','mock_backend.h','uniform_checks.inc']:
         shutil.copy(root/'launcher/integration'/f,test/f)
     # Preserve ../firmware/commands.h for the copied dir.h.
     (work/'firmware').mkdir(exist_ok=True)
@@ -124,15 +130,22 @@ uint8_t ui_test_row(void) { return dir->selected; }
     config=config.replace('    BSS:      file = "", start = $8000, size = $1000;',
                           '    BSS:      file = "", start = $8000, size = $1000;\n    MOCK: file = %O, start = $9000, size = $2000;')
     config=config.replace('    ZEROPAGE: load = ZP,       type = zp;',
-                          '    MOCK_ASSET: load = MOCK, type = ro;\n    ZEROPAGE: load = ZP,       type = zp;')
+                          '    MOCK_ASSET: load = MOCK, type = ro;\n    MOCK_CODE: load = MOCK, type = ro, optional = yes;\n    ZEROPAGE: load = ZP,       type = zp;')
     harness_cfg.write_text(config)
-    for scenario in range(9):
+    for scenario in range(10):
         output=work/('interactive' if scenario==0 else 'scenario-'+str(scenario))
         output.mkdir()
         flags=[] if scenario==0 else ['-DUI_TEST_AUTORUN','-DUI_TEST_SCENARIO='+str(scenario)]
         input_expr='c = kbhit() ? cgetc() : getJoy();'
         code=patched if scenario==0 else patched.replace(input_expr,'c = ui_test_key();')
+        if scenario==9:
+            code=code.replace('if (kbhit())','if (1)').replace('c = cgetc();','c = ui_test_key();')
         (test/'main.c').write_text(code)
+        base_code=(launcher/'base.c').read_text()
+        if scenario==9:
+            base_code=base_code.replace('void waitKey(void)\n{','void waitKey(void)\n{\n    ui_test_key(); return;')
+            base_code='#include "mock_backend.h"\n'+base_code
+        (test/'base.c').write_text(base_code)
         ui_code=(launcher/'ui/home.c').read_text()
         if scenario:
             ui_code='#include "mock_backend.h"\n'+ui_code.replace(input_expr,'c = ui_test_key();')

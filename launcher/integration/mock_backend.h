@@ -13,4 +13,11 @@ extern uint8_t test_key_index, test_error, test_result;
 extern uint8_t test_reply_count, test_replies[48];
 extern uint8_t test_selected, test_folder, test_page, test_select_count;
 extern uint8_t test_seen;
+extern uint8_t test_asset_count;
+extern uint16_t ui_mock_read_ptr;
+uint8_t ui_mock_read_byte(void);
+void ui_mock_text(void);
+void ui_mock_cancel(void);
+void ui_test_uniform(void);
+void ui_uniform_checkpoint(void);
 #endif

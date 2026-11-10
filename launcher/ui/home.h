@@ -14,7 +14,8 @@
 #define HOME_RANDOM 8
 #define HOME_INTERRUPTED 9
 extern uint8_t home_command;
-void home_enter(void);
+extern uint8_t home_ready;
+void home_enter(uint8_t reload);
 void home_leave(void);
 void home_select(uint8_t selected);
 uint8_t home_run(void);

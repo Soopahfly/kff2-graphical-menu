@@ -1,0 +1,68 @@
+{
+  "version": "2.G6",
+  "native_image_sha256": "aac6ed22cb0b1c6b3b5a5efd42d17a6072dda9be3c925db434f84848c9787547",
+  "screens": [
+    {
+      "screen": "settings",
+      "passed": true,
+      "asset_requests": 1
+    },
+    {
+      "screen": "utilities",
+      "passed": true,
+      "asset_requests": 1
+    },
+    {
+      "screen": "options",
+      "passed": true,
+      "asset_requests": 1
+    },
+    {
+      "screen": "options-scroll",
+      "passed": true,
+      "asset_requests": 1
+    },
+    {
+      "screen": "help",
+      "passed": true,
+      "asset_requests": 1
+    },
+    {
+      "screen": "search",
+      "passed": true,
+      "asset_requests": 1
+    },
+    {
+      "screen": "warning",
+      "passed": true,
+      "asset_requests": 1
+    },
+    {
+      "screen": "progress",
+      "passed": true,
+      "asset_requests": 1
+    },
+    {
+      "screen": "reader-first",
+      "passed": true,
+      "asset_requests": 1
+    },
+    {
+      "screen": "reader-next",
+      "passed": true,
+      "asset_requests": 1
+    },
+    {
+      "screen": "reader-back",
+      "passed": true,
+      "asset_requests": 1
+    },
+    {
+      "screen": "startup-fallback",
+      "passed": true,
+      "asset_requests": 1
+    }
+  ],
+  "reader_forward_back": true,
+  "native_fallback": true
+}

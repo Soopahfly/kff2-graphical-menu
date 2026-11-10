@@ -1,0 +1,292 @@
+--- a/launcher/main.c
++++ b/launcher/main.c
+@@ -63,8 +63,6 @@
+ static uint8_t search(uint8_t c);
+ static void showDir(void);
+ static void updateDir(uint8_t last_selected);
+-static void printDirPage(void);
+-static void printElement(uint8_t pos);
+ 
+ static const char *kff_receive_text(uint16_t size);
+ static const char *kff_read_text(void);
+@@ -97,7 +95,6 @@
+ #pragma rodata-name (pop)
+ 
+ static const char programBar[] = {"          " KUNG_FU_FLASH_VER "           "};
+-static const char menuBar[] = {" " KUNG_FU_FLASH_VER " F1 Help F2 Home"};
+ 
+ /* Size experiment: bounded fields replace the general formatter. */
+ static void format_line(const char *prefix, const char *text, uint8_t width)
+@@ -208,6 +205,7 @@
+             showMessage("Waiting for command from cartridge.", ERRORC);
+             cputs("Command: ");
+             print_hex(cmd);
++            browser_capture();
+         }
+     }
+ 
+@@ -233,6 +231,7 @@
+                 showKFFMessage(TEXTC);
+                 textcolor(ERRORC);
+                 cputs("PLEASE DO NOT POWER OFF OR RESET");
++                browser_capture();
+                 reply = kff_sync();
+                 break;
+ 
+@@ -247,6 +246,7 @@
+                 text = kff_read_text();
+                 textcolor(cxy[0]);
+                 cputsxy(cxy[1], cxy[2], text);
++                browser_capture();
+                 if (cmd == CMD_TEXT_WAIT)
+                 {
+                     reply = kff_sync();
+@@ -263,11 +263,14 @@
+                 continue;
+ 
+             case CMD_WAIT_SYNC:
++                browser_native_begin(0);
+                 clrscr();
++                browser_capture();
+                 reply = kff_sync();
+                 break;
+ 
+             case CMD_MOUNT_DISK:
++                browser_leave();home_ready=0;
+                 disk_mount_and_load();
+                 break;
+ 
+@@ -279,9 +282,11 @@
+                 showMessage("Communication with cartridge failed.", ERRORC);
+                 cputs("Unexpected command: ");
+                 print_hex(cmd);
+-                break;
+-        }
+-
++                browser_capture();
++                break;
++        }
++
++        browser_capture();
+         cmd = kff_send_reply(reply);
+     }
+ }
+@@ -325,6 +330,7 @@
+     textcolor(COLOR_PURPLE);
+     cputsxy(0, 11, "PRESS A KEY TO CANCEL");
+     revers(0);
++    browser_capture();
+ }
+ 
+ static uint8_t kff_sync(void)
+@@ -343,6 +349,7 @@
+ {
+     uint8_t i, chr, last_c = 0;
+ 
++    browser_native_begin(1);
+     clrscr();
+     revers(1);
+     textcolor(BACKC);
+@@ -362,7 +369,7 @@
+     while (true)
+     {
+         chr = KFF_DATA;
+-        if (!chr || wherey() >= 24)
++        if (!chr || wherey() >= 17)
+         {
+             (KFF_READ_PTR)--;
+             break;
+@@ -388,10 +395,12 @@
+             cputc(chr);
+         }
+ 
++        if (wherex() >= 32) cputs("\r\n");
+         last_c = chr;
+     }
+ 
+     pageBuffer[page + 1] = KFF_READ_PTR;
++    browser_capture();
+ }
+ 
+ static void textReaderLoop(void)
+@@ -426,7 +435,7 @@
+ 
+             case CH_CURS_DOWN:
+             case CH_CURS_RIGHT:
+-                if (KFF_READ_PTR < size && page < (sizeof(Directory)/2))
++                if (KFF_READ_PTR < size && page+2 < (sizeof(Directory)/2))
+                 {
+                     showTextPage(++page);
+                 }
+@@ -738,12 +747,8 @@
+ {
+     uint8_t cursor_pos, cursor_delay;
+     bool changed = false;
+-    uint8_t i, last_selected = dir->selected;
+-
+-    browser_leave();
+-    dir->selected++;
+-    printElement(last_selected);
+-    dir->selected = last_selected;
++    uint8_t i;
++
+ 
+     textcolor(TEXTC);
+     revers(1);
+@@ -861,15 +866,19 @@
+         }
+ 
+         format_line(" Search: ", inputBuffer, 30);
+-        cputsxy(0, 0, linebuffer);
++        browser_search(linebuffer,9+cursor_pos,0);
+ 
+         cursor_delay = 0;
+         while (true)
+         {
+             if (cursor_delay == 0)
+             {
+-                SCREEN_RAM[9 + cursor_pos] ^= 0x80;
++                browser_search(linebuffer,9+cursor_pos,1);
+                 cursor_delay = 120;
++            }
++            else if (cursor_delay == 60)
++            {
++                browser_search(linebuffer,9+cursor_pos,0);
+             }
+             cursor_delay--;
+ 
+@@ -945,28 +954,13 @@
+         format_line(" ", dir->name+1, 38);
+     }
+ 
+-    if (IS_BROWSER) {browser_show(dir,linebuffer);return;}
+-    browser_leave();
+-    clrscr();
+-    revers(0);
+-    textcolor(BACKC);
+-    drawFrame();
+-    revers(1);
+-    cputsxy(0, BOTTOM, menuBar);
+-    cputsxy(0, 0, linebuffer);
+-    revers(0);
+-    printDirPage();
++    browser_show(dir,linebuffer);
+ }
+ 
+ static void help(void)
+ {
+-    browser_leave();
+-    clrscr();
+-    revers(0);
+-    textcolor(COLOR_CYAN);
+-    cputsxy(1, 0, programBar);
+-    textcolor(TEXTC);
+-    cputsxy(1, 2,
++    browser_panel("Help / keyboard and joystick","PRESS A KEY / FIRE: Return");
++    browser_block(
+         "CRSR/Joy Select   RETURN/Fire Open\r\n"
+         " SHIFT-RETURN/Hold fire Options\r\n"
+         " HOME Root  DEL/Fire left Up\r\n"
+@@ -979,10 +973,6 @@
+         " F8 Kill    RUN/STOP Reset\r\n"
+         "\r\n"
+         " Joystick port 2");
+-    textcolor(ERRORC);
+-    cputsxy(1, 21, "NO WARRANTY. USE AT YOUR OWN RISK!");
+-
+-    gotoxy(0, 24);
+     waitKey();
+     updateScreen();
+     waitRelease();
+@@ -990,56 +980,12 @@
+ 
+ static void updateDir(uint8_t last_selected)
+ {
+-    if (IS_BROWSER) {browser_update(dir,last_selected);return;}
+-    printElement(last_selected);
+-    printElement(dir->selected);
+-}
+-
+-static void printDirPage(void)
+-{
+-    uint8_t element_no = 0;
+-
+-    for (;element_no < dir->no_of_elements; element_no++)
+-    {
+-        printElement(element_no);
+-    }
+-
+-    // clear empty lines
+-    for (;element_no < DIRH; element_no++)
+-    {
+-        cputsxy(1, 1+element_no, "                                      ");
+-    }
+-}
+-
+-static void printElement(uint8_t element_no)
+-{
+-    char *element;
+-
+-    element = dir->elements[element_no];
+-    if (*element++ == TEXT_ELEMENT)
+-    {
+-        textcolor(WARNC);
+-    }
+-    else
+-    {
+-        textcolor(TEXTC);
+-    }
+-
+-    if (element_no == dir->selected)
+-    {
+-        revers(1);
+-    }
+-    else
+-    {
+-        revers(0);
+-    }
+-
+-    cputsxy(1, 1+element_no, element);
+-    revers(0);
++    browser_update(dir,last_selected);
+ }
+ 
+ static void showFrame(const char *title)
+ {
++    browser_native_begin(0);
+     clrscr();
+ 
+     revers(1);
+@@ -1057,4 +1003,5 @@
+     cputsxy(0, 3, text);
+ 
+     cputs("\r\n\r\n\r\n");
+-}
++    browser_capture();
++}
+--- a/launcher/base.c
++++ b/launcher/base.c
+@@ -35,6 +35,7 @@
+ #include <conio.h>
+ #include <joystick.h>
+ #include "base.h"
++#include "ui/browser.h"
+ 
+ #define LONG_PRESS  (180)
+ #define KEY_PRESS   (80)
+@@ -146,6 +147,7 @@
+ 	cputs("PRESS A KEY");
+ 	revers(0);
+ 
++    browser_capture();
+     while (1)
+     {
+         if (kbhit())
+@@ -163,6 +165,7 @@
+ 
+ void waitRelease(void)
+ {
++    browser_capture();
+     while (1)
+     {
+         if (kbhit())

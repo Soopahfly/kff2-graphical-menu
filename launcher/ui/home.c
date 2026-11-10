@@ -12,13 +12,14 @@
 
 #define REG(a) (*(volatile uint8_t*)(a))
 static uint8_t saved[8],selected;
+uint8_t home_ready;
 void unpack_home(void);
 void home_select(uint8_t index)
 {
     memcpy(P_GFX_COLOR,(void*)(0x4500+(uint16_t)index*1000),1000);
     memcpy(P_GFX_BITMAP+19*320,(void*)(0x4000+(uint16_t)index*320),320);
 }
-void home_enter(void)
+void home_enter(uint8_t reload)
 {
     saved[0] = REG(0xd011) & 0x7f;
     saved[1] = REG(0xd016);
@@ -31,9 +32,12 @@ void home_enter(void)
     REG(0xd011) = saved[0] & 0x6f; /* blank while drawing */
     REG(0xd015) = 0;
     REG(0x0291) = 0x80; /* lock character-set toggle while bitmap is active */
-    unpack_home();
-    if (home_command) return;
-    home_select(0);
+    if (reload) {
+        unpack_home();
+        if (home_command) return;
+        home_ready=1;
+        home_select(0);
+    }
     REG(0xdd02) = saved[4] | 3;
     REG(0xdd00) = (saved[3] & 0xfc) | 2;
     REG(0xd018) = 0x78; /* matrix $5c00, bitmap $6000, VIC bank $4000 */
@@ -56,7 +60,7 @@ void home_leave(void)
 uint8_t home_run(void)
 {
     uint8_t c,action;
-    selected=0;home_enter();
+    selected=0;home_enter(1);
     if (home_command) {home_leave();return HOME_INTERRUPTED;}
     waitRelease();
     while (1) {

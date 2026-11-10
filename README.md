@@ -1,12 +1,20 @@
 # KFF2 Graphical Menu
 
 An experimental graphical home screen integrated with Kung Fu Flash 2's native
-launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G5**.
-It is built and software-checked, not tested on physical KFF2 hardware.
+launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G6**.
+G6 needs physical KFF2 testing. G5 Home and file-browser rendering have been
+checked by the user on hardware.
 
 ![Graphical home](preview/integration-home.png)
 
-## Patterned browser, G5
+## Shared appearance, G6
+
+Settings, REU configuration, F3 cart utilities, file options, Help, search,
+messages and the text reader now use the same frame and font as Home and Games.
+Early startup diagnostics retain native text until graphics are available.
+See [screens, checks and remaining hardware tests](docs/uniform-ui.md).
+
+![G6 Settings in VICE, simulated values](preview/g6-settings.png)
 
 The firmware now uses Home's exact patterned border and masthead in the live
 file browser, with twelve visible rows, file icons and cyan selection. The
@@ -32,7 +40,7 @@ opens Browse, S opens Settings, F3 opens built-in cart utilities and Q opens BAS
 The browser uses the existing Home font, a patterned surround and a 12-row
 viewport. F4 also runs Random directly from the browser.
 
-The native C64 image remains 16 KB, with **1,440 bytes free** in its main ROM
+The native C64 image remains 16 KB, with **630 bytes free** in its main ROM
 allocation. The unused 16 KB flash region is not used. The full MCU update is
 128 KB. No original cartridge features were intentionally removed, and the ARM
 firmware adds folder dispatch, random selection, a persistent launch journal
@@ -80,6 +88,8 @@ Run the VICE checks with your own C64 ROMs:
 
 With a configured GNU Arm Embedded toolchain and newlib development files:
 
+    python3 tools/test_uniform_ui.py --vice /path/to/x64sc --rom-dir /path/to/vice/C64
+
     python3 tools/build_firmware.py --upstream /path/to/KungFuFlash2
 
 The packaging script checks that the software-test hashes match the launcher.
@@ -100,9 +110,9 @@ Regenerate the artwork using `python3 tools/make_kicker.py`.
 
 ## Next
 
-Read the [recovery guide](firmware/experimental/RECOVERY.md), test the build on physical KFF2 hardware, then replace the text
-browser renderer. Preserve the 23-entry page protocol and selection indexes.
-Favourites and further cartridge features are later work.
+Read the [recovery guide](firmware/experimental/RECOVERY.md), then test G6's
+Settings, options, search, warnings and reader on hardware. Confirm game loading,
+REU and USB independently. Favourites remains a manually organised folder.
 
 ## Upstream and credits
 
