@@ -26,14 +26,15 @@ The separate reserved 16 KB flash region is still blank.
 
 ## Install and recover
 
-Read [RECOVERY.md](RECOVERY.md) before flashing. Put the update on a FAT32 SD card
+Use [Getting started](../../docs/getting-started.md) and the
+[current hardware checks](../../docs/testing.md). Read [RECOVERY.md](RECOVERY.md) before flashing. Put the update on a FAT32 SD card
 and select it using the working launcher. Keep G6 or an official update available
 for rollback. Upstream documents USB DFU and SWD recovery if the launcher fails.
 
 Use `/Games`, `/Tools`, `/Utilities` and `/Favourites` for the four Home cards.
 Folder names are case-insensitive. Missing folders warn and fall back to SD root.
-Favourites remains a folder you organise yourself. Keep dependent game files
-and multi-disk sets together.
+Favourites is an ordinary folder, populated on a PC or using G7 Copy to Favourites.
+Keep dependent game files and multi-disk sets together.
 
 B opens Browse, S opens Settings, F3 opens built-in cart utilities, Q starts BASIC.
 F2 returns Home. Settings contains the existing REU enable/disable control.

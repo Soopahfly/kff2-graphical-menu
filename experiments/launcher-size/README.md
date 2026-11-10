@@ -1,12 +1,13 @@
-> Current G3 firmware: 129 bytes free in the native main ROM.
-> Earlier measurements below document the previous layouts. See [current build](https://github.com/Soopahfly/kff2-graphical-menu/tree/main/firmware/experimental).
+> Historical measurements. Current G7: 630 bytes free in the native main ROM.
+> G7 receives its graphics/font bank from the ARM firmware; the reserved 16 KB
+> flash region stays blank. See the [current build report](https://github.com/Soopahfly/kff2-graphical-menu/blob/main/firmware/experimental/build-report.json).
 
 # Original launcher size experiments
 
 These optional patches are for upstream KFF2 commit
-`9c84d999f4e2f5b2c7688cbc37a127069f5401b0`. They are not applied to the standalone
-preview or incorporated into a flashable update. All current launcher features
-are retained in these link experiments.
+`9c84d999f4e2f5b2c7688cbc37a127069f5401b0`. The tables below describe the original link experiments.
+Their compact-launcher combination is now used by the integrated build, followed
+by Home, browser and G7 patches. These historical figures are not G7 ROM usage.
 
 | Original launcher variant | ROM bytes used | ROM bytes free | Saving from baseline |
 | --- | ---: | ---: | ---: |

@@ -42,8 +42,9 @@ the bitmap $6000. Navigation redraws rows locally; assets reload when entering
 graphics from text mode. Home selection and its artwork are unchanged.
 
 This removes the compressed Home asset payload from the scarce C64 ROM. The
-complete launcher still occupies 16 KB, with 1,440 bytes spare in its main
-allocation. ARM read-only data grows by 16 KB; upstream mirrors that section
+G5 launcher occupied 16 KB, with 1,440 bytes spare in its main allocation.
+The current G7 launcher is also 16 KB, with 630 bytes spare. ARM read-only data
+grows by 16 KB; upstream mirrors that section
 into DTCM RAM as well as storing it in flash. The build report records the final
 ARM flash use and BSS end. No REU buffer is repurposed, and the separate spare
 16 KB flash region remains blank.
@@ -62,6 +63,8 @@ sanitizers. Existing loader-route, random, journal and real FatFs tests are run
 before firmware packaging. Package checks preserve the 128 KB update layout,
 16 KB C64 image, original reserved regions and reset vectors.
 
-Physical cartridge bus timing, full native cartridge boot and CRT readability
-remain unverified. The PRG harness substitutes an ARM response, not the complete
-KFF2 hardware. See [G5 hardware checks](g5-testing.md) and the recovery guide.
+G5 Home and SD-browser rendering were confirmed on a physical KFF2 with an LCD.
+G7, full loading/bus compatibility and CRT readability remain unverified. The PRG
+harness substitutes an ARM response, not the complete
+KFF2 hardware. See the [current hardware checks](testing.md) and
+[recovery guide](../firmware/experimental/RECOVERY.md).

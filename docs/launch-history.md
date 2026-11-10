@@ -1,6 +1,6 @@
-# G3 launch history and recent-game avoidance
+# Launch history and recent-game avoidance
 
-G3 automatically creates `/.KFF2-history` on the SD card. It is separate from
+Introduced in G3 and retained in G7, the firmware automatically creates `/.KFF2-history` on the SD card. It is separate from
 `.KFF2.cfg`, so existing cartridge settings and calibration are retained. The
 journal is hidden from the KFF2 browser because its name begins with a dot.
 No empty database or additional menu PRG needs to be copied to the card.
@@ -65,7 +65,7 @@ python tools/history_report.py .KFF2-history --csv game-stats.csv
 The CSV contains `path`, `launches`, `random_launches`, `manual_launches`,
 `last_launch` and `last_source`. The reader verifies checksums and reports an
 invalid/incomplete tail. It does not modify the journal. There is no on-cart
-statistics screen or CSV import in G3.
+statistics screen or CSV import in G7.
 
 Back up the journal like any other SD file. To reset the history, delete it with
 the cartridge powered off. The next explicit launch creates a new journal.
@@ -101,4 +101,4 @@ read-only handling, then decodes the exported journal independently with the PC
 tool. Host checks run with address and undefined-behaviour sanitizers.
 
 The VICE harness continues to check the C64 menu and F4 protocol. It does not run
-the STM32 or emulate physical SD hardware. **G3 still needs physical KFF2 testing.**
+the STM32 or emulate physical SD hardware. **The current G7 history/loading paths still need physical KFF2 testing.**

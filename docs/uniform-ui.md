@@ -1,6 +1,7 @@
-# G6 shared appearance
+# Shared appearance, introduced in G6
 
-G6 extends Home's existing artwork and font to the rest of the menu interface.
+Introduced in G6 and retained in G7, this extends Home's existing artwork and font
+to the rest of the menu interface.
 No additional SD graphics files are needed.
 
 | Screen | Presentation |
@@ -58,7 +59,7 @@ steps must not issue any additional asset request. Reader forward/back banks mus
 match exactly. A full-width line of wide glyphs checks the wrap boundary.
 
 These fixtures simulate cartridge replies and text bytes. They do not prove SD
-loading, physical bus timing, USB or REU operation. G6 needs real KFF2 testing. The
+loading, physical bus timing, USB or REU operation. The current G7 build needs real KFF2 testing; see [the checklist](testing.md). The
 user's earlier G5 tests confirmed Home and folder-browser rendering on hardware.
 
 The native image remains 16 KB, with 630 bytes free in the main allocation. The

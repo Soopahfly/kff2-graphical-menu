@@ -19,7 +19,7 @@ the same title are not treated as duplicates. Existing duplicates are not remove
 
 The script considers PRG, P00, T64, CRT, D64, D71 and D81 files. It checks PRG/disk
 sizes and P00/T64/CRT header information, including the supported CRT mapper IDs
-from the G5 upstream cartridge handler. These are format candidates, not proof
+from the pinned upstream cartridge handler, unchanged in G7. These are format candidates, not proof
 that every game boots or that every PRG is a game. Archives are not unpacked.
 TAP/G64/snapshot formats are not included.
 
@@ -71,7 +71,7 @@ card or filename/path problem is reported; other selected files can still copy.
 Temporary partial files are removed. Keep enough free space for the copies.
 
 For a different plan location, pass the same -PlanPath to both commands.
-After copying, safely eject the card. G5's F4 runner scans the new subfolders.
+After copying, safely eject the card. G7's F4 runner scans the new subfolders.
 The separate firmware Sort directory command sorts each folder if desired.
 
 ## Verification

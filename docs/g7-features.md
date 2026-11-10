@@ -84,4 +84,4 @@ to our G6/original layout, not arbitrary community forks with different layouts.
 G7 still needs physical KFF2 testing. Check a small PRG copy, a folder containing
 companion files, a collision, persistence after restart, both autoboot values and
 REU software at the chosen size. Software tests do not prove cartridge bus timing.
-Keep a known working G6 or official update available for rollback.
+Keep your previous working firmware or an official update available for rollback.

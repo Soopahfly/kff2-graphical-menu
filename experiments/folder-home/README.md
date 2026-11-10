@@ -1,4 +1,7 @@
-# Folder Home design preview
+# Historical Folder Home design preview
+
+> This is the original static prototype. The design is now integrated in G7.
+> Use [the current firmware guide](../../firmware/experimental/README.md) for installation.
 
 A proposed replacement for the large high-kick figure and vertical button list.
 Four folder panels fill the main area, with the existing system actions below.
@@ -12,7 +15,7 @@ artwork drawn for this project, not EasyFlash's original background bitmap.
 ![Folder Home, Games selected](../../preview/folder-home-games.png)
 
 This image is a pixel layout render of the exact C64 bitmap and colour matrix
-used by the PRG. It is not a VICE screenshot. F4 now selects a random game in the integrated firmware. The revised design is now integrated in the [updated v2.G3 firmware](../../firmware/experimental/README.md).
+used by the PRG. It is not a VICE screenshot. F4 now selects a random game in the integrated firmware. The revised design is now integrated in the [current G7 firmware](../../firmware/experimental/README.md).
 
 ## Intended folder mapping
 
@@ -25,8 +28,9 @@ used by the PRG. It is not a VICE screenshot. F4 now selects a random game in th
 
 The firmware shortcuts open these ordinary directories. Tools and Utilities are
 separate collections for the user to organise, with no file-type restrictions.
-Favourites initially means copies of files placed in that folder, not a database
-or automatic list. Keep each multi-disk game together in its own subdirectory.
+In this prototype Favourites means manually placed copies. Current G7 also
+offers Copy to Favourites for files and whole game folders; it remains an ordinary
+folder, not a shortcut database or automatic list. Keep each multi-disk game together in its own subdirectory.
 
 Built-in cartridge utilities stay separate, labelled **Cart utilities** on F3.
 Browse SD (B), Settings (S) and BASIC (Q) remain visible at the bottom.
@@ -70,8 +74,9 @@ on leaving the graphical screen.
 This prototype uses a complete compressed static bitmap so the PNGs and PRG
 share the exact layout. Its asset size is recorded in `measurements.json`.
 That is **not a native firmware ROM-fit measurement**. The native launcher uses a separate LZ4-packed version of the same pixels and
-now fits with 129 bytes spare. The integrated firmware connects folder navigation;
-physical hardware validation remains pending.
+had 129 bytes spare at the G3 milestone. Current G7 has 630 bytes spare and uses
+an ARM-supplied graphics/font bank. G5 Home/browser display has been checked on
+hardware; the current G7 features and other hardware paths remain unverified.
 
 Font: Thomas Giesel / EasyFlash 3. Existing copyright and licence remain in
 `launcher/ui/charset.sed` and `launcher/ui/EF3-LICENSE.md`.

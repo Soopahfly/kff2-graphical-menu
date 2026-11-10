@@ -1,5 +1,6 @@
-> Current G3 firmware: 129 bytes free in the native main ROM.
-> Earlier measurements below document the previous layouts. See [current build](https://github.com/Soopahfly/kff2-graphical-menu/tree/main/firmware/experimental).
+> Historical measurements. Current G7: 630 bytes free in the native main ROM.
+> G7 receives its graphics/font bank from the ARM firmware; the reserved 16 KB
+> flash region stays blank. See the [current build report](https://github.com/Soopahfly/kff2-graphical-menu/blob/main/firmware/experimental/build-report.json).
 
 # UI size reduction
 
@@ -11,7 +12,7 @@ The menu looks the same while the linked UI payload is 821 bytes smaller.
 | UI constants, font and artwork | 2,105 | 1,701 | 404 bytes |
 | **UI payload** | **4,062** | **3,241** | **821 bytes / 20.2%** |
 | Combined resident DATA and BSS | 596 | 452 | 144 bytes |
-| Complete standalone preview PRG | 8,565 | 7,576 | 9129 bytes |
+| Complete standalone preview PRG | 8,565 | 7,576 | 989 bytes |
 | Resident launcher ROM free in split-layout experiment | 670 | 926 | 256 more bytes |
 | Overflow when everything is linked into the stock ROM allocation | 3,227 | 2,311 | 916 bytes less |
 

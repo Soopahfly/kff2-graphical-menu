@@ -1,5 +1,6 @@
-> Current G3 firmware: 129 bytes free in the native main ROM.
-> Earlier measurements below document the previous layouts. See [current build](https://github.com/Soopahfly/kff2-graphical-menu/tree/main/firmware/experimental).
+> Historical measurements. Current G7: 630 bytes free in the native main ROM.
+> G7 receives its graphics/font bank from the ARM firmware; the reserved 16 KB
+> flash region stays blank. See the [current build report](https://github.com/Soopahfly/kff2-graphical-menu/blob/main/firmware/experimental/build-report.json).
 
 # ROM space investigation
 

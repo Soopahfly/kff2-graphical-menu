@@ -1,6 +1,6 @@
 # F4: Random game
 
-From the graphical Home screen, press **F4**. The cart searches `/Games` and its
+From the graphical Home screen or file browser, press **F4**. The cart searches `/Games` and its
 subdirectories, picks one eligible file and immediately starts it using existing
 KFF2 loaders. No PC-generated index is required.
 
@@ -19,9 +19,9 @@ warning. Unsupported or damaged content can still fail its normal loader checks.
 PRGs retain the ordinary filesystem-mounted launch mode for auxiliary loads.
 The chosen file's containing directory becomes the working directory.
 
-## G3 history-aware selection
+## History-aware selection
 
-G3 records explicit launches in `/.KFF2-history`, including whether they came
+Introduced in G3 and retained in G7, history records explicit launches in `/.KFF2-history`, including whether they came
 from F4. Random selection avoids the last 10 distinct Games paths when possible,
 falling back to the least recent when the pool is small. See
 [launch history and CSV export](launch-history.md).

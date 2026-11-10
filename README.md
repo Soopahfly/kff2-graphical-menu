@@ -1,137 +1,106 @@
 # KFF2 Graphical Menu
 
-An experimental graphical home screen integrated with Kung Fu Flash 2's native
-launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G7**.
-G7 needs physical KFF2 testing. G5 Home and file-browser rendering have been
-checked by the user on hardware.
+A graphical Home screen and shared menu style for **Kung Fu Flash 2**, inspired
+by EasyFlash 3. The current experimental build is **v2.G7**.
 
-## G7 additions
+**[Download G7 firmware](https://github.com/Soopahfly/kff2-graphical-menu/raw/refs/heads/main/firmware/experimental/KungFuFlash_v2.G7.upd)** ·
+[Installation and SD setup](docs/getting-started.md) ·
+[Recovery](firmware/experimental/RECOVERY.md) ·
+[Hardware test checklist](docs/testing.md)
 
-- Shift+Return file/folder options: **Copy to Favourites**, keeping originals.
-- Settings: **REU size**, choosing 1 MB, 512 KB or 256 KB.
-- Settings: **Autoboot last selection**, choosing whether startup returns to Home.
+G7 is based on official **v2.07 plus one documentation commit**, `9c84d99`.
+`2.G7` is this project's version label, not an official upstream release.
+Software checks pass; G7 still needs real KFF2 testing. Earlier G5 Home and
+SD-browser rendering were confirmed on hardware with an LCD display.
 
-Based on upstream **v2.07 plus one documentation commit**, not an unrelated
-community fork. Existing settings keep their defaults and configuration layout.
-Read [operation, limits and test coverage](docs/g7-features.md).
+![Graphical Home, VICE with simulated cartridge data](preview/integration-home.png)
 
-![G7 example settings in VICE, simulated values](preview/g7-settings.png)
+## Features
 
-![Graphical home](preview/integration-home.png)
+- **Games, Tools, Utilities and Favourites** shortcuts to ordinary SD folders.
+- The same patterned border, masthead and proportional font across browsing,
+  Settings/REU, file options, Help, search, messages and text reading.
+- **F4 Random** immediately launches a supported file under `/Games`, avoiding
+  the last ten distinct Games paths where possible.
+- Persistent manual/random launch counts in `/.KFF2-history`, with a PC exporter.
+- **Copy to Favourites** from Shift+Return file/folder options. Originals remain;
+  existing destination files/folders are not overwritten.
+- **REU size:** 256 KB, 512 KB or 1 MB, alongside the existing enable control.
+- **Autoboot last selection:** choose whether startup returns to Home.
 
-## Shared appearance, G6
+![G7 example settings in VICE; shown values are not defaults](preview/g7-settings.png)
 
-Settings, REU configuration, F3 cart utilities, file options, Help, search,
-messages and the text reader now use the same frame and font as Home and Games.
-Early startup diagnostics retain native text until graphics are available.
-See [screens, checks and remaining hardware tests](docs/uniform-ui.md).
+Existing cards retain **1 MB REU capacity and autoboot enabled**. Change a setting
+and select **Save** to store it. The original 1,024-byte configuration layout is
+preserved. [G7 operation, defaults and copy limits](docs/g7-features.md)
 
-![G6 Settings in VICE, simulated values](preview/g6-settings.png)
+## SD card and controls
 
-The firmware now uses Home's exact patterned border and masthead in the live
-file browser, with twelve visible rows, file icons and cyan selection. The
-original 23-entry paging and loading protocol is retained.
+Use a **FAT32** card with `/Games`, `/Tools`, `/Utilities` and `/Favourites`.
+Names are case-insensitive. Missing folders warn and fall back to SD root.
+No menu PRG, artwork pack or font files are required on the card.
 
-![Working G5 browser in VICE](preview/integration-browser.png)
+| Action | Control |
+| --- | --- |
+| Move / open | Cursor keys and Return, or joystick port 2 and Fire |
+| Browse SD from Home | B |
+| Settings from Home / browser | S / F5 |
+| Built-in cart utilities | F3 |
+| File/folder options, including Copy to Favourites | Shift+Return or held Fire |
+| Go up in browser | DEL or Fire+left |
+| Return Home from browser | F2 |
+| Random game from Home or browser | F4 |
+| BASIC from Home | Q |
 
-[Browser implementation and CRT checks](docs/browser.md) ·
-[G5 hardware test notes](docs/g5-testing.md)
+The Utilities card opens `/Utilities`; F3 opens the built-in cartridge functions.
+For multi-file games, copy the whole game folder to Favourites. Keep related
+files and multiple disks together. [Full setup guide](docs/getting-started.md)
 
-## Current milestone
+## Limits and test status
 
-**F4: Random game** picks a supported file from `/Games` and its subfolders,
-avoiding the last 10 distinct games where possible. G3 adds persistent manual/
-random launch counts. See [history and PC CSV export](docs/launch-history.md). See [behaviour and limits](docs/random-game.md).
-G3 retains the disk-image/context fixes and makes Random disk autostart explicit,
-even when ordinary image autostart is disabled.
-Do not use the older G1 image for new testing.
+- G7 has not been hardware-tested. VICE fixtures simulate cartridge packets;
+  they do not emulate the STM32, real SD loading, USB or REU bus timing.
+- Physical CRT readability remains untested. LCD photos of G5 confirm only the
+  Home and folder-browser presentation.
+- Early startup diagnostics retain native text until graphics are available.
+- exFAT, simultaneous CRT+REU, REU image loading/saving and expanded cartridge
+  formats are not added in G7.
+- Random chooses files, not recognised game titles or complete multi-disk sets.
+  On-cart statistics and automatic history compaction are not implemented.
 
-**Games / Tools / Utilities / Favourites > styled file browser > Home** is
-connected. F2 returns Home while preserving the folder and selected entry. B
-opens Browse, S opens Settings, F3 opens built-in cart utilities and Q opens BASIC.
-The browser uses the existing Home font, a patterned surround and a 12-row
-viewport. F4 also runs Random directly from the browser.
+The C64 launcher remains **16 KB, with 630 bytes free** in its main allocation.
+The update is **128 KB** and the reserved 16 KB flash region stays blank.
+See the [build report](firmware/experimental/build-report.json) and
+[SHA-256 checksums](firmware/experimental/SHA256SUMS).
 
-The native C64 image remains 16 KB, with **630 bytes free** in its main ROM
-allocation. The unused 16 KB flash region is not used. The full MCU update is
-128 KB. No original cartridge features were intentionally removed, and the ARM
-firmware adds folder dispatch, random selection, a persistent launch journal
-and a graphics/font bank transferred to C64 graphics RAM as needed. Full compatibility needs hardware testing.
+## Documentation
 
-Existing autoload and direct PRG/USB, cartridge and disk boot paths remain;
-the home screen appears when the native launcher enters menu mode.
+| Topic | Guide |
+| --- | --- |
+| Install, SD folders, controls, REU and sorting | [Getting started](docs/getting-started.md) |
+| G7 copying, settings and downgrade compatibility | [G7 features](docs/g7-features.md) |
+| Physical testing and known evidence | [Testing](docs/testing.md) |
+| USB DFU / SWD recovery | [Recovery](firmware/experimental/RECOVERY.md) |
+| Shared appearance and browser implementation | [Shared UI](docs/uniform-ui.md), [browser](docs/browser.md) |
+| Random selection and bookkeeping | [Random](docs/random-game.md), [launch history](docs/launch-history.md) |
+| PC SD collection tools | [Copy planner](docs/copy-games.md), [hash catalogue](docs/hash-catalogue.md) |
+| Build requirements and commands | [Building](docs/building.md) |
+| Earlier prototypes and ROM measurements | [Development history](docs/development-history.md) |
 
-## Try it in VICE
+## VICE preview
 
-Autostart [kff2-integration-test.prg](preview/kff2-integration-test.prg) in x64sc.
-This runs the patched native menu with a simulated cartridge data source:
-
-- B on Home opens the directory. Cursor keys and Return select.
-- F2 returns Home without clearing the folder or selection.
-- G/T/U/F open the four simulated collections; S/F3 open Settings/cart utilities.
-- F4 records a random-game request in the harness; it does not scan or load SD files.
-- Q on Home exits the harness to BASIC.
-
-Directory entries are test data. No SD files or games are loaded. This harness
-does not emulate the cartridge's ARM hardware, disk drive, USB or REU.
-The earlier [visual-only preview](preview/kff2-menu-preview.prg) remains available.
-
-## Experimental firmware
-
-The complete update, checksum and build report are under
-[firmware/experimental](firmware/experimental/README.md). The software checks
-verify layout and menu routing; they do not validate physical cartridge timing
-or loading. This is an altered development build, not an official release.
-
-## Build and test
-
-Install cc65, GNU make, patch and Python 3. Generating artwork also needs Pillow and liblz4. Obtain the upstream KFF2 source at
-commit `9c84d999f4e2f5b2c7688cbc37a127069f5401b0`, then:
-
-    python3 tools/design_folder_home.py
-python3 tools/pack_folder_home.py
-python3 tools/build_integrated_launcher.py --upstream /path/to/KungFuFlash2
-
-This builds the native launcher and interactive/automated VICE harnesses.
-Run the VICE checks with your own C64 ROMs:
-
-    python3 tools/test_integrated_launcher.py --vice /path/to/x64sc \
-        --rom-dir /path/to/vice/C64
-
-With a configured GNU Arm Embedded toolchain and newlib development files:
-
-    python3 tools/test_uniform_ui.py --vice /path/to/x64sc --rom-dir /path/to/vice/C64
-
-    python3 tools/build_firmware.py --upstream /path/to/KungFuFlash2
-
-The packaging script checks that the software-test hashes match the launcher.
-See [integration notes](experiments/home-integration/README.md) and
-[firmware notes](firmware/experimental/README.md) for inputs, outputs and limits.
-
-The older standalone UI can be built with `make -C launcher/preview`.
-Regenerate the artwork using `python3 tools/make_kicker.py`.
-
-## Size work
-
-- The UI payload was reduced from 4,062 to **3,241 bytes**, with identical pixels
-  and all font mappings retained. See [optimisation notes](docs/ui-size-reduction.md).
-- Replacing general formatting and a single heap allocation saves **2,560 bytes**
-  in the native launcher. See [optional patches](experiments/launcher-size/README.md).
-- The initial [ROM investigation](docs/rom-space-investigation.md) also documents
-  the separate-payload option if future growth makes it useful.
-
-## Next
-
-Read the [recovery guide](firmware/experimental/RECOVERY.md), then test G6's
-Settings, options, search, warnings and reader on hardware. Confirm game loading,
-REU and USB independently. Favourites remains a manually organised folder.
+Autostart [kff2-integration-test.prg](preview/kff2-integration-test.prg) in VICE
+x64sc. B opens simulated entries, F2 returns Home, G/T/U/F choose collections,
+S/F3 open simulated menus and Q returns to BASIC. F4 records the request and stops
+before loading. This preview does not read your PC's SD card or execute games.
+Its Settings/utilities lists are stand-ins, not the complete ARM implementation.
 
 ## Upstream and credits
 
-This repository contains the UI, build tools and patches. Native builds use:
+This repository contains the UI, build tools and patches. Builds use:
 
-- [Kung Fu Flash 2](https://codeberg.org/KimJorgensen/KungFuFlash2),
-  Kim Jørgensen, baseline `9c84d99` (one commit after v2.07).
+- [Kung Fu Flash 2](https://codeberg.org/KimJorgensen/KungFuFlash2), Kim Jørgensen,
+  pinned to `9c84d999f4e2f5b2c7688cbc37a127069f5401b0`.
 - [EasyFlash 3 menu](https://github.com/easyflash-mirror/easyflash3-bootimage),
   Thomas Giesel, baseline `bf89562`, providing the proportional font and renderer.
 

@@ -1,7 +1,12 @@
-# G5 hardware test candidate
+# Historical G5 hardware test plan
+
+> Current candidate: **G7**. Use [the current test checklist](testing.md).
+> G5 Home and SD-browser rendering were subsequently confirmed on an LCD display.
+> That confirms only those screens, not the remaining checks below.
 
 This build integrates the approved Home border into the live browser. It is
-software-checked and has not yet been tested on a physical KFF2 or CRT.
+software-checked. Its Home/browser display has now been checked on a physical
+KFF2 with an LCD; physical CRT readability remains untested.
 Use a FAT32 SD card. The existing /Games, /Tools, /Utilities and /Favourites
 folders are unchanged. No graphics files need copying to the SD card.
 
