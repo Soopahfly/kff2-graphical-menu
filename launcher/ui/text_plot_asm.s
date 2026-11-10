@@ -31,7 +31,10 @@
 .import _text_plot_addr
 ; Altered version: packed font pointers, compact pixel loop, unused fill removed.
 
-.import charset_offset_lo, charset_offset_hi, charset_data
+; Altered G5: ARM-supplied font in unused Home bank RAM.
+charset_offset_lo = $5900
+charset_offset_hi = $5a00
+charset_data = $5500
 
 ; usage of tmp space in this module
 ptr1_char_addr          = ptr1

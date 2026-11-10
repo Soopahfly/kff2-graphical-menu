@@ -12,6 +12,8 @@
 #define HOME_UTILITIES 6
 #define HOME_BASIC 7
 #define HOME_RANDOM 8
+#define HOME_INTERRUPTED 9
+extern uint8_t home_command;
 void home_enter(void);
 void home_leave(void);
 void home_select(uint8_t selected);

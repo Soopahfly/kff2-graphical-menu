@@ -3,3 +3,4 @@ PASS: persistent counts, origins, recent window, torn/corrupt tails, exact loade
 PASS: independent PC report matches journal counts and launch origin
 PASS: real FatFs FAT32 create/append/sync/remount, truncated-tail repair and read-only media
 PASS: exported real-FatFs journal matches independent PC decoder
+ARM assets: actual reply handler, 16384 bytes, KFF pointer reset and buffer bounds passed

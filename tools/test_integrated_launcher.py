@@ -35,13 +35,13 @@ def main():
           '-autostartprgmode','1','-limitcycles','50000000']
     expected={1:[0x82,0x80,0x87,0x80,0x8f,0x89,0x80,0x9a,0x80,0x8a],
               2:[0x82,0x80,0x87],3:[0x82,0x80,0x86,0x80,0x85,0x80,0x8f,0x87],
-              4:[0x8e,0x80,0x8e,0x80,0x8e,0x80,0x8e,0x80,0x8f,0x8e,0x80,0x8a],5:[0x9b],6:[0x8e,0x80,0x9b]}
-    for scenario in range(1,7):
+              4:[0x8e,0x80,0x8e,0x80,0x8e,0x80,0x8e,0x80,0x8f,0x8e,0x80,0x8a],5:[0x9b],6:[0x8e,0x80,0x9b],7:[0x8e,0x80,0x87,0x80,0x87],8:[]}
+    for scenario in range(1,9):
         output=work/('scenario-'+str(scenario))
         syms=labels(output/'test.lbl')
         names=['_test_key_index','_test_error','_test_result','_test_reply_count',
                '_test_replies','_test_selected','_test_folder','_test_page',
-               '_test_select_count','_test_seen']
+               '_test_select_count','_test_seen','_test_asset_count']
         start=min(syms[n] for n in names)
         end=max(syms[n]+(47 if n=='_test_replies' else 0) for n in names)
         dump=output/'status.bin'
@@ -57,9 +57,8 @@ def main():
                 f'screenshot "{output / "home-return.png"}" 2','g',
                 f'screenshot "{output / "cached-browser.png"}" 2','delete 1']
         commands += [f'break exec ${syms["_ui_test_finished"]:04x}','g']
-        if scenario in (3,6):
-            commands += [f'bsave "{output / "screen.bin"}" 0 $0400 $07e7',
-                         f'bsave "{output / "colors.bin"}" 0 $d800 $dbe7',
+        if scenario in (3,6,7):
+            commands += [f'bsave "{output / "browser-bank.bin"}" 0 $4000 $7fff',
                          f'screenshot "{output / "browser-final.png"}" 2']
         commands += [f'bsave "{dump}" 0 ${start:04x} ${end:04x}','quit']
         script=output/'test.mon';script.write_text('\n'.join(commands)+'\n')
@@ -71,7 +70,7 @@ def main():
         r=subprocess.run(cmd,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,timeout=50)
         (output/'vice.log').write_bytes(r.stdout)
         if scenario==1:
-            expected_bank=bytearray((root/'launcher/build/folder-home/vic-bank.bin').read_bytes())
+            expected_bank=bytearray((work/'ui-assets/bank.bin').read_bytes())
             expected_bank[0x2000+19*320:0x2000+20*320]=expected_bank[:320]
             assert (output/'home-bank.bin').read_bytes()==expected_bank, 'VIC bank differs from the design'
         if not dump.exists():raise RuntimeError(f'Scenario {scenario} did not reach its final checkpoint.')
@@ -85,19 +84,37 @@ def main():
                 'selected_byte':value('_test_selected'),'keys_used':value('_test_key_index')}
         assert result['passed'] and not result['error'],result
         assert trace==expected[scenario],result
-        if scenario in (3,6):
-            screen=(output/'screen.bin').read_bytes()
-            colors=bytes(c&15 for c in (output/'colors.bin').read_bytes())
-            assert len(screen)==len(colors)==1000
-            assert screen[:40]==b' '*40 and screen[24*40:]==b' '*40, 'Overscan margin contains text'
-            assert all(c==1 for c in colors[2*40+1:2*40+38]), 'Path must be white'
-            selected_row=20 if scenario==3 else 4
-            selected=screen[selected_row*40+1:selected_row*40+39]
-            assert all(c&128 for c in selected), 'Selection must fill the row'
-            assert colors[selected_row*40+1:selected_row*40+39]==bytes([3])*38, 'Selection must be cyan'
-            if scenario==3:
-                assert not any(screen[4*40+1:20*40+39][i]&128
-                               for i in range(16*40) if i%40<38), 'Stale selection after viewport scroll'
+        assert value('_test_asset_count')>0, 'Native asset request was not exercised'
+        result['asset_requests']=value('_test_asset_count')
+        if scenario in (3,6,7):
+            bank=(output/'browser-bank.bin').read_bytes()
+            original=(work/'ui-assets/bank.bin').read_bytes()
+            assert len(bank)==16384
+            for row in range(25):
+                for col in range(40):
+                    if row in (0,24) or col in (0,39):
+                        cell=row*40+col
+                        assert bank[0x1c00+cell]==original[0x1c00+cell]
+                        assert bank[0x2000+cell*8:0x2000+cell*8+8]==original[0x2000+cell*8:0x2000+cell*8+8]
+            selected_row=18 if scenario==3 else 9 if scenario==7 else 7
+            assert bank[0x1c00+selected_row*40+2:0x1c00+selected_row*40+38]==bytes([3])*36
+            assert any(bank[0x2000+selected_row*320+16:0x2000+selected_row*320+304])
+            assert bank[0x1500:0x1b40]==original[0x1500:0x1b40], 'Renderer overwrote font tables'
+            # Check complete right-hand labels against the actual licensed glyphs.
+            from make_font import read_font,glyph
+            font,offsets=read_font(root/'launcher/ui/charset.sed')
+            expected_label=bytearray(272 if scenario==7 else 32)
+            x=0
+            label=('123  '+' '+'LOCKED GAME'.ljust(16)+' '*11+'*PRG<') if scenario==7 else ('PRG' if scenario==3 else 'dir')
+            for char in label:
+                code=ord(char)|128 if char.isupper() else ord(char)-32 if char.islower() else ord(char)
+                for column in glyph(font,offsets[code]):
+                    for y in range(8):
+                        if column & (1<<y):expected_label[x//8*8+y] |= 128>>(x%8)
+                    x+=1
+                x+=1
+            offset=0x2000+selected_row*320+(32 if scenario==7 else 272)
+            assert bank[offset:offset+len(expected_label)]==expected_label, 'File type label is truncated or misaligned'
             result['browser_screen_checked']=True
         results.append(result)
         print(json.dumps(result))

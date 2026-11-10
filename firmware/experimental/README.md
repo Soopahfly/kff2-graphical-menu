@@ -1,26 +1,33 @@
-# Experimental firmware v2.G4, styled file browser
+# Experimental firmware v2.G5, Home-bordered bitmap browser
 
-[KungFuFlash_v2.G4.upd](KungFuFlash_v2.G4.upd) is a complete 128 KB KFF2 update
+[KungFuFlash_v2.G5.upd](KungFuFlash_v2.G5.upd) is a complete 128 KB KFF2 update
 with the revised graphical Games, Tools, Utilities and Favourites screen.
-Use G4 for new testing. The retained G1 image has known disk-image-exit and
+Use G5 for new testing. The retained G1 image has known disk-image-exit and
 cart-utilities context bugs, fixed in G2. This is **not an official release and has not been tested
 on physical KFF2 hardware**.
 
 ![Folder Home running in VICE](../../preview/integration-home.png)
 
-## G4 browser
+## G5 browser
 
-![G4 browser in VICE, sample entries](../../preview/integration-browser.png)
+![G5 browser in VICE, sample entries](../../preview/integration-browser.png)
 
-White filenames, cyan selection, purple edges, standard C64 character font and
-17 visible entries. The existing 23-entry transfer pages and selected indexes
-are preserved. Scrolling reveals entries below the viewport. SD entries with
-three-letter extensions show those extensions instead of sizes; other entries
-retain size labels. Disk/tape contents and cartridge dialogs retain their
-original information and controls.
+The live file browser now keeps Home's exact patterned surround, title and
+chevrons. Twelve rows, file icons, cyan selection and the existing Home font
+replace G4's text reskin. Disk/tape row information, including *PRG< flags,
+is preserved. Settings, options and warnings keep their native text screens.
 
-The display keeps rows 0 and 24 free of essential browser text. It has **not
-been checked on a physical CRT**. See [browser details and CRT checks](../../docs/browser.md).
+The ARM firmware supplies the graphics/font bank through a new menu reply.
+C64 cursor movement renders locally. No SD graphics files are required.
+The launcher still fits its 16 KB image, with **1,440 bytes spare**.
+
+The static concept's example launch counts and total-file counter are not
+present. G3 history logging and the PC report remain available. The details
+band shows the selected bounded filename/type, with Help/options hints below.
+
+Read [G5 test notes](../../docs/g5-testing.md) and
+[browser implementation/CRT limits](../../docs/browser.md). It has **not been
+checked on a physical CRT or KFF2**.
 
 ## Install and recover
 

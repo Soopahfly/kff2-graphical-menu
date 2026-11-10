@@ -1,0 +1,23 @@
+--- a/firmware/menu.c
++++ b/firmware/menu.c
+@@ -35,6 +35,8 @@
+ #include "random_game.c"
+ #include "menu_home.c"
+ 
++#include "ui_assets.h"
++
+ static void menu_loop(void)
+ {
+     history_menu_session = true;
+@@ -69,6 +71,11 @@
+         u8 data;
+         switch (reply)
+         {
++            case REPLY_HOME_ASSETS:
++                c64_send_data(ui_bank,sizeof(ui_bank));
++                cmd = CMD_NONE;
++                break;
++
+             case REPLY_OK:
+                 cmd = CMD_NONE;
+                 break;

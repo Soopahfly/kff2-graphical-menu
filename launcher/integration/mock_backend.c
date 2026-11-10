@@ -13,19 +13,22 @@
 uint8_t test_key_index, test_error, test_result;
 uint8_t test_reply_count, test_replies[48];
 uint8_t test_selected, test_folder, test_page, test_select_count;
-uint8_t test_seen, test_home_mask;
+uint8_t test_seen, test_home_mask, test_asset_count;
+static uint8_t bank_pending;
+void unpack_home_fixture(void);
+
 static uint8_t dialog;
 static uint16_t readpos, writepos;
 static char packet[1024];
 static const char* root_files[] = {
-    "Games                            dir", "Demos                            dir",
-    "Utilities                        dir", "Boulder Dash.prg                  PRG",
-    "Prince of Persia.crt              CRT", "Sam's Journey.crt                 CRT"
+    "Games                              dir", "Demos                              dir",
+    "Utilities                          dir", "Boulder Dash.prg                   PRG",
+    "Prince of Persia.crt               CRT", "Sam's Journey.crt                  CRT"
 };
 static const char* folder_names[] = {"\xa0/Games", "\xa0/Tools", "\xa0/Utilities", "\xa0/Favourites"};
 static const char* child_files[] = {
-    "..                               dir", "Impossible Mission.prg            PRG",
-    "The Last Ninja.d64                D64"
+    "..                                 dir", "Impossible Mission.prg             PRG",
+    "The Last Ninja.d64                 D64"
 };
 
 static void field(const char* value, uint8_t size)
@@ -38,7 +41,8 @@ static uint8_t directory(uint8_t command, uint8_t selected)
     const char* name;
     writepos = readpos = 0;
     if (command == CMD_READ_DIR) {
-        if (dialog==1) name=" Settings (simulated)";
+        if (dialog==3) name="\xa0/Games/Test.d64";
+        else if (dialog==1) name=" Settings (simulated)";
         else if (dialog==2) name=" Utilities (simulated)";
         else if (test_folder) name=folder_names[test_folder-1];
         else name="\xa0/";
@@ -47,11 +51,12 @@ static uint8_t directory(uint8_t command, uint8_t selected)
     count = dialog ? 3 : test_folder ? 3 : test_page ? 7 : MAX_ELEMENTS_PAGE;
     for (i=0; i<count; ++i) {
         packet[writepos++] = i == selected ? SELECTED_ELEMENT : NORMAL_ELEMENT;
-        if (dialog) name = i == 0 ? "Back to browser" : i == 1 ?
+        if (dialog==3) name=i==0 ? "..                                 DIR" : i==1 ? "TEST DISK HEADER" : "123   LOCKED GAME                *PRG<";
+        else if (dialog) name = i == 0 ? "Back to browser" : i == 1 ?
                           "Simulated cartridge action" : "F2 opens the home screen";
         else if (test_folder) name = child_files[i];
         else if (!test_page && i<6) name = root_files[i];
-        else name = "Sample entry.prg                  PRG";
+        else name = "Sample entry.prg                   PRG";
         field(name, ELEMENT_LENGTH-1);
     }
     if (count<MAX_ELEMENTS_PAGE) {
@@ -64,6 +69,10 @@ static uint8_t directory(uint8_t command, uint8_t selected)
 void ui_mock_send_byte(uint8_t value) { test_selected = value; }
 void __fastcall__ kff_receive_data(void* dest, uint16_t size)
 {
+    if (bank_pending) {
+        if (dest!=(void*)0x4000 || size!=16384) test_error=13;
+        bank_pending=0;unpack_home_fixture();return;
+    }
     if (readpos+size>writepos) { test_error=2; memset(dest,0,size); return; }
     memcpy(dest,packet+readpos,size);
     readpos += size;
@@ -97,6 +106,12 @@ uint8_t kff_send_reply_progress(uint8_t reply)
         case REPLY_SELECT:
             ++test_select_count;
             item=test_selected & 0x3f;
+            if (dialog==3) return CMD_MOUNT_DISK;
+#if defined(UI_TEST_SCENARIO) && UI_TEST_SCENARIO == 7
+            if (test_folder && item==2) {
+                dialog=3;return directory(CMD_READ_DIR,2);
+            }
+#endif
             if (dialog || (test_folder && item==0)) {
                 dialog=test_folder=test_page=0;
                 return directory(CMD_READ_DIR,0);
@@ -131,7 +146,16 @@ uint8_t kff_send_reply_progress(uint8_t reply)
     test_error=4;
     return CMD_WAIT_RESET;
 }
-uint8_t __fastcall__ kff_send_reply(uint8_t reply) { return kff_send_reply_progress(reply); }
+uint8_t __fastcall__ kff_send_reply(uint8_t reply)
+{
+    if (reply!=REPLY_HOME_ASSETS) return kff_send_reply_progress(reply);
+    ++test_asset_count;
+#if defined(UI_TEST_SCENARIO) && UI_TEST_SCENARIO == 8
+    return CMD_WAIT_SYNC; /* USB can preempt before the graphics reply. */
+#endif
+    bank_pending=1;
+    return CMD_NONE;
+}
 void kff_wait_for_sync(void) { test_error=5; }
 void wait_for_reset(void) { test_error=6; }
 uint8_t is_c128(void) { return 0; }
@@ -164,6 +188,8 @@ static const uint8_t keys[] = {
     'g',CH_F2,'t',CH_F2,'u',CH_F2,'f',CH_F2,
     'b',CH_F2,CH_CURS_RIGHT,CH_CURS_DOWN,CH_ENTER,CH_F2,'q'
 };
+#elif UI_TEST_SCENARIO == 7
+static const uint8_t keys[] = {'g',CH_CURS_DOWN,CH_CURS_DOWN,CH_ENTER,CH_ENTER};
 #elif UI_TEST_SCENARIO == 6
 static const uint8_t keys[] = {'g',CH_F4};
 #else
@@ -207,10 +233,16 @@ int main(void)
 #elif UI_TEST_SCENARIO == 4
         test_result = !test_error && command==CMD_WAIT_RESET && test_home_mask==15 &&
                       test_folder==4 && test_key_index==sizeof(keys);
+#elif UI_TEST_SCENARIO == 8
+        test_result = !test_error && command==CMD_WAIT_SYNC && !test_key_index;
+#elif UI_TEST_SCENARIO == 7
+        test_result = !test_error && command==CMD_MOUNT_DISK && test_selected==2 && test_select_count==2 &&
+                      test_key_index==sizeof(keys);
 #else
         test_result = !test_error && command==CMD_MOUNT_DISK && test_selected==0 &&
                       test_key_index==sizeof(keys);
 #endif
+        if (!test_asset_count) test_error=14;
         ui_test_finished();
         clrscr();
         textcolor(test_result ? COLOR_LIGHTGREEN : COLOR_LIGHTRED);

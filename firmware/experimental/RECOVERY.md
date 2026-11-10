@@ -1,7 +1,7 @@
 # Installing and recovering KFF2 firmware
 
 This guide is for **Kung Fu Flash 2**, not the original KFF cartridge.
-The v2.G4 build is experimental and has not been tested on
+The v2.G5 build is experimental and has not been tested on
 physical hardware. Software checks do not establish hardware compatibility.
 
 ## Install or roll back using a working launcher

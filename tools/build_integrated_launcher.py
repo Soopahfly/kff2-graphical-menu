@@ -20,7 +20,7 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--upstream',type=Path,required=True)
     ap.add_argument('--cc65-home',type=Path)
-    ap.add_argument('--version',default='2.G4',help='Four-character experimental v2 version')
+    ap.add_argument('--version',default='2.G5',help='Four-character experimental v2 version')
     args=ap.parse_args()
     if not re.fullmatch(r'2\.[A-Za-z0-9]{2}',args.version):
         raise ValueError('Version must fit the 20-byte launcher identifier, for example 2.G1')
@@ -33,6 +33,8 @@ def main():
     if args.cc65_home:
         env['CC65_HOME']=str(args.cc65_home.resolve())
         env['PATH']=str(args.cc65_home.resolve()/'bin')+os.pathsep+env['PATH']
+    from make_ui_bank import generate
+    bank_info=generate(work/'ui-assets')
     source=work/'source'
     ignore=shutil.ignore_patterns('build','obj','*.o','*.lib','.git')
     for folder in ['launcher','3rd_party/libef3usb']:
@@ -42,7 +44,8 @@ def main():
     for patch in ['experiments/launcher-size/compact-launcher.patch',
                   'experiments/home-integration/home-menu.patch',
                   'experiments/home-integration/folder-home.patch',
-                  'experiments/home-integration/browser.patch']:
+                  'experiments/home-integration/browser.patch',
+                  'experiments/home-integration/bitmap-browser.patch']:
         run(['patch','--batch','--forward','--fuzz=0','-p1','-i',root/patch],env,cwd=source)
     shutil.copytree(root/'launcher/ui',source/'launcher/ui',dirs_exist_ok=True)
     launcher=source/'launcher'
@@ -65,9 +68,9 @@ def main():
         objects.append(cobj(launcher/(name+'.c'),name,True))
     for name in ['disk','ef3usb_loader','launcher_asm']:
         objects.append(aobj(launcher/(name+'.s'),name))
-    for name in ['home']:
+    for name in ['home','home_assets','browser','text_plot']:
         objects.append(cobj(launcher/'ui'/(name+'.c'),name,True))
-    objects.append(aobj(launcher/'ui/folder_unpack.s','folder_unpack'))
+    objects.append(aobj(launcher/'ui/text_plot_asm.s','text_plot_asm'))
     run(['make','-C',source/'3rd_party/libef3usb'],env)
     image=build/'kff2-integrated-launcher.bin'
     mapfile=build/'launcher.map'
@@ -76,6 +79,7 @@ def main():
     (build/'link.log').write_text(log)
     from investigate_rom import rom_usage
     result=rom_usage(mapfile)
+    result.update(bank_info)
     result['image_bytes']=image.stat().st_size
     result['version']=args.version
     result['cc65']=run(['cc65','--version'],env).strip()
@@ -116,8 +120,13 @@ uint8_t ui_test_row(void) { return dir->selected; }
     config=cfg.read_text()
     config=re.sub(r'BSS:      file = "",[^\n]+',
                   'BSS:      file = "", start = $8000, size = $1000;',config)
+    config=config.replace('size = __HIMEM__ - __HEADER_LAST__;','size = $9000 - __HEADER_LAST__, fill = yes;')
+    config=config.replace('    BSS:      file = "", start = $8000, size = $1000;',
+                          '    BSS:      file = "", start = $8000, size = $1000;\n    MOCK: file = %O, start = $9000, size = $2000;')
+    config=config.replace('    ZEROPAGE: load = ZP,       type = zp;',
+                          '    MOCK_ASSET: load = MOCK, type = ro;\n    ZEROPAGE: load = ZP,       type = zp;')
     harness_cfg.write_text(config)
-    for scenario in range(7):
+    for scenario in range(9):
         output=work/('interactive' if scenario==0 else 'scenario-'+str(scenario))
         output.mkdir()
         flags=[] if scenario==0 else ['-DUI_TEST_AUTORUN','-DUI_TEST_SCENARIO='+str(scenario)]
@@ -129,23 +138,31 @@ uint8_t ui_test_row(void) { return dir->selected; }
             ui_code='#include "mock_backend.h"\n'+ui_code.replace(input_expr,'c = ui_test_key();')
         (test/'ui/home.c').write_text(ui_code)
         sources=[test/(n+'.c') for n in ['main','base','screen','dir','mock_backend']]
-        sources += [test/'ui/home.c']
+        sources += [test/'ui/home.c',test/'ui/home_assets.c',test/'ui/browser.c',test/'ui/text_plot.c',work/'ui-assets/mock_assets.c']
         objs=[]
         for path in sources:
             obj=output/(path.stem+'.o')
             run(['cl65','-t','c64','-O','-g','-c',
-                 *(['--static-locals'] if path.stem in ['main','base','screen','dir','home'] else []),
+                 *(['--static-locals'] if path.stem in ['main','base','screen','dir','home','browser','text_plot'] else []),
                  define,*flags,
                  '-I',test,'-I',source/'3rd_party/libef3usb/src','-o',obj,path],env)
             objs.append(obj)
+        (test/'ui/mock_unpack.s').write_text((test/'ui/folder_unpack.s').read_text().replace('_unpack_home','_unpack_home_fixture'))
         unpack=output/'folder_unpack.o'
-        run(['ca65','-t','c64','-g','-o',unpack,test/'ui/folder_unpack.s'],env)
+        run(['ca65','-t','c64','-g','-o',unpack,test/'ui/mock_unpack.s'],env)
         objs.append(unpack)
+        plot=output/'text_plot_asm.o'
+        run(['ca65','-t','c64','-g','-I',test/'ui','-o',plot,test/'ui/text_plot_asm.s'],env)
+        objs.append(plot)
         run(['cl65','-t','c64','-Wl','-D,__HIMEM__=0xc000','-C',harness_cfg,'-o',output/'kff2-integration-test.prg',
              '-m',output/'test.map','-Ln',output/'test.lbl',*objs,
              source/'3rd_party/libef3usb/libef3usb.lib'],env)
         prg=(output/'kff2-integration-test.prg').read_bytes()
-        assert int.from_bytes(prg[:2],'little')+len(prg)-2<=0x4000
+        assert int.from_bytes(prg[:2],'little')==0x0801
+        segments=(output/'test.map').read_text()
+        for seg,start,end in re.findall(r'^(CODE|RODATA|DATA|ONCE)\s+([0-9A-F]+)\s+([0-9A-F]+)',segments,re.M):
+            assert int(end,16)<0x4000,(seg,end)
+        assert int.from_bytes(prg[:2],'little')+len(prg)-2<0xb000
         state=re.search(r'^BSS\s+([0-9A-F]+)\s+([0-9A-F]+)',(output/'test.map').read_text(),re.M)
         assert 0x8000<=int(state[1],16)<=int(state[2],16)<0x9000
     print(json.dumps(result,indent=2))

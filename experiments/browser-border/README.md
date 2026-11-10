@@ -2,8 +2,8 @@
 
 ![Native C64 layout, shown at 3x nearest-neighbour scale](../../preview/browser-home-border.png)
 
-This is a **static layout experiment**, not another firmware release. G4's
-browser remains unchanged. The PRG displays sample filenames and counts and
+This remains a **static layout experiment**. G5 now integrates this border
+and a live browser into firmware; see ../../docs/browser.md. The PRG displays sample filenames and counts and
 returns to BASIC when Space is pressed. It does not browse or launch games.
 
 The geometric surround is copied from the existing Home bitmap and palette,
@@ -15,9 +15,8 @@ The layout is native 320x200 hi-res bitmap mode, with twelve list entries,
 It uses the existing licensed EF3 / Home proportional font. The 960x600 image
 is an exact nearest-neighbour enlargement of the native pixel render.
 
-The displayed launch counts and index are sample design data. They are not
-new G4 features. Dynamic rendering, navigation and the extra history metadata
-still need integrating and measuring against the firmware ROM budget.
+The displayed launch counts and index are sample design data. G5 integrates
+dynamic rendering and navigation; these counters are not firmware features.
 No firmware-size claim is made for this independent PRG.
 
 ## Build and inspect

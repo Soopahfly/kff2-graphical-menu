@@ -9,7 +9,7 @@
 #include "../base.h"
 #include "home.h"
 #include "memcfg.h"
-#include "folder_packed.h"
+
 #define REG(a) (*(volatile uint8_t*)(a))
 static uint8_t saved[8],selected;
 void unpack_home(void);
@@ -32,6 +32,7 @@ void home_enter(void)
     REG(0xd015) = 0;
     REG(0x0291) = 0x80; /* lock character-set toggle while bitmap is active */
     unpack_home();
+    if (home_command) return;
     home_select(0);
     REG(0xdd02) = saved[4] | 3;
     REG(0xdd00) = (saved[3] & 0xfc) | 2;
@@ -55,7 +56,9 @@ void home_leave(void)
 uint8_t home_run(void)
 {
     uint8_t c,action;
-    selected=0;home_enter();waitRelease();
+    selected=0;home_enter();
+    if (home_command) {home_leave();return HOME_INTERRUPTED;}
+    waitRelease();
     while (1) {
         c = kbhit() ? cgetc() : getJoy();
         if (c==CH_CURS_LEFT || c==CH_CURS_RIGHT) selected^=1;

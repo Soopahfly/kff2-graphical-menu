@@ -1,16 +1,21 @@
 # KFF2 Graphical Menu
 
 An experimental graphical home screen integrated with Kung Fu Flash 2's native
-launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G4**.
+launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G5**.
 It is built and software-checked, not tested on physical KFF2 hardware.
 
 ![Graphical home](preview/integration-home.png)
 
-## Browser layout revision
+## Patterned browser, G5
 
-The next browser layout keeps Home's exact patterned border and masthead.
-[See the native-resolution layout and standalone VICE preview](experiments/browser-border/README.md).
-This is a static design experiment; the G4 firmware below remains unchanged.
+The firmware now uses Home's exact patterned border and masthead in the live
+file browser, with twelve visible rows, file icons and cyan selection. The
+original 23-entry paging and loading protocol is retained.
+
+![Working G5 browser in VICE](preview/integration-browser.png)
+
+[Browser implementation and CRT checks](docs/browser.md) ·
+[G5 hardware test notes](docs/g5-testing.md)
 
 ## Current milestone
 
@@ -24,16 +29,14 @@ Do not use the older G1 image for new testing.
 **Games / Tools / Utilities / Favourites > styled file browser > Home** is
 connected. F2 returns Home while preserving the folder and selected entry. B
 opens Browse, S opens Settings, F3 opens built-in cart utilities and Q opens BASIC.
-The browser now uses white filenames, cyan selection, a purple frame and a
-17-row viewport. F4 also runs Random directly from the browser.
-See [browser design and CRT testing](docs/browser.md).
+The browser uses the existing Home font, a patterned surround and a 12-row
+viewport. F4 also runs Random directly from the browser.
 
-![Working G4 browser in VICE](preview/integration-browser.png)
-
-The native C64 image remains 16 KB, with **132 bytes free** in its main ROM
+The native C64 image remains 16 KB, with **1,440 bytes free** in its main ROM
 allocation. The unused 16 KB flash region is not used. The full MCU update is
 128 KB. No original cartridge features were intentionally removed, and the ARM
-firmware adds folder dispatch, random selection and a persistent launch journal. Full compatibility needs hardware testing.
+firmware adds folder dispatch, random selection, a persistent launch journal
+and a graphics/font bank transferred to C64 graphics RAM as needed. Full compatibility needs hardware testing.
 
 Existing autoload and direct PRG/USB, cartridge and disk boot paths remain;
 the home screen appears when the native launcher enters menu mode.

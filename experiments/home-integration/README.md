@@ -1,4 +1,4 @@
-# Home-screen integration, experimental v2.G4
+# Home-screen integration, experimental v2.G5
 
 The graphical home now dispatches into the original compact launcher.
 The native C64 launcher links into the original 16 KB image, with 129 bytes
@@ -63,13 +63,13 @@ Requires Python 3, Pillow, liblz4, cc65, make, patch and an upstream KFF2 checko
     python3 tools/build_integrated_launcher.py --upstream /path/to/KungFuFlash2
 
 An unpacked cc65 build can be selected using `--cc65-home /path/to/cc65`.
-The default identifier is v2.G4, which fits the original 20-byte version field.
+The default identifier is v2.G5, which fits the original 20-byte version field.
 
 Outputs under ignored `launcher/build/integration/`:
 
 - `native/kff2-integrated-launcher.bin`: C64 launcher only, not an MCU update.
 - `interactive/kff2-integration-test.prg`: interactive simulated-cartridge harness.
-- `scenario-1` through `scenario-6`: automated harness variants.
+- `scenario-1` through `scenario-8`: automated harness variants.
 - `source/launcher/main.c`: patched native source for inspection.
 - `native-measurements.json`: native ROM/RAM measurements.
 
@@ -113,11 +113,23 @@ The native ROM's reset/boot path and ARM cartridge timing have not run in VICE.
 The harness does not emulate real SD, USB, disk drive, CRT or REU operation.
 Those need physical KFF2 tests. C128 mode and a physical joystick are untested.
 
-G4 uses a styled character-mode browser with a 17-row viewport over the unchanged
-23-entry page protocol. Existing selection indexes and replies are preserved.
-The extra scenario covers F4 from Games. Screen/color RAM checks validate the
-selection after scrolling to entry 22, the white path, cyan selection and blank
-top/bottom text margins. See [browser notes](../../docs/browser.md).
+G5 uses a hi-res bitmap browser with Home's exact surround and a 12-row viewport
+over the unchanged 23-entry page protocol. Selection indexes and replies are
+preserved. The additional scenarios check F4 from Games, full disk entry flags
+and USB preemption before an asset reply. Screen-bank checks validate the
+selected row, full type labels, unchanged border and untouched font tables.
 
-The spare 16 KB flash region is not used by this build. The single-bank route
-now includes the home dispatch and fits, although its 132-byte margin is small.
+The ARM supplies a 16 KB graphics/font bank via REPLY_HOME_ASSETS ($9c), returning
+CMD_NONE when the buffer is ready. Font data/tables occupy $5500-$5b3f, outside
+Home's hint/palette/matrix/bitmap regions. The C64 request helper rejects other
+commands and returns control to the native command loop without reading a bank.
+A host test exercises the actual ARM case with upstream KFF buffer-pointer rules.
+
+The VICE stand-in uses a compressed fixture at $9000-$9d81; its native request
+helper is the same as firmware. The fixture decoder stands in for the real ARM
+response only. Code/data remain below $4000, BSS at $8000-$8fff and the C stack
+below $c000. The larger PRG therefore includes a padded gap and mock-only assets.
+This does not change the cartridge's 16 KB launcher allocation.
+
+The spare 16 KB flash region remains unused. Current ROM measurements and
+hash-linked VICE results are included beside this document.
