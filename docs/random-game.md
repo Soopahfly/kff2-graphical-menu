@@ -19,13 +19,20 @@ warning. Unsupported or damaged content can still fail its normal loader checks.
 PRGs retain the ordinary filesystem-mounted launch mode for auxiliary loads.
 The chosen file's containing directory becomes the working directory.
 
+## G3 history-aware selection
+
+G3 records explicit launches in `/.KFF2-history`, including whether they came
+from F4. Random selection avoids the last 10 distinct Games paths when possible,
+falling back to the least recent when the pool is small. See
+[launch history and CSV export](launch-history.md).
+
 ## What random means
 
-The unit of selection is **a file**. Every eligible file gets equal selection
-weight, irrespective of which subfolder contains it. Multiple versions of a
+The unit of selection is **a file**. Eligible files outside the recent window get equal selection
+weight, irrespective of which subfolder contains them. Multiple versions of a
 game, auxiliary PRGs and secondary disk images are separate candidates. This
 version does not infer game titles or identify the first disk of a multi-disk set.
-Consecutive selections can repeat.
+A one-file pool, or unavailable history, can still produce repeats.
 
 A one-pass reservoir sampler avoids keeping an entire file list in memory.
 The PRNG mixes the STM32's running cycle counter when F4 is pressed. It is
@@ -43,7 +50,7 @@ Missing `/Games` and an empty eligible collection produce a message without
 launching anything. Unsaved EasyFlash CRT changes get the original save prompt
 before scanning or changing context; invoke F4 again after resolving that prompt.
 
-## G2 menu corrections
+## Retained menu corrections
 
 Home's Browse, collection buttons, cart utilities and Random action unwind any
 active D64/T64 image context, including an options menu over an image. Image

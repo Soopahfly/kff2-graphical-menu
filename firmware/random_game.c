@@ -7,7 +7,8 @@ static char random_path[sizeof(cfg_file.path)];
 static char random_folder[sizeof(cfg_file.path)];
 static char random_file[sizeof(cfg_file.file)];
 static u8 random_type;
-static u32 random_count, random_state;
+static u32 random_count, random_state, random_pool_count;
+static u8 random_best_age;
 
 static u32 random_next(void)
 {
@@ -58,7 +59,9 @@ static bool random_walk(u8 depth)
         else if (random_eligible(type))
         {
             if (++random_count == 0) { ok = false; break; }
-            if (random_below(random_count) == 0)
+            u8 age=history_age(random_path,info.fname);
+            if(age<random_best_age) { random_best_age=age;random_pool_count=0; }
+            if (age==random_best_age && random_below(++random_pool_count) == 0)
             {
                 strcpy(random_folder, random_path);
                 strcpy(random_file, info.fname);
@@ -75,7 +78,7 @@ static bool random_pick(u32 seed)
     /* Human key timing and the running DWT counter vary each invocation. */
     random_state ^= seed;
     if (!random_state) random_state = 0x6d2b79f5u;
-    random_count = 0;
+    random_count = 0; random_pool_count=0; random_best_age=255;
     random_file[0] = 0;
     strcpy(random_path, "/Games");
     return random_walk(0);

@@ -1,7 +1,7 @@
 # KFF2 Graphical Menu
 
 An experimental graphical home screen integrated with Kung Fu Flash 2's native
-launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G2**.
+launcher, inspired by EasyFlash 3. The current firmware candidate is **v2.G3**.
 It is built and software-checked, not tested on physical KFF2 hardware.
 
 ![Graphical home](preview/integration-home.png)
@@ -9,8 +9,10 @@ It is built and software-checked, not tested on physical KFF2 hardware.
 ## Current milestone
 
 **F4: Random game** picks a supported file from `/Games` and its subfolders,
-then uses the original loader. See [behaviour and limits](docs/random-game.md).
-G2 also fixes leaving disk images and opening cart utilities from Settings.
+avoiding the last 10 distinct games where possible. G3 adds persistent manual/
+random launch counts. See [history and PC CSV export](docs/launch-history.md). See [behaviour and limits](docs/random-game.md).
+G3 retains the disk-image/context fixes and makes Random disk autostart explicit,
+even when ordinary image autostart is disabled.
 Do not use the older G1 image for new testing.
 
 **Games / Tools / Utilities / Favourites > original text browser > Home** is
@@ -21,7 +23,7 @@ The file browser still has its original text appearance.
 The native C64 image remains 16 KB, with **129 bytes free** in its main ROM
 allocation. The unused 16 KB flash region is not used. The full MCU update is
 128 KB. No original cartridge features were intentionally removed, and the ARM
-firmware adds folder dispatch and random selection. Full compatibility needs hardware testing.
+firmware adds folder dispatch, random selection and a persistent launch journal. Full compatibility needs hardware testing.
 
 Existing autoload and direct PRG/USB, cartridge and disk boot paths remain;
 the home screen appears when the native launcher enters menu mode.

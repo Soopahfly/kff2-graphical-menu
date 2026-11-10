@@ -1,14 +1,14 @@
 # Installing and recovering KFF2 firmware
 
 This guide is for **Kung Fu Flash 2**, not the original KFF cartridge.
-The v2.G2 build is experimental and has not been tested on
+The v2.G3 build is experimental and has not been tested on
 physical hardware. Software checks do not establish hardware compatibility.
 
 ## Install or roll back using a working launcher
 
 1. Keep a copy of an official KFF2 `.upd` from the upstream releases page on
    your PC, as well as a backup of your SD card configuration.
-2. Copy `KungFuFlash_v2.G2.upd` to the FAT32 SD card. The UI is built in; it
+2. Copy `KungFuFlash_v2.G3.upd` to the FAT32 SD card. The UI is built in; it
    does not need a menu PRG, graphics folder or fonts on the card.
 3. Create `/Games`, `/Tools`, `/Utilities` and `/Favourites`, then add your
    normal files. Missing folders show a message; OK opens the SD root.
@@ -17,8 +17,9 @@ physical hardware. Software checks do not establish hardware compatibility.
 5. On the new Home screen, B opens Browse SD so another `.upd` can be selected.
    This is also how to restore an official image while the launcher still works.
 
-Use G2 for testing. G1 is retained only as build history and has known menu
-context defects. `SHA256SUMS` identifies both files.
+Use G3 for testing. Older G1/G2 images are retained as build history.
+`SHA256SUMS` identifies each file. Back up `.KFF2-history` with the SD card;
+restoring older firmware will not itself erase that file.
 
 ## USB DFU recovery when the launcher will not run
 

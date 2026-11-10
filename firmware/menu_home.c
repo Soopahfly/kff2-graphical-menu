@@ -63,6 +63,7 @@ static u8 home_folder(u8 index)
 
 static u8 home_random(u8 flags)
 {
+    history_random_origin=true;
     u8 cmd = home_crt_guard();
     if (cmd != CMD_NONE) return cmd;
     home_sd_context();
@@ -101,7 +102,12 @@ static u8 home_random(u8 flags)
         return CMD_WAIT_SYNC;
     }
     if (random_type == FILE_D64)
-        return sd_handle_load(&sd_state, random_file, random_type, flags | SELECT_FLAG_MOUNT, 0);
+    {
+        u8 result=sd_handle_load(&sd_state,random_file,random_type,flags|SELECT_FLAG_MOUNT,0);
+        /* Force LOAD"*" for Random even if ordinary image autostart is off. */
+        if(result==CMD_WAIT_SYNC) cfg_file.img.element=0;
+        return result;
+    }
     if (random_type == FILE_T64) return t64_load_first(random_file);
     return sd_handle_load(&sd_state, random_file, random_type, flags, 0);
 }

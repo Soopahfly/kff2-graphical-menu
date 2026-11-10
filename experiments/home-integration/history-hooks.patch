@@ -1,0 +1,36 @@
+--- a/firmware/main.c
++++ b/firmware/main.c
+@@ -32,6 +32,7 @@
+ #include "fatfs.c"
+ #include "filesystem.c"
+ #include "file_types.c"
++#include "launch_history.c"
+ #include "cartridge.c"
+ #include "commands.c"
+ #include "disk_drive.h"
+--- a/firmware/loader.c
++++ b/firmware/loader.c
+@@ -888,6 +888,7 @@
+                 break;
+             }
+ 
++            history_before_launch();
+             c64_ef3_enable();
+             send_prg(size, scratch_buf);
+             result = true;
+@@ -907,6 +908,7 @@
+                 break;
+             }
+ 
++            history_before_launch();
+             c64_wait_valid_clock();
+             crt_install_handler(&cfg_file.crt);
+             c64_enable();
+@@ -929,6 +931,7 @@
+                 break;
+             }
+ 
++            history_before_launch();
+             if (reu_enabled())
+             {
+                 c64_launcher_reu_mode();

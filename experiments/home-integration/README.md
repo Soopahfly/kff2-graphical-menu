@@ -1,4 +1,4 @@
-# Home-screen integration, experimental v2.G2
+# Home-screen integration, experimental v2.G3
 
 The graphical home now dispatches into the original compact launcher.
 The native C64 launcher links into the original 16 KB image, with 129 bytes
@@ -9,6 +9,9 @@ This milestone implements **Home > existing text browser > Home**. It does
 not replace the browser's list renderer with a graphical one yet.
 
 ![Native browser with simulated directory data](../../preview/integration-browser.png)
+
+G3 adds the ARM-side launch journal and recent-game avoidance. See
+[history behaviour and tests](../../docs/launch-history.md). The C64 UI is unchanged.
 
 ## Native changes
 
@@ -60,7 +63,7 @@ Requires Python 3, Pillow, liblz4, cc65, make, patch and an upstream KFF2 checko
     python3 tools/build_integrated_launcher.py --upstream /path/to/KungFuFlash2
 
 An unpacked cc65 build can be selected using `--cc65-home /path/to/cc65`.
-The default identifier is v2.G2, which fits the original 20-byte version field.
+The default identifier is v2.G3, which fits the original 20-byte version field.
 
 Outputs under ignored `launcher/build/integration/`:
 

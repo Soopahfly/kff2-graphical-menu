@@ -1,6 +1,6 @@
 --- a/firmware/menu.c
 +++ b/firmware/menu.c
-@@ -32,6 +32,8 @@
+@@ -32,9 +32,12 @@
  #include "menu_options.c"
  #include "menu_utilities.c"
  #include "menu_settings.c"
@@ -9,8 +9,15 @@
  
  static void menu_loop(void)
  {
-@@ -95,6 +97,19 @@
++    history_menu_session = true;
+     menu = sd_menu_init();
+     char *search = sd_state.search;
+ 
+@@ -93,8 +96,22 @@
+                 break;
+ 
              case REPLY_SELECT:
++                history_random_origin = false;
                  data = c64_receive_byte();
                  cmd = menu->select(menu->state, data & 0xc0, data & 0x3f);
 +                break;

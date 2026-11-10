@@ -49,6 +49,8 @@ static int d64_closed,t64_closed,reopened,unsaved,prompts,errors,options_opened,
 static u8 loaded_type,loaded_flags;
 static bool header_valid;
 static u32 cartridge_type;
+static bool history_random_origin;
+static u8 history_age(const char *folder,const char *file){(void)folder;(void)file;return 0;}
 static char cwd[750];
 static const struct{const char*parent,*name;u8 type,attr;}entries[]={
  {"/Games","one.crt",FILE_CRT,0},{"/Games","notes.txt",FILE_TXT,0},
@@ -142,7 +144,7 @@ int main(void){
  for(u8 type=1;type<=5;++type){reset();u32 seed=seed_for(type);reset();dwt.CYCCNT=seed;assert(home_random(0)==CMD_WAIT_SYNC&&active_dirs==0);assert(!strcmp(cfg_file.path,random_folder)&&!strcmp(cfg_file.file,random_file));
   if(type==FILE_PRG)assert(!loaded&&cfg_file.boot_type==CFG_DISK&&cfg_file.img.mode==DISK_MODE_FS);
   else if(type==FILE_T64)assert(tape_loaded==1&&!loaded);
-  else {assert(loaded==1&&loaded_type==type);if(type==FILE_D64)assert(loaded_flags&SELECT_FLAG_MOUNT);}
+  else {assert(loaded==1&&loaded_type==type);if(type==FILE_D64)assert((loaded_flags&SELECT_FLAG_MOUNT)&&cfg_file.img.element==0);}
  }
  reset();u32 seed=seed_for(FILE_CRT);reset();dwt.CYCCNT=seed;cartridge_type=CRT_C128_CARTRIDGE;assert(home_random(0)==CMD_READ_DIR&&errors==1&&!loaded);
  reset();dwt.CYCCNT=seed;cartridge_type=CRT_C128_CARTRIDGE;assert(home_random(SELECT_FLAG_C128)==CMD_WAIT_SYNC&&loaded_flags==SELECT_FLAG_C128);

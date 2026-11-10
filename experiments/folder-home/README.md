@@ -12,7 +12,7 @@ artwork drawn for this project, not EasyFlash's original background bitmap.
 ![Folder Home, Games selected](../../preview/folder-home-games.png)
 
 This image is a pixel layout render of the exact C64 bitmap and colour matrix
-used by the PRG. It is not a VICE screenshot. F4 now selects a random game in the integrated firmware. The revised design is now integrated in the [updated v2.G2 firmware](../../firmware/experimental/README.md).
+used by the PRG. It is not a VICE screenshot. F4 now selects a random game in the integrated firmware. The revised design is now integrated in the [updated v2.G3 firmware](../../firmware/experimental/README.md).
 
 ## Intended folder mapping
 

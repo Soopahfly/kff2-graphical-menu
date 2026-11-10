@@ -43,9 +43,13 @@ def main():
     shutil.copy(ui/'source/firmware/commands.h',source/'commands.h')
     run(['patch','--batch','--forward','--fuzz=0','-p1','-i',
          root/'experiments/home-integration/folder-arm.patch'],env,cwd=work)
-    for name in ['random_game.c','menu_home.c']:
+    run(['patch','--batch','--forward','--fuzz=0','-p1','-i',root/'experiments/home-integration/history-hooks.patch'],env,cwd=work)
+    for name in ['random_game.c','menu_home.c','launch_history.c']:
         shutil.copy(root/'firmware'/name,source/name)
     route_tests=run([sys.executable,root/'tools/test_home_features.py','--upstream',args.upstream.resolve()],env)
+    history_tests=run([sys.executable,root/'tools/test_launch_history.py','--upstream',args.upstream.resolve()],env)
+    fatfs_tests=run([sys.executable,root/'tools/test_history_fatfs.py','--upstream',args.upstream.resolve()],env)
+    (work/'host-tests.log').write_text(route_tests+history_tests+fatfs_tests)
     options=['version='+version,'LAUNCHER='+str(launcher),'-o',launcher]
     if args.arm_bin:options.append('GCC_PATH='+str(args.arm_bin.resolve()))
     if args.newlib_libdir:options.append('LIBDIR=-L'+str(args.newlib_libdir.resolve()))
@@ -66,7 +70,11 @@ def main():
     sp,reset=struct.unpack('<II',upd[:8])
     assert sp==0x20020000 and reset&1 and 0x08000000<=(reset&~1)<0x08018000
     gcc=str(args.arm_bin.resolve()/'arm-none-eabi-gcc') if args.arm_bin else 'arm-none-eabi-gcc'
-    result={'version':version,'experimental':True,'hardware_tested':False,
+    size_tool=str(args.arm_bin.resolve()/'arm-none-eabi-size') if args.arm_bin else 'arm-none-eabi-size'
+    size_text=run([size_tool,'-A',Path(str(built)+'.elf')],env)
+    bss=re.search(r'^\.bss\s+(\d+)\s+(\d+)',size_text,re.M)
+    result={'arm_bss_bytes':int(bss[1]),'arm_bss_end':hex(int(bss[1])+int(bss[2])),
+        'version':version,'experimental':True,'hardware_tested':False,
         'upstream_commit':metadata['upstream_commit'],
         'arm_compiler':run([gcc,'--version'],env).splitlines()[0],
         'cc65':metadata['cc65'],'update_bytes':len(upd),'arm_binary_bytes':len(arm),
@@ -74,7 +82,7 @@ def main():
         'blank_region_preserved':True,'initial_sp':hex(sp),'reset_vector':hex(reset),
         'sha256':digest(upd),'launcher_sha256':digest(native),
         'vice_harness_matches_build':True,'folder_shortcuts':True,'arm_source_changed':True,
-        'home_graphics_lossless':True,'random_game_f4':True,'menu_context_regressions_tested':True,'arm_folder_dispatch_host_tested':True,
+        'home_graphics_lossless':True,'random_game_f4':True,'persistent_history':True,'history_real_fatfs_tested':True,'recent_distinct_window':10,'menu_context_regressions_tested':True,'arm_folder_dispatch_host_tested':True,
         'compiler_warning_kinds':sorted(set(line.strip() for line in log.splitlines() if 'warning:' in line))}
     dest=root/'firmware/experimental'
     dest.mkdir(parents=True,exist_ok=True)

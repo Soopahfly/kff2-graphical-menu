@@ -57,7 +57,7 @@
     }
   },
   "image_bytes": 16384,
-  "version": "2.G2",
+  "version": "2.G3",
   "cc65": "cc65 V2.18 - Debian 2.19-1",
   "upstream_commit": "9c84d999f4e2f5b2c7688cbc37a127069f5401b0"
 }
