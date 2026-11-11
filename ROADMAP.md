@@ -4,6 +4,12 @@ Updated 11 November 2026. **G7 is the current experimental build.** This roadmap
 sets proposed priorities and acceptance checks, not release dates or a claim that
 future features are implemented. G8/G9 are working milestone names.
 
+**Not every feature on this roadmap will necessarily be implemented.** Progress
+depends on the coding skills and development time available, the complexity of
+each change, and the KFF2/C64's memory, timing and hardware limits. Features may
+be simplified, deferred or dropped if they cannot be implemented and tested
+reliably. Inclusion here is an idea for consideration, not a promise of delivery.
+
 The project keeps its graphical interface and pinned official v2.07-based source.
 Community changes will be reviewed and ported individually, with attribution.
 
