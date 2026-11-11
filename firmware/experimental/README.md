@@ -1,3 +1,11 @@
+# Historical G7 development packages
+
+**The primary release package is now [G7.03](../releases/G7.03/RELEASE-NOTES.md).**
+Download [KungFuFlash_v2.G7.03.upd](../releases/G7.03/KungFuFlash_v2.G7.03.upd).
+G7.03 contains exactly the G7.0.3 firmware below, with the same checksum. Earlier
+G7, G7.0.1 and G7.0.2 files remain for traceability and have superseded copy-result
+behaviour. Use G7.03 for new installations.
+
 # Experimental firmware G7.0.3, one-key copy-result display fix
 
 [KungFuFlash_v2.G7.0.3.upd](KungFuFlash_v2.G7.0.3.upd) is a complete 128 KB KFF2 update.

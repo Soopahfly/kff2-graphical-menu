@@ -1,4 +1,4 @@
-# Getting started with G7.0.3
+# Getting started with G7.03
 
 G7 is experimental firmware for **Kung Fu Flash 2**. It is based on official
 v2.07 plus documentation commit `9c84d99`. It is not firmware for the original KFF.
@@ -6,16 +6,17 @@ G7 has passed software checks and has limited positive hardware reports for
 PRG/CRT loading, saving preferences and reset with autoboot disabled. Favourites
 copying and actual REU operation still need verification. See [test status](testing.md).
 
-G7.0.3 clears the stale copy-result display so one keypress visibly returns Home. The internal version still
-shows `2.G7`, so use the `.0.1.upd` filename and verify [SHA256SUMS](../firmware/experimental/SHA256SUMS).
-The fix still needs a real-hardware retest.
+G7.03 clears the stale copy-result display so one keypress visibly returns Home. The internal version still
+shows `2.G7`, so use `KungFuFlash_v2.G7.03.upd` and verify [SHA256SUMS](../firmware/releases/G7.03/SHA256SUMS).
+G7.03 contains the exact G7.0.3 firmware bytes. The owner reports the fix working;
+the test environment was not specified. Broader hardware checks remain open.
 
 ## Install
 
 1. Back up the SD card, especially `.KFF2.cfg` and `.KFF2-history` if present.
 2. Keep your previous working firmware or an official KFF2 update available.
    Read [the recovery methods](../firmware/experimental/RECOVERY.md).
-3. Download [KungFuFlash_v2.G7.0.3.upd](https://github.com/Soopahfly/kff2-graphical-menu/raw/refs/heads/main/firmware/experimental/KungFuFlash_v2.G7.0.3.upd)
+3. Download [KungFuFlash_v2.G7.03.upd](https://github.com/Soopahfly/kff2-graphical-menu/raw/refs/heads/main/firmware/releases/G7.03/KungFuFlash_v2.G7.03.upd)
    and copy it to a **FAT32** SD card. exFAT is not supported.
 4. Select the update in the working KFF2 file browser and confirm the update.
    Keep power connected until programming finishes.

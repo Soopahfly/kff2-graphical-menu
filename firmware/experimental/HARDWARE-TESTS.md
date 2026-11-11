@@ -8,7 +8,8 @@ v2.07 plus documentation commit `9c84d99`. The original G7 SHA256 is
 
 This log records hardware reports received after packaging. It does not change
 the firmware or retrospectively alter the build report's `hardware_tested: false`
-snapshot. G7 remains an experimental test candidate, not a public release.
+snapshot. G7.03 is the current experimental release package; broad compatibility
+and remaining hardware checks are not implied by that release name.
 
 ## 11 November 2026, project owner report
 
@@ -86,7 +87,20 @@ check copied content, source retention and folder copying. Earlier hardware
 passes remain associated with original G7. Software evidence and runnable PRGs
 are in [copy-return tests](../../experiments/copy-return/README.md).
 
-## Remaining checks before a first public release
+## 11 November 2026, fix confirmation and G7.03 naming
+
+The owner reported “that's working” after the VICE test pack and G7.0.3 firmware
+were supplied, then requested G7.03 as the release version replacing G7. The
+confirmation did not specify emulator versus real cartridge, individual copy
+checks or REU programs. Record it as a reported copy-screen fix confirmation,
+without marking a comprehensive hardware pass.
+
+G7.03 is byte-identical to G7.0.3, SHA256
+`2d7456f99b3864578da30b0da6280bd0a9ed26ba9e78034f38bb7841253ee402`.
+It requires no reflash when the working G7.0.3 image is already installed.
+[Release package and notes](../releases/G7.03/RELEASE-NOTES.md).
+
+## Remaining hardware coverage
 
 - Copy a single file to Favourites and load the copy. Confirm the original remains.
 - Copy a complete game folder, including companions/multiple disks, and use it.
@@ -94,7 +108,8 @@ are in [copy-return tests](../../experiments/copy-return/README.md).
 - Use REU software to detect and exercise **256 KB, 512 KB and 1 MB**. Saving the
   selected size alone does not establish address wrapping or DMA operation.
 
-The public release has not been created. These checks are still pending.
+These checks remain open for the experimental release package. Release naming
+does not turn them into passes.
 
 ## Additional coverage requested
 

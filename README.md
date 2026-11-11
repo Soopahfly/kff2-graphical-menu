@@ -1,9 +1,10 @@
 # KFF2 Graphical Menu
 
 A graphical Home screen and shared menu style for **Kung Fu Flash 2**, inspired
-by EasyFlash 3. The current experimental build is **G7.0.3**.
+by EasyFlash 3. The current experimental release package is **G7.03**.
 
-**[Download G7.0.3 firmware](https://github.com/Soopahfly/kff2-graphical-menu/raw/refs/heads/main/firmware/experimental/KungFuFlash_v2.G7.0.3.upd)** ·
+**[Download G7.03 firmware](https://github.com/Soopahfly/kff2-graphical-menu/raw/refs/heads/main/firmware/releases/G7.03/KungFuFlash_v2.G7.03.upd)** ·
+[Release notes](firmware/releases/G7.03/RELEASE-NOTES.md) ·
 [Installation and SD setup](docs/getting-started.md) ·
 [Recovery](firmware/experimental/RECOVERY.md) ·
 [Hardware test checklist](docs/testing.md) ·
@@ -11,16 +12,18 @@ by EasyFlash 3. The current experimental build is **G7.0.3**.
 
 G7 is based on official **v2.07 plus one documentation commit**, `9c84d99`.
 `2.G7` is this project's internal version label, not an official upstream release.
-**G7.0.3 restores Home visibly after one keypress on a copy-result screen.**
+**G7.03 restores Home visibly after one keypress on a copy-result screen.**
+It is the release name for the exact G7.0.3 firmware, with unchanged bytes and
+checksum. If G7.0.3 is already installed, you do not need to flash again.
 G7.0.2 completed the command return but could redraw the old prompt over Home.
 [Before-and-after VICE tests](experiments/copy-return/README.md) reproduce and check the display fix.
 Its internal cartridge label remains `2.G7`; identify the hotfix by its filename and
-[checksum](firmware/experimental/SHA256SUMS). It contains no G8 features.
+[checksum](firmware/releases/G7.03/SHA256SUMS). It contains no G8 features.
 Software checks pass. On real hardware, the project owner reports working G7
 PRG/CRT loading, saved REU-size/autoboot preferences and return to Home after reset
-with autoboot disabled. The original G7 copy-result screen was reported to freeze. G7.0.3 fixes that
-handshake in software; hardware confirmation and actual REU operation still need
-verification. See [the dated hardware results](firmware/experimental/HARDWARE-TESTS.md).
+with autoboot disabled. The original G7 copy-result screen was reported to freeze. The copy-screen
+fix is now reported working; the confirmation did not specify VICE or hardware.
+Full copy integrity and actual REU operation still need explicit verification. See [the dated hardware results](firmware/experimental/HARDWARE-TESTS.md).
 Earlier G5 Home/SD-browser rendering was photographed on an LCD.
 
 ![Graphical Home, VICE with simulated cartridge data](preview/integration-home.png)
@@ -81,8 +84,8 @@ files and multiple disks together. [Full setup guide](docs/getting-started.md)
 
 The C64 launcher remains **16 KB, with 627 bytes free** in its main allocation.
 The update is **128 KB** and the reserved 16 KB flash region stays blank.
-See the [build report](firmware/experimental/build-report.json) and
-[SHA-256 checksums](firmware/experimental/SHA256SUMS).
+See the [build report](firmware/releases/G7.03/build-report.json) and
+[SHA-256 checksums](firmware/releases/G7.03/SHA256SUMS).
 
 ## Documentation
 

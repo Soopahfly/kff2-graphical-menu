@@ -5,6 +5,9 @@ G7 uses upstream **v2.07 plus one documentation commit**,
 `60b82792bd8275f4ca9e9c43300766e02b05dfcf`). It retains G6's graphical interface.
 It does not import a community fork or expand cartridge format support.
 
+**Current release package: G7.03.** It is byte-for-byte identical to the earlier
+G7.0.3 hotfix, with the same checksum. See [release notes](../firmware/releases/G7.03/RELEASE-NOTES.md).
+
 **G7.0.3 hotfix:** clears the saved status-screen mode when leaving it. G7.0.2
 already completed the command handshake and entered Home, but Home's key-release
 check could redraw the previous “Press a key” message over it. One keypress now

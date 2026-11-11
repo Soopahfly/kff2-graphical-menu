@@ -37,11 +37,13 @@ The ROM directory must contain:
 - `basic-901226-01.bin`
 - `chargen-901225-01.bin`
 
-For the G7.0.3 hotfix, add `--package-version 2.G7.0.3` to the firmware-builder
+For the G7.03 release package, add `--package-version 2.G7.03` to the firmware-builder
 command. This changes the download filename and report package version while
 preserving the internal `2.G7` identifier. G7.0.3 changes the C64 status-view
-cleanup; its new launcher must pass all VICE suites. The
-original G7 `.upd` remains alongside the new package.
+cleanup; its launcher must pass all VICE suites. The builder initially writes to
+`firmware/experimental/`. The named release package is under
+`firmware/releases/G7.03/`, with a checksum, report, notes and ZIP. The existing
+release renames the tested G7.0.3 package without changing its firmware bytes.
 
 The default identifier is `2.G7`. The launcher builder also accepts `--version`;
 the firmware builder takes its version from the launcher measurements. Version
@@ -73,7 +75,7 @@ warnings remain visible; they are recorded in the build report.
 | --- | --- |
 | `launcher/build/integration/` | Patched C64 source, native ROM, measurements, VICE harnesses/screenshots/results |
 | `launcher/build/arm-firmware/` | Patched ARM source, host-test log, compiler log and firmware artifacts |
-| `firmware/experimental/KungFuFlash_v2.G7.0.3.upd` | Current hotfix update |
+| `firmware/releases/G7.03/KungFuFlash_v2.G7.03.upd` | Current named release package |
 | `firmware/experimental/build-report.json` | Current package identity and measurements |
 | `firmware/experimental/SHA256SUMS` | Checksums for retained updates |
 

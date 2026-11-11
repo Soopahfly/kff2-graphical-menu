@@ -1,4 +1,9 @@
-# Current hardware checks, G7
+# Current checks, G7.03
+
+G7.03 is the release package name for the unchanged G7.0.3 firmware. The owner
+reports the copy-screen fix working, but did not specify whether this was in VICE
+or on the cartridge. That confirmation does not close the remaining hardware checks.
+See [release notes](../firmware/releases/G7.03/RELEASE-NOTES.md).
 
 ## G7.0.3 display-return retest
 

@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated 11 November 2026. **G7 is the current experimental build.** This roadmap
+Updated 11 November 2026. **G7.03 is the current experimental release package.** This roadmap
 sets proposed priorities and acceptance checks, not release dates or a claim that
 future features are implemented. G8/G9 are working milestone names.
 
@@ -17,7 +17,7 @@ Community changes will be reviewed and ported individually, with attribution.
 
 | Order | Milestone | Scope | Status |
 | --- | --- | --- | --- |
-| 1 | G7 first public experimental release | Complete Favourites and REU hardware checks; package tested build | Awaiting hardware results |
+| 1 | G7.03 experimental release package | Package working copy-screen fix; continue Favourites and REU hardware coverage | Package prepared; remaining hardware checks recorded |
 | 2 | G8 everyday-use improvements | D64 disk swapping and optional Random preview | Upstream ideas/code reviewed; not integrated |
 | 3 | G9 GMod2 | Native cartridge loading and EEPROM save persistence | Community implementation identified; not integrated |
 | 4 | Larger cartridges | Magic Desk 16 images up to 2 MB | Separate banking/timing investigation |
