@@ -1,9 +1,11 @@
 # Experimental firmware v2.G7, favourites and REU/startup settings
 
 [KungFuFlash_v2.G7.upd](KungFuFlash_v2.G7.upd) is a complete 128 KB KFF2 update.
-It is an altered development build, not an official release. G7 has not been
-flashed on a physical KFF2. The user previously checked G5 Home and folder-browser
-rendering on real hardware.
+It is an altered development build, not an official release. G7 has a positive
+hardware report for PRG/CRT loading, saving REU-size/autoboot preferences and
+returning to Home after reset with autoboot disabled. Favourites copying and
+actual REU operation remain unverified. See [dated hardware results](HARDWARE-TESTS.md)
+and the [current test checklist](../../docs/testing.md).
 
 ![G7 Settings in VICE, example values](../../preview/g7-settings.png)
 
@@ -72,6 +74,9 @@ ARM dispatcher, random/history, real FatFs and graphics-transfer host tests run
 before packaging. Layout checks cover update size, reset/stack vectors, embedded
 launcher and blank reserved space. Current numbers and SHA256 are in
 [build-report.json](build-report.json) and [SHA256SUMS](SHA256SUMS).
+The build report records the state at packaging time; its `hardware_tested: false`
+field predates these user reports. Post-build evidence is tracked separately in
+[HARDWARE-TESTS.md](HARDWARE-TESTS.md).
 
 The harness simulates cartridge packets. It does not validate physical bus timing,
 SD game loading, USB, REU or CRT readability. Test Settings changes and Save, both autoboot values, REU software at each

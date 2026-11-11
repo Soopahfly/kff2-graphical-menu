@@ -81,7 +81,12 @@ to our G6/original layout, not arbitrary community forks with different layouts.
 - Existing VICE navigation, keyboard/NTSC and twelve shared-screen checks remain.
   Firmware packaging requires the test hashes to match the launcher.
 
-G7 still needs physical KFF2 testing. Check a small PRG copy, a folder containing
-companion files, a collision, persistence after restart, both autoboot values and
-REU software at the chosen size. Software tests do not prove cartridge bus timing.
+As of 11 November 2026, the project owner reports PRG/CRT loading, saved REU-size
+and autoboot preferences, and reset to Home with autoboot disabled working on
+hardware. See [the hardware log](../firmware/experimental/HARDWARE-TESTS.md).
+
+Still check a small file copy, a complete game folder and a destination collision.
+Verify actual REU detection/transfers at 256 KB, 512 KB and 1 MB; preference saving
+is not an REU capacity test. Autoboot-enabled reset and wider hardware compatibility
+also remain unconfirmed. Software tests do not prove cartridge bus timing.
 Keep your previous working firmware or an official update available for rollback.

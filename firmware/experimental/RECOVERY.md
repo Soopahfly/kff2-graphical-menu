@@ -1,10 +1,11 @@
 # Installing and recovering KFF2 firmware
 
 This guide is for **Kung Fu Flash 2**, not the original KFF cartridge.
-The current **v2.G7** build is experimental and has not been tested on physical
-KFF2 hardware. G5 Home/browser rendering was checked on an LCD, but that does not
-validate G7 loading, REU, USB or recovery. Software checks do not establish
-hardware compatibility.
+The current **v2.G7** build is experimental, with limited positive hardware
+reports for PRG/CRT loading, preference saving and reset with autoboot disabled.
+Favourites copies, actual REU operation and broader compatibility still need testing.
+See [the hardware log](HARDWARE-TESTS.md). Recovery procedures themselves have not
+been tested as part of this project; the methods below are documented upstream.
 
 ## Install or roll back using a working launcher
 

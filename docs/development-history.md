@@ -15,8 +15,10 @@ instructions and measurements. Version labels here describe this custom project.
 | G7 | Favourites file/folder copies, selectable REU size and autoboot setting |
 
 G5 Home and SD-browser rendering were photographed on real KFF2 hardware using
-an LCD. G6/G7 have software checks; their added functionality remains unverified
-on physical hardware. Physical CRT readability is untested.
+an LCD. G7 now has user-reported hardware passes for PRG/CRT loading, saving
+REU-size/autoboot preferences and reset with autoboot disabled. Favourites copying,
+actual REU operation and broader compatibility remain unverified. Physical CRT
+readability is untested. See [the hardware log](../firmware/experimental/HARDWARE-TESTS.md).
 
 ## Historical experiments
 

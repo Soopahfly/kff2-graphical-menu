@@ -64,7 +64,8 @@ before firmware packaging. Package checks preserve the 128 KB update layout,
 16 KB C64 image, original reserved regions and reset vectors.
 
 G5 Home and SD-browser rendering were confirmed on a physical KFF2 with an LCD.
-G7, full loading/bus compatibility and CRT readability remain unverified. The PRG
+G7 PRG/CRT loading has since been reported working by the project owner. Broader
+loading/bus compatibility and CRT readability remain unverified. The PRG
 harness substitutes an ARM response, not the complete
 KFF2 hardware. See the [current hardware checks](testing.md) and
 [recovery guide](../firmware/experimental/RECOVERY.md).

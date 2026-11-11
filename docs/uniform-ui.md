@@ -59,7 +59,8 @@ steps must not issue any additional asset request. Reader forward/back banks mus
 match exactly. A full-width line of wide glyphs checks the wrap boundary.
 
 These fixtures simulate cartridge replies and text bytes. They do not prove SD
-loading, physical bus timing, USB or REU operation. The current G7 build needs real KFF2 testing; see [the checklist](testing.md). The
+loading, physical bus timing, USB or REU operation. G7 has limited positive hardware
+reports; see [the current results and remaining checks](testing.md). The
 user's earlier G5 tests confirmed Home and folder-browser rendering on hardware.
 
 The native image remains 16 KB, with 630 bytes free in the main allocation. The

@@ -2,7 +2,9 @@
 
 G7 is experimental firmware for **Kung Fu Flash 2**. It is based on official
 v2.07 plus documentation commit `9c84d99`. It is not firmware for the original KFF.
-G7 has passed software checks but has not yet been tested on a physical cartridge.
+G7 has passed software checks and has limited positive hardware reports for
+PRG/CRT loading, saving preferences and reset with autoboot disabled. Favourites
+copying and actual REU operation still need verification. See [test status](testing.md).
 
 ## Install
 

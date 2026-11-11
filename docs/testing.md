@@ -1,6 +1,25 @@
 # Current hardware checks, G7
 
-## What is established
+## Hardware report, 11 November 2026
+
+The project owner (Soopahfly) reports these G7 checks passed on real hardware:
+
+| Check | Result | Scope |
+| --- | --- | --- |
+| PRG loading | Reported pass | Tested titles not specified |
+| CRT loading | Reported pass | Tested titles/cartridge types not specified |
+| Saving REU size and autoboot preferences | Reported pass | Persistence only; capacities exercised not specified |
+| Reset with autoboot disabled | Reported pass | Returns to Home |
+
+These are user-reported hardware results, separate from the automated tests.
+Exact C64 board/model, video standard and REU test programs were not supplied
+with this report. See the [release hardware log](../firmware/experimental/HARDWARE-TESTS.md).
+
+**Before a first public release:** verify file/folder copies to Favourites, loading
+the copies and no-overwrite behaviour; verify REU software detects and uses each
+selected capacity. Saving a capacity setting alone does not establish REU operation.
+
+## Software checks and earlier evidence
 
 | Area | Evidence |
 | --- | --- |
@@ -13,9 +32,9 @@
 | History, random and assets | ARM-side host tests, real FatFs tests and transfer-buffer checks |
 | Update layout and space | Packaging checks and the [G7 build report](../firmware/experimental/build-report.json) |
 
-G7 has not yet been tested on a physical KFF2. None of the software checks proves
-physical bus timing, SD controller behaviour, USB or REU operation. The earlier
-LCD photos do not establish CRT readability or compatibility across game loaders.
+G7 hardware testing has started with the limited results above. The software
+checks do not prove physical bus timing, USB or REU operation. The earlier LCD
+photos do not establish CRT readability or compatibility across game loaders.
 
 ## Before installing
 
@@ -35,10 +54,11 @@ Use [Getting started](getting-started.md) for installation and SD folders.
 | Copy a small game folder with companion files | All files/subfolders present and usable |
 | Repeat a file copy / try an existing folder name | Already-present message or collision, no overwrite |
 | Change REU size, then Cancel | Stored setting remains unchanged |
-| Change REU size, Save and restart | Selected capacity persists; compatible REU software detects it |
-| Set autoboot no, Save, launch a game and reset | Return to Home instead of replaying the saved selection |
+| Change REU size, Save and restart | Preference persistence reported working; software detection/use at each capacity remains unverified |
+| Set autoboot no, Save, launch a game and reset | Return to Home reported working; repeat on additional setups |
 | Set autoboot yes, Save, launch a game and reset | Existing saved-selection behaviour resumes |
-| Load PRG, CRT and supported disk/tape examples | Existing loader routes/options still work |
+| Load PRG and CRT examples | Reported working; additional titles/cartridge types welcome |
+| Load D64/D71/D81 and T64 examples | Disk/tape loading remains to be confirmed on hardware |
 | Open a longer text file | Pages wrap inside the border; forward/back/first/exit work |
 | F4, reset and repeat | Games scan works; history/recent avoidance persists |
 | Joystick port 2 | Move, Fire, held-Fire options and Fire+left work |

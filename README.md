@@ -10,8 +10,11 @@ by EasyFlash 3. The current experimental build is **v2.G7**.
 
 G7 is based on official **v2.07 plus one documentation commit**, `9c84d99`.
 `2.G7` is this project's version label, not an official upstream release.
-Software checks pass; G7 still needs real KFF2 testing. Earlier G5 Home and
-SD-browser rendering were confirmed on hardware with an LCD display.
+Software checks pass. On real hardware, the project owner reports working G7
+PRG/CRT loading, saved REU-size/autoboot preferences and return to Home after reset
+with autoboot disabled. Favourites copies and actual REU operation still need
+verification. See [the dated hardware results](firmware/experimental/HARDWARE-TESTS.md).
+Earlier G5 Home/SD-browser rendering was photographed on an LCD.
 
 ![Graphical Home, VICE with simulated cartridge data](preview/integration-home.png)
 
@@ -58,8 +61,9 @@ files and multiple disks together. [Full setup guide](docs/getting-started.md)
 
 ## Limits and test status
 
-- G7 has not been hardware-tested. VICE fixtures simulate cartridge packets;
-  they do not emulate the STM32, real SD loading, USB or REU bus timing.
+- G7 has limited positive hardware reports, not full compatibility validation.
+  Favourites copying and REU operation at each capacity remain unverified.
+  VICE fixtures simulate cartridge packets; they do not emulate the STM32 or REU bus timing.
 - Physical CRT readability remains untested. LCD photos of G5 confirm only the
   Home and folder-browser presentation.
 - Early startup diagnostics retain native text until graphics are available.

@@ -101,4 +101,5 @@ read-only handling, then decodes the exported journal independently with the PC
 tool. Host checks run with address and undefined-behaviour sanitizers.
 
 The VICE harness continues to check the C64 menu and F4 protocol. It does not run
-the STM32 or emulate physical SD hardware. **The current G7 history/loading paths still need physical KFF2 testing.**
+the STM32 or emulate physical SD hardware. **G7 PRG/CRT loading is user-reported working; launch-history persistence and
+recent-game avoidance still need explicit hardware confirmation.**
