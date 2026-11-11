@@ -53,7 +53,7 @@ These are user-reported hardware results, separate from the automated tests.
 Exact C64 board/model, video standard and REU test programs were not supplied
 with this report. See the [release hardware log](../firmware/experimental/HARDWARE-TESTS.md).
 
-**Before a first public release:** verify file/folder copies to Favourites, loading
+**Remaining hardware coverage:** verify file/folder copies to Favourites, loading
 the copies and no-overwrite behaviour; verify REU software detects and uses each
 selected capacity. Saving a capacity setting alone does not establish REU operation.
 

@@ -100,6 +100,13 @@ G7.03 is byte-identical to G7.0.3, SHA256
 It requires no reflash when the working G7.0.3 image is already installed.
 [Release package and notes](../releases/G7.03/RELEASE-NOTES.md).
 
+## G7.03 publication
+
+[G7.03 was published as a GitHub pre-release](https://github.com/Soopahfly/kff2-graphical-menu/releases/tag/G7.03)
+on 11 November 2026, tagged at `f14246b9f4e4a6a4e045b032619e74a8b599044f`.
+The UPD, SHA256SUMS, package ZIP and build report are attached. Firmware bytes
+remain identical to G7.0.3; publication does not add hardware-test passes.
+
 ## Remaining hardware coverage
 
 - Copy a single file to Favourites and load the copy. Confirm the original remains.

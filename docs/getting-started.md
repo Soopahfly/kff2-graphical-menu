@@ -16,7 +16,7 @@ the test environment was not specified. Broader hardware checks remain open.
 1. Back up the SD card, especially `.KFF2.cfg` and `.KFF2-history` if present.
 2. Keep your previous working firmware or an official KFF2 update available.
    Read [the recovery methods](../firmware/experimental/RECOVERY.md).
-3. Download [KungFuFlash_v2.G7.03.upd](https://github.com/Soopahfly/kff2-graphical-menu/raw/refs/heads/main/firmware/releases/G7.03/KungFuFlash_v2.G7.03.upd)
+3. Download [KungFuFlash_v2.G7.03.upd](https://github.com/Soopahfly/kff2-graphical-menu/releases/download/G7.03/KungFuFlash_v2.G7.03.upd)
    and copy it to a **FAT32** SD card. exFAT is not supported.
 4. Select the update in the working KFF2 file browser and confirm the update.
    Keep power connected until programming finishes.

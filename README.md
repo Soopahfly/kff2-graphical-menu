@@ -3,8 +3,8 @@
 A graphical Home screen and shared menu style for **Kung Fu Flash 2**, inspired
 by EasyFlash 3. The current experimental release package is **G7.03**.
 
-**[Download G7.03 firmware](https://github.com/Soopahfly/kff2-graphical-menu/raw/refs/heads/main/firmware/releases/G7.03/KungFuFlash_v2.G7.03.upd)** ·
-[Release notes](firmware/releases/G7.03/RELEASE-NOTES.md) ·
+**[Download G7.03 firmware](https://github.com/Soopahfly/kff2-graphical-menu/releases/download/G7.03/KungFuFlash_v2.G7.03.upd)** ·
+[Release page and notes](https://github.com/Soopahfly/kff2-graphical-menu/releases/tag/G7.03) ·
 [Installation and SD setup](docs/getting-started.md) ·
 [Recovery](firmware/experimental/RECOVERY.md) ·
 [Hardware test checklist](docs/testing.md) ·
