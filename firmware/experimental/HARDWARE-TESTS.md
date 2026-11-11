@@ -3,8 +3,8 @@
 Candidate: [KungFuFlash_v2.G7.upd](KungFuFlash_v2.G7.upd), based on upstream
 v2.07 plus documentation commit `9c84d99`. The original G7 SHA256 is
 `c36c30e3ec04bcffdff07dcf03cf9cdafd007b1cbd7eaeffd719696c6d76f552`.
-[build-report.json](build-report.json) now describes the G7.0.1 hotfix;
-[SHA256SUMS](SHA256SUMS) identifies both downloads.
+[build-report.json](build-report.json) now describes the G7.0.2 hotfix;
+[SHA256SUMS](SHA256SUMS) identifies all retained downloads.
 
 This log records hardware reports received after packaging. It does not change
 the firmware or retrospectively alter the build report's `hardware_tested: false`
@@ -42,11 +42,28 @@ still waiting for `CMD_SYNC` after acknowledging the warning. G7.0.1 adds that
 synchronisation. Host regression checks cover success, already present, collision
 and failure, and fail when the fix is removed.
 
-**G7.0.1 hardware retest: pending.** Its internal label is still `2.G7`. Download
-[KungFuFlash_v2.G7.0.1.upd](KungFuFlash_v2.G7.0.1.upd), SHA256
-`d6e6eefdd237a143af32e33a6691f36faa2269aa013f1b9b43b7c0030adb8bcb`.
+## 11 November 2026, command 9 report and G7.0.2
+
+During the subsequent update/test attempt, the owner supplied a photograph showing
+“Communication with cartridge failed. Unexpected command: 9”, and questioned the
+short flash duration. The actual installed image was not independently verified.
+Source review nevertheless establishes a second bug in G7.0.1: a warning exits
+the C64 browser loop, so its outer dispatcher rejects the returned `CMD_READ_DIR`
+command even after the missing synchronisation has been fixed.
+
+G7.0.2 restores the previous SD context and returns `CMD_MENU` after `CMD_SYNC`.
+Dismissing a copy result now returns to Home, not directly to the file list.
+Host checks derive valid outer commands from the actual launcher source. Negative
+checks reproduce failures with both the missing sync and G7.0.1 directory-return
+code. **G7.0.1 is superseded, not a successful hardware fix.**
+
+**G7.0.2 hardware retest: pending.** Its internal label remains `2.G7`. Download
+[KungFuFlash_v2.G7.0.2.upd](KungFuFlash_v2.G7.0.2.upd), SHA256
+`531ea196a6b762218d07fafe37c29f26c7cf7133e2cec43c5acf6aa63343d558`.
 The earlier PRG/CRT/settings/reset passes apply to original G7, not a claimed
-retest of this hotfix.
+retest of either hotfix. Verify the SD file checksum and confirm **Upgrade**.
+The unchanged upstream updater rewrites 128 KB without a same-version rejection
+or unchanged-sector skipping; flash duration has not been measured here.
 
 ## Remaining checks before a first public release
 

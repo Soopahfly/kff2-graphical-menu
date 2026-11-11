@@ -108,6 +108,7 @@ def main():
     if package_version!=version:
         result['package_version']=package_version
     result['favourites_acknowledgement_sync']=True
+    result['favourites_result_returns_home']=True
     filename='KungFuFlash_v'+package_version+'.upd'
     (dest/filename).write_bytes(upd)
     (dest/'build-report.json').write_text(json.dumps(result,indent=2)+'\n')

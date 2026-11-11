@@ -20,6 +20,7 @@ DRESULT disk_read(BYTE d,BYTE *b,LBA_t s,UINT n){(void)d;if(s>=SECTORS||n>SECTOR
 DRESULT disk_write(BYTE d,const BYTE*b,LBA_t s,UINT n){(void)d;if(read_only)return RES_WRPRT;if(fail_writes){--fail_writes;return RES_ERROR;}if(s>=SECTORS||n>SECTORS-s)return RES_PARERR;memcpy(volume+(size_t)s*512,b,(size_t)n*512);return RES_OK;}
 DRESULT disk_ioctl(BYTE d,BYTE c,void*b){(void)d;switch(c){case CTRL_SYNC:return RES_OK;case GET_SECTOR_COUNT:*(LBA_t*)b=SECTORS;return RES_OK;case GET_SECTOR_SIZE:*(WORD*)b=512;return RES_OK;case GET_BLOCK_SIZE:*(DWORD*)b=1;return RES_OK;default:return RES_PARERR;}}
 @FILE_TYPES@
+@COMMANDS@
 @SETTINGS@
 static int button_calls,invalidated,enabled;
 static bool signature;
@@ -30,8 +31,9 @@ static void invalidate_menu_signature(void){++invalidated;signature=false;}
 static void menu_button_enable(void){++enabled;}
 @AUTO_BOOT@
 @FAVOURITES@
-typedef struct {int unused;} OPTIONS_STATE;
+typedef struct {void *prev_menu;} OPTIONS_STATE;
 typedef struct {int unused;} OPTIONS_ELEMENT;
+static void *menu;
 static u8 settings_g7,settings_flags;
 static int saves,restarts,back_to_dir;
 /* Model the C64's two waits: flash operation, then warning acknowledgement.
@@ -46,11 +48,29 @@ static bool save_cfg(void){++saves;return true;}
 static void restart_to_menu(void){++restarts;protocol_state=PROTOCOL_READY;}
 static u8 c64_interface_sync(void){assert(protocol_state!=PROTOCOL_READY);if(protocol_state==PROTOCOL_WARNING_WAIT)++warning_syncs;protocol_state=PROTOCOL_READY;return 0;}
 static void c64_send_warning(const char *text){assert(protocol_state==PROTOCOL_READY);strcpy(displayed,text);protocol_state=PROTOCOL_WARNING_WAIT;}
-static u8 options_prev_dir(OPTIONS_STATE *s,OPTIONS_ELEMENT *e,u8 flags){(void)s;(void)e;(void)flags;assert(protocol_state==PROTOCOL_READY);++back_to_dir;return 124;}
-#define CMD_NONE 0
+static u8 options_prev_dir(OPTIONS_STATE *s,OPTIONS_ELEMENT *e,u8 flags){(void)s;(void)e;(void)flags;assert(protocol_state==PROTOCOL_READY);++back_to_dir;return CMD_READ_DIR;}
 @SETTINGS_CALLBACKS@
 @SETTINGS_SAVE@
 @FAVOURITES_MENU@
+static bool launcher_accepts_outer_command(u8 command)
+{
+    switch(command) {
+        @OUTER_COMMAND_CASES@
+            return true;
+        default:return false;
+    }
+}
+static void copy_result_returns_home(void)
+{
+    int sd_context,options_context;
+    OPTIONS_STATE state={.prev_menu=&sd_context};
+    menu=&options_context;
+    u8 command=favourite_copy(&state,NULL,0);
+    assert(protocol_state==PROTOCOL_READY);
+    assert(launcher_accepts_outer_command(command));
+    assert(command==CMD_MENU && menu==&sd_context && back_to_dir==0);
+    menu=NULL;
+}
 _Static_assert(sizeof(CFG_FILE)==1024,"Original configuration size changed");
 _Static_assert(offsetof(CFG_FILE,path)==18,"Original path offset changed");
 _Static_assert(offsetof(CFG_FILE,file)==768,"Original filename offset changed");
@@ -121,19 +141,19 @@ int main(void)
     assert(fav_add("/Games","Test [EF].crt")==FAV_ALREADY);
     strcpy(cfg_file.path,"/Games");strcpy(cfg_file.file,"Test [EF].crt");
     assert(favourite_supported(FILE_DIR) && favourite_supported(FILE_CRT) && !favourite_supported(FILE_D64_PRG));
-    assert(favourite_copy(NULL,NULL,0)==124 && back_to_dir==1);
+    copy_result_returns_home();
     assert(strstr(displayed,"already") && !strcmp(cfg_file.path,"/Games"));
     assert(warning_syncs==1);
     put("/Games/Ack.prg","ack",3);strcpy(cfg_file.file,"Ack.prg");
-    assert(favourite_copy(NULL,NULL,0)==124 && back_to_dir==2);
+    copy_result_returns_home();
     assert(strstr(displayed,"Added") && warning_syncs==2);
     equal("/Favourites/Ack.prg","ack",3);equal("/Games/Ack.prg","ack",3);
     put("/Games/Ack.prg","different",9);
-    assert(favourite_copy(NULL,NULL,0)==124 && back_to_dir==3);
+    copy_result_returns_home();
     assert(strstr(displayed,"Nothing overwritten") && warning_syncs==3);
     equal("/Favourites/Ack.prg","ack",3);
     strcpy(cfg_file.file,"Missing.prg");
-    assert(favourite_copy(NULL,NULL,0)==124 && back_to_dir==4 && warning_syncs==4);
+    copy_result_returns_home();assert(warning_syncs==4);
     assert(protocol_state==PROTOCOL_READY);
     put("/Games/Test [EF].crt","changed",7);
     assert(fav_add("/Games","Test [EF].crt")==FAV_COLLISION);equal("/Favourites/Test [EF].crt",data,sizeof(data));
@@ -164,6 +184,6 @@ int main(void)
     assert(f_mount(NULL,"",0)==FR_OK);memset(&fs,0,sizeof(fs));assert(f_mount(&fs,"",1)==FR_OK);
     equal("/Favourites/Set/Sub/data","payload",7);equal("/.KFF2.cfg",&cfg_file,sizeof(cfg_file));
     assert(f_mount(NULL,"",0)==FR_OK);free(volume);
-    puts("PASS: G7 config layout/defaults/downgrade, REU sizes, real FAT32 file/folder copies, companions, no-overwrite, interrupted copy, read-only, depth and I/O failures, copy-result acknowledgement handshake");
+    puts("PASS: G7 config layout/defaults/downgrade, REU sizes, real FAT32 file/folder copies, companions, no-overwrite, interrupted copy, read-only, depth and I/O failures, copy-result handshake and actual launcher outer-command compatibility");
     return 0;
 }

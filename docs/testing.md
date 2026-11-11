@@ -1,16 +1,23 @@
 # Current hardware checks, G7
 
-## G7.0.1 hotfix retest
+## G7.0.2 hotfix retest
 
 Original G7 was reported to remain on “Added to /Favourites. Original kept. /
-PRESS A KEY” after keypresses. The copy itself has not yet been independently
-verified. G7.0.1 adds the missing warning-to-browser synchronisation. Host tests
-pass; hardware verification is pending.
+PRESS A KEY” after keypresses. A later report during the G7.0.1 update/test attempt
+showed “Communication with cartridge failed. Unexpected command: 9”. The owner
+also questioned the short flash duration, so the installed image has not been
+independently verified. Source review confirms G7.0.1's directory-return path
+is invalid after a warning, whether or not that particular flash completed.
+
+G7.0.2 completes the acknowledgement handshake, restores the SD menu context and
+issues the outer dispatcher's `CMD_MENU`. Each copy result now returns to **Home**.
+Host checks pass and reject both previous faulty return paths; hardware verification
+is pending. Copy contents and source retention still need independent checking.
 
 Retest a new file copy, then an identical repeat and a different file with the
-same destination name. Each result screen should dismiss to the browser. Load
-the copied game and confirm the source remains. Repeat with a complete game folder.
-The internal label still reads `2.G7`; use the `.0.1.upd` file and its checksum.
+same destination name. Each result should dismiss to Home. Open Favourites,
+load the copy and confirm the source remains. Repeat with a complete game folder.
+The internal label still reads `2.G7`; use the `.0.2.upd` file and its checksum.
 
 ## Hardware report, 11 November 2026
 

@@ -1,30 +1,40 @@
-# Experimental firmware G7.0.1, Favourites acknowledgement fix
+# Experimental firmware G7.0.2, Favourites acknowledgement fix
 
-[KungFuFlash_v2.G7.0.1.upd](KungFuFlash_v2.G7.0.1.upd) is a complete 128 KB KFF2 update.
+[KungFuFlash_v2.G7.0.2.upd](KungFuFlash_v2.G7.0.2.upd) is a complete 128 KB KFF2 update.
 It is an altered development build, not an official release. G7 has a positive
 hardware report for PRG/CRT loading, saving REU-size/autoboot preferences and
 returning to Home after reset with autoboot disabled. Favourites copying and
 actual REU operation remain unverified. See [dated hardware results](HARDWARE-TESTS.md)
 and the [current test checklist](../../docs/testing.md).
 
-## G7.0.1 hotfix, 11 November 2026
+## G7.0.2 hotfix, 11 November 2026
 
-Fixes the freeze after pressing a key on Copy to Favourites result screens.
-The callback now completes `CMD_SYNC` after the warning acknowledgement before
-sending browser data. Success, already-present, collision and failure messages
-share this path. No G8 features, configuration changes or graphics changes.
+Fixes both stages of the Copy to Favourites return path. G7.0.1 supplied the
+missing `CMD_SYNC`, but then sent `CMD_READ_DIR` (9) to the outer C64 dispatcher,
+which does not accept directory commands. G7.0.2 restores the previous SD menu
+context and returns `CMD_MENU` instead. Dismissing any copy result returns to
+**Home**; use Favourites or B/Browse to inspect the copy. The copier, configuration,
+C64 launcher and graphics are unchanged. There are no G8 features.
 
-The download version is **G7.0.1**; the internal firmware identifier remains
-`2.G7` to fit the existing launcher field. ARM code grows by **4 bytes**, to
-77,624 bytes. RAM/BSS is unchanged; the exact C64 launcher and graphics hashes
-are unchanged. The original [G7 update](KungFuFlash_v2.G7.upd) is retained for
-traceability and rollback, but contains the reported acknowledgement bug.
+The download version is **G7.0.2**; the internal identifier remains `2.G7` to fit
+the existing launcher field. ARM code is 77,620 bytes, with 20,684 bytes available.
+RAM/BSS and the exact C64 launcher/graphics hashes are unchanged. Original
+[G7](KungFuFlash_v2.G7.upd) and [G7.0.1](KungFuFlash_v2.G7.0.1.upd) remain for
+traceability, but their Favourites acknowledgement/return paths are faulty.
+**G7.0.1 is superseded.**
 
-Software checks pass, including a regression test that rejects the old missing
-handshake. Existing VICE evidence is reused for the byte-identical launcher;
-VICE does not emulate this physical ARM/C64 handshake. G7.0.1 has **not yet been
-retested on hardware**. After updating, copy a file, press Return and confirm
-you return to the browser; then load the copy and check the original remains.
+Software checks pass. Regression checks derive allowed commands from the actual
+C64 outer dispatcher and reject both previous faults. Existing VICE evidence is
+reused for the byte-identical launcher; this is not physical ARM/C64 bus emulation.
+**G7.0.2 has not yet been retested on hardware.** After updating, copy a file,
+dismiss the result, confirm Home appears, then open Favourites and load the copy.
+Check the source remains and repeat with a complete game folder.
+
+The updater accepts this package despite the shared internal version, and rewrites
+all sixteen 8 KB sectors (128 KB). It does not skip unchanged bytes. We have not
+measured a reliable flash duration; a quick return alone cannot prove an update.
+Verify the SD file's checksum, select it, then select **Upgrade** on the confirmation
+screen and leave power connected until the launcher restarts.
 
 ![G7 Settings in VICE, example values](../../preview/g7-settings.png)
 

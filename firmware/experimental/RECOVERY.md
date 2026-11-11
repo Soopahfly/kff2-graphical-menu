@@ -1,7 +1,7 @@
 # Installing and recovering KFF2 firmware
 
 This guide is for **Kung Fu Flash 2**, not the original KFF cartridge.
-The current **G7.0.1** build is experimental, with limited positive hardware
+The current **G7.0.2** build is experimental, with limited positive hardware
 reports for PRG/CRT loading, preference saving and reset with autoboot disabled.
 Favourites copies, actual REU operation and broader compatibility still need testing.
 See [the hardware log](HARDWARE-TESTS.md). Recovery procedures themselves have not
@@ -11,7 +11,7 @@ been tested as part of this project; the methods below are documented upstream.
 
 1. Keep a copy of an official KFF2 `.upd` from the upstream releases page on
    your PC, as well as a backup of your SD card configuration.
-2. Copy `KungFuFlash_v2.G7.0.1.upd` to the FAT32 SD card. The UI is built in; it
+2. Copy `KungFuFlash_v2.G7.0.2.upd` to the FAT32 SD card. The UI is built in; it
    does not need a menu PRG, graphics folder or fonts on the card.
 3. Create `/Games`, `/Tools`, `/Utilities` and `/Favourites`, then add your
    normal files. Missing folders show a message; OK opens the SD root.

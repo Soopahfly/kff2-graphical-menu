@@ -5,9 +5,13 @@ G7 uses upstream **v2.07 plus one documentation commit**,
 `60b82792bd8275f4ca9e9c43300766e02b05dfcf`). It retains G6's graphical interface.
 It does not import a community fork or expand cartridge format support.
 
-**G7.0.1 hotfix:** completes the warning acknowledgement handshake after copying
-to Favourites, fixing the stuck “Press a key” screen. The internal version remains
-`2.G7`. Software regression checks pass; hardware retesting is pending.
+**G7.0.2 hotfix:** completes the warning handshake and restores the SD menu
+context before issuing `CMD_MENU`. After dismissing a copy result, the launcher
+returns to **Home**, where the folder cards and B/Browse work normally. G7.0.1
+fixed only the initial wait; it could then show “Unexpected command: 9” because
+the outer launcher loop cannot accept directory data. It is superseded.
+The internal version remains `2.G7`. Software checks pass; hardware retesting
+is pending. The copier itself is unchanged.
 
 ## Copy to Favourites
 
