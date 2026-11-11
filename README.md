@@ -91,6 +91,7 @@ See the [build report](firmware/experimental/build-report.json) and
 | PC SD collection tools | [Copy planner](docs/copy-games.md), [hash catalogue](docs/hash-catalogue.md) |
 | Build requirements and commands | [Building](docs/building.md) |
 | Proposed features and acceptance checks | [Roadmap](ROADMAP.md) |
+| Next milestone boundaries and work breakdown | [G8 scope](docs/g8-scope.md) |
 | Earlier prototypes and ROM measurements | [Development history](docs/development-history.md) |
 
 ## VICE preview

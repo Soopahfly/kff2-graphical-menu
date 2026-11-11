@@ -56,6 +56,9 @@ See [the current checklist](docs/testing.md).
 
 ## 2. G8: disk swapping and optional Random preview
 
+See the [G8 scope and implementation plan](docs/g8-scope.md) for proposed controls,
+disk-list format, configuration compatibility, work breakdown and release checks.
+
 ### D64 disk swapping with the Special button
 
 **Benefit:** change disks in a multi-disk game without returning to the launcher.
