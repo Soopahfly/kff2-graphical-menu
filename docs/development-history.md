@@ -38,6 +38,8 @@ menu/loader-context bugs and should not be used as a new test baseline.
 
 ## Not in G7
 
+See [the roadmap](../ROADMAP.md) for proposed priorities and acceptance checks.
+
 REU image loading/saving, Special-button disk swapping, GMod2/larger-cartridge
 support and random preview were reviewed as possible later work. They are not
 part of G7 or a promised release. exFAT, simultaneous CRT+REU and on-cart launch

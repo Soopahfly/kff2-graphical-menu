@@ -6,7 +6,8 @@ by EasyFlash 3. The current experimental build is **v2.G7**.
 **[Download G7 firmware](https://github.com/Soopahfly/kff2-graphical-menu/raw/refs/heads/main/firmware/experimental/KungFuFlash_v2.G7.upd)** ·
 [Installation and SD setup](docs/getting-started.md) ·
 [Recovery](firmware/experimental/RECOVERY.md) ·
-[Hardware test checklist](docs/testing.md)
+[Hardware test checklist](docs/testing.md) ·
+[Roadmap](ROADMAP.md)
 
 G7 is based on official **v2.07 plus one documentation commit**, `9c84d99`.
 `2.G7` is this project's version label, not an official upstream release.
@@ -89,6 +90,7 @@ See the [build report](firmware/experimental/build-report.json) and
 | Random selection and bookkeeping | [Random](docs/random-game.md), [launch history](docs/launch-history.md) |
 | PC SD collection tools | [Copy planner](docs/copy-games.md), [hash catalogue](docs/hash-catalogue.md) |
 | Build requirements and commands | [Building](docs/building.md) |
+| Proposed features and acceptance checks | [Roadmap](ROADMAP.md) |
 | Earlier prototypes and ROM measurements | [Development history](docs/development-history.md) |
 
 ## VICE preview
