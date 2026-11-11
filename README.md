@@ -1,19 +1,23 @@
 # KFF2 Graphical Menu
 
 A graphical Home screen and shared menu style for **Kung Fu Flash 2**, inspired
-by EasyFlash 3. The current experimental build is **v2.G7**.
+by EasyFlash 3. The current experimental build is **G7.0.1**.
 
-**[Download G7 firmware](https://github.com/Soopahfly/kff2-graphical-menu/raw/refs/heads/main/firmware/experimental/KungFuFlash_v2.G7.upd)** ·
+**[Download G7.0.1 firmware](https://github.com/Soopahfly/kff2-graphical-menu/raw/refs/heads/main/firmware/experimental/KungFuFlash_v2.G7.0.1.upd)** ·
 [Installation and SD setup](docs/getting-started.md) ·
 [Recovery](firmware/experimental/RECOVERY.md) ·
 [Hardware test checklist](docs/testing.md) ·
 [Roadmap](ROADMAP.md)
 
 G7 is based on official **v2.07 plus one documentation commit**, `9c84d99`.
-`2.G7` is this project's version label, not an official upstream release.
+`2.G7` is this project's internal version label, not an official upstream release.
+**G7.0.1 fixes the stuck “Press a key” screen after Copy to Favourites.**
+Its internal cartridge label remains `2.G7`; identify the hotfix by its filename and
+[checksum](firmware/experimental/SHA256SUMS). It contains no G8 features.
 Software checks pass. On real hardware, the project owner reports working G7
 PRG/CRT loading, saved REU-size/autoboot preferences and return to Home after reset
-with autoboot disabled. Favourites copies and actual REU operation still need
+with autoboot disabled. The original G7 copy-result screen was reported to freeze. G7.0.1 fixes that
+handshake in software; hardware confirmation and actual REU operation still need
 verification. See [the dated hardware results](firmware/experimental/HARDWARE-TESTS.md).
 Earlier G5 Home/SD-browser rendering was photographed on an LCD.
 

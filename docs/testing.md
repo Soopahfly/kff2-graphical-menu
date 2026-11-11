@@ -1,5 +1,17 @@
 # Current hardware checks, G7
 
+## G7.0.1 hotfix retest
+
+Original G7 was reported to remain on “Added to /Favourites. Original kept. /
+PRESS A KEY” after keypresses. The copy itself has not yet been independently
+verified. G7.0.1 adds the missing warning-to-browser synchronisation. Host tests
+pass; hardware verification is pending.
+
+Retest a new file copy, then an identical repeat and a different file with the
+same destination name. Each result screen should dismiss to the browser. Load
+the copied game and confirm the source remains. Repeat with a complete game folder.
+The internal label still reads `2.G7`; use the `.0.1.upd` file and its checksum.
+
 ## Hardware report, 11 November 2026
 
 The project owner (Soopahfly) reports these G7 checks passed on real hardware:

@@ -19,5 +19,8 @@ static u8 favourite_copy(OPTIONS_STATE *state,OPTIONS_ELEMENT *element,u8 flags)
     FAV_RESULT result=fav_add(cfg_file.path,cfg_file.file);
     c64_interface_sync();
     c64_send_warning(messages[result]);
+    /* CMD_WARNING acknowledges the key, then waits for CMD_SYNC before it can
+     * accept another command. Finish that handshake before sending directory data. */
+    c64_interface_sync();
     return options_prev_dir(state,element,flags);
 }

@@ -8,14 +8,14 @@
   "arm_compiler": "arm-none-eabi-gcc (15:12.2.rel1-1) 12.2.1 20221205",
   "cc65": "cc65 V2.18 - Debian 2.19-1",
   "update_bytes": 131072,
-  "arm_binary_bytes": 77620,
+  "arm_binary_bytes": 77624,
   "launcher_offset": 114688,
   "launcher_bytes": 16384,
   "launcher_rom_free": 630,
   "blank_region_preserved": true,
   "initial_sp": "0x20020000",
   "reset_vector": "0x80002b1",
-  "sha256": "c36c30e3ec04bcffdff07dcf03cf9cdafd007b1cbd7eaeffd719696c6d76f552",
+  "sha256": "d6e6eefdd237a143af32e33a6691f36faa2269aa013f1b9b43b7c0030adb8bcb",
   "launcher_sha256": "34fc8c6cbff2e561818d6a4a953b31cf17d758b1c82c11f12b1100bb8cdd737d",
   "vice_harness_matches_build": true,
   "ui_bank_sha256": "fdd9172d8a2b5d3db2ec4a42983fb01802ae987cc8b964a98108693e9b338724",
@@ -52,5 +52,7 @@
   "compiler_warning_kinds": [
     "stm32h7b0xx/c64_interface.h:465:41: warning: array subscript 0 is outside array bounds of 'u32[0]' {aka 'long unsigned int[]'} [-Warray-bounds]",
     "stm32h7b0xx/c64_interface.h:468:17: warning: array subscript 0 is outside array bounds of 'u32[0]' {aka 'long unsigned int[]'} [-Warray-bounds]"
-  ]
+  ],
+  "package_version": "2.G7.0.1",
+  "favourites_acknowledgement_sync": true
 }

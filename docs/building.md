@@ -36,6 +36,11 @@ The ROM directory must contain:
 - `basic-901226-01.bin`
 - `chargen-901225-01.bin`
 
+For the G7.0.1 hotfix, add `--package-version 2.G7.0.1` to the firmware-builder
+command. This changes the download filename and report package version while
+preserving the internal `2.G7` identifier and byte-identical C64 launcher. The
+original G7 `.upd` remains alongside the new package.
+
 The default identifier is `2.G7`. The launcher builder also accepts `--version`;
 the firmware builder takes its version from the launcher measurements. Version
 identifiers must fit the existing 20-byte launcher name field.
@@ -66,7 +71,7 @@ warnings remain visible; they are recorded in the build report.
 | --- | --- |
 | `launcher/build/integration/` | Patched C64 source, native ROM, measurements, VICE harnesses/screenshots/results |
 | `launcher/build/arm-firmware/` | Patched ARM source, host-test log, compiler log and firmware artifacts |
-| `firmware/experimental/KungFuFlash_v2.G7.upd` | Flashable update |
+| `firmware/experimental/KungFuFlash_v2.G7.0.1.upd` | Current hotfix update |
 | `firmware/experimental/build-report.json` | Current package identity and measurements |
 | `firmware/experimental/SHA256SUMS` | Checksums for retained updates |
 

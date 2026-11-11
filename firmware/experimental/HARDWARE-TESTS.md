@@ -1,8 +1,10 @@
 # G7 hardware results
 
 Candidate: [KungFuFlash_v2.G7.upd](KungFuFlash_v2.G7.upd), based on upstream
-v2.07 plus documentation commit `9c84d99`. Firmware identity and software checks
-are in [build-report.json](build-report.json) and [SHA256SUMS](SHA256SUMS).
+v2.07 plus documentation commit `9c84d99`. The original G7 SHA256 is
+`c36c30e3ec04bcffdff07dcf03cf9cdafd007b1cbd7eaeffd719696c6d76f552`.
+[build-report.json](build-report.json) now describes the G7.0.1 hotfix;
+[SHA256SUMS](SHA256SUMS) identifies both downloads.
 
 This log records hardware reports received after packaging. It does not change
 the firmware or retrospectively alter the build report's `hardware_tested: false`
@@ -26,6 +28,25 @@ Exact C64 model/board, PAL/NTSC standard and test titles/programs were not
 provided with this report. Earlier G5 photographs used an LCD; G7 CRT-display
 readability has not been reported. These results do not imply that every loader,
 cartridge type, display or hardware configuration has passed.
+
+## 11 November 2026, Favourites result-screen failure
+
+The owner supplied a photograph of the original G7 success message, “Added to
+/Favourites. Original kept.”, and reported no response to any key. This confirms
+the result screen displayed, but does not independently prove the destination
+contents, source retention or successful loading. File/folder and title were not
+specified. Treat acknowledgement as a **reported failure**, not a passed copy test.
+
+Source review found that the callback sent directory data while the launcher was
+still waiting for `CMD_SYNC` after acknowledging the warning. G7.0.1 adds that
+synchronisation. Host regression checks cover success, already present, collision
+and failure, and fail when the fix is removed.
+
+**G7.0.1 hardware retest: pending.** Its internal label is still `2.G7`. Download
+[KungFuFlash_v2.G7.0.1.upd](KungFuFlash_v2.G7.0.1.upd), SHA256
+`d6e6eefdd237a143af32e33a6691f36faa2269aa013f1b9b43b7c0030adb8bcb`.
+The earlier PRG/CRT/settings/reset passes apply to original G7, not a claimed
+retest of this hotfix.
 
 ## Remaining checks before a first public release
 

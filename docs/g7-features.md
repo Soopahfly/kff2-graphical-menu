@@ -5,6 +5,10 @@ G7 uses upstream **v2.07 plus one documentation commit**,
 `60b82792bd8275f4ca9e9c43300766e02b05dfcf`). It retains G6's graphical interface.
 It does not import a community fork or expand cartridge format support.
 
+**G7.0.1 hotfix:** completes the warning acknowledgement handshake after copying
+to Favourites, fixing the stuck “Press a key” screen. The internal version remains
+`2.G7`. Software regression checks pass; hardware retesting is pending.
+
 ## Copy to Favourites
 
 In the SD browser, highlight a file or game folder and use **Shift+Return**

@@ -18,6 +18,7 @@ def digest(data):return hashlib.sha256(data).hexdigest()
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--upstream',type=Path,required=True)
+    ap.add_argument('--package-version',help='Download version, e.g. 2.G7.0.1; internal launcher identifier stays unchanged')
     ap.add_argument('--arm-bin',type=Path,help='Directory containing arm-none-eabi tools; defaults to PATH')
     ap.add_argument('--newlib-include',type=Path,help='Only needed for an unpacked toolchain without configured headers')
     ap.add_argument('--newlib-libdir',type=Path,help='Only needed for unpacked newlib archives')
@@ -29,6 +30,8 @@ def main():
     launcher=ui/'native/kff2-integrated-launcher.bin'
     native=launcher.read_bytes()
     version=metadata['version']
+    package_version=args.package_version or version
+    assert package_version==version or re.fullmatch(re.escape(version)+r'(?:\.\d+)+',package_version),'Package version must extend the internal version with numeric components'
     assert len(native)==16384
     assert tests['native_image_sha256']==digest(native),'VICE results do not match this launcher build'
     assert tests['interactive_prg_sha256']==digest((ui/'interactive/kff2-integration-test.prg').read_bytes())
@@ -102,7 +105,10 @@ def main():
         'compiler_warning_kinds':sorted(set(line.strip() for line in log.splitlines() if 'warning:' in line))}
     dest=root/'firmware/experimental'
     dest.mkdir(parents=True,exist_ok=True)
-    filename='KungFuFlash_v'+version+'.upd'
+    if package_version!=version:
+        result['package_version']=package_version
+    result['favourites_acknowledgement_sync']=True
+    filename='KungFuFlash_v'+package_version+'.upd'
     (dest/filename).write_bytes(upd)
     (dest/'build-report.json').write_text(json.dumps(result,indent=2)+'\n')
     (dest/'SHA256SUMS').write_text(''.join(digest(p.read_bytes())+'  '+p.name+'\n' for p in sorted(dest.glob('*.upd'))))

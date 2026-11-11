@@ -1,11 +1,30 @@
-# Experimental firmware v2.G7, favourites and REU/startup settings
+# Experimental firmware G7.0.1, Favourites acknowledgement fix
 
-[KungFuFlash_v2.G7.upd](KungFuFlash_v2.G7.upd) is a complete 128 KB KFF2 update.
+[KungFuFlash_v2.G7.0.1.upd](KungFuFlash_v2.G7.0.1.upd) is a complete 128 KB KFF2 update.
 It is an altered development build, not an official release. G7 has a positive
 hardware report for PRG/CRT loading, saving REU-size/autoboot preferences and
 returning to Home after reset with autoboot disabled. Favourites copying and
 actual REU operation remain unverified. See [dated hardware results](HARDWARE-TESTS.md)
 and the [current test checklist](../../docs/testing.md).
+
+## G7.0.1 hotfix, 11 November 2026
+
+Fixes the freeze after pressing a key on Copy to Favourites result screens.
+The callback now completes `CMD_SYNC` after the warning acknowledgement before
+sending browser data. Success, already-present, collision and failure messages
+share this path. No G8 features, configuration changes or graphics changes.
+
+The download version is **G7.0.1**; the internal firmware identifier remains
+`2.G7` to fit the existing launcher field. ARM code grows by **4 bytes**, to
+77,624 bytes. RAM/BSS is unchanged; the exact C64 launcher and graphics hashes
+are unchanged. The original [G7 update](KungFuFlash_v2.G7.upd) is retained for
+traceability and rollback, but contains the reported acknowledgement bug.
+
+Software checks pass, including a regression test that rejects the old missing
+handshake. Existing VICE evidence is reused for the byte-identical launcher;
+VICE does not emulate this physical ARM/C64 handshake. G7.0.1 has **not yet been
+retested on hardware**. After updating, copy a file, press Return and confirm
+you return to the browser; then load the copy and check the original remains.
 
 ![G7 Settings in VICE, example values](../../preview/g7-settings.png)
 
