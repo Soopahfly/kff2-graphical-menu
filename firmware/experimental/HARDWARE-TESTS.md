@@ -3,7 +3,7 @@
 Candidate: [KungFuFlash_v2.G7.upd](KungFuFlash_v2.G7.upd), based on upstream
 v2.07 plus documentation commit `9c84d99`. The original G7 SHA256 is
 `c36c30e3ec04bcffdff07dcf03cf9cdafd007b1cbd7eaeffd719696c6d76f552`.
-[build-report.json](build-report.json) now describes the G7.0.2 hotfix;
+[build-report.json](build-report.json) now describes the G7.0.3 hotfix;
 [SHA256SUMS](SHA256SUMS) identifies all retained downloads.
 
 This log records hardware reports received after packaging. It does not change
@@ -64,6 +64,27 @@ The earlier PRG/CRT/settings/reset passes apply to original G7, not a claimed
 retest of either hotfix. Verify the SD file checksum and confirm **Upgrade**.
 The unchanged upstream updater rewrites 128 KB without a same-version rejection
 or unchanged-sector skipping; flash duration has not been measured here.
+
+## 11 November 2026, two-key display report and G7.0.3
+
+The owner reports that dismissing a copy result requires two keypresses: the
+first flashes and redraws the prompt; the second reaches the file manager.
+The exact installed package checksum was not supplied. VICE reproduced that
+symptom in G7.0.2: Home's `waitRelease()` redrew the old terminal because the saved
+status mode was not cleared. Home was already accepting input; the second Return
+selected Games. The earlier missing-sync and command-9 faults are separate.
+
+G7.0.3 clears that mode on leaving the status view. Its new VICE regression uses
+the actual C64 outer dispatcher, warning/key wait, Home and browser, with a
+stand-in supplying ARM replies and sample directory contents. It injects one
+Return at the prompt and compares the full Home bank with the original assets.
+The old build fails that comparison; the corrected build passes, including B/F2/Q.
+No SD copying, flash operation or physical bus is emulated by this check.
+
+**G7.0.3 hardware retest: pending.** Confirm one key visibly returns Home, then
+check copied content, source retention and folder copying. Earlier hardware
+passes remain associated with original G7. Software evidence and runnable PRGs
+are in [copy-return tests](../../experiments/copy-return/README.md).
 
 ## Remaining checks before a first public release
 

@@ -9,6 +9,7 @@
 #include "base.h"
 #include "dir.h"
 #include "launcher_asm.h"
+#include "ui/home.h"
 #pragma code-name ("MOCK_CODE")
 #pragma rodata-name ("MOCK_CODE")
 
@@ -17,6 +18,15 @@ uint8_t test_reply_count, test_replies[48];
 uint8_t test_selected, test_folder, test_page, test_select_count;
 uint8_t test_seen, test_home_mask, test_asset_count;
 static uint8_t bank_pending;
+uint8_t test_copy_stage,test_copy_syncs;
+static uint8_t copy_command;
+void ui_copy_stop(void) { }
+void ui_copy_prompt(void) {
+    volatile uint16_t delay;
+    test_copy_stage=1;
+    for (delay=0;delay<5000;++delay);
+    ui_copy_stop();
+}
 void unpack_home_fixture(void);
 
 static uint8_t dialog;
@@ -37,6 +47,12 @@ static const char* child_files[] = {
 static void field(const char* value, uint8_t size)
 {
     while (size--) packet[writepos++] = *value ? *value++ : ' ';
+}
+static void copy_message(const char *text) {
+    uint8_t n=strlen(text);
+    writepos=readpos=ui_mock_read_ptr=0;
+    packet[writepos++]=n;packet[writepos++]=0;
+    field(text,n);
 }
 #pragma code-name (push, "MOCK_CODE")
 #pragma rodata-name (push, "MOCK_CODE")
@@ -184,6 +200,16 @@ uint8_t kff_send_reply_progress(uint8_t reply)
 }
 uint8_t __fastcall__ kff_send_reply(uint8_t reply)
 {
+#if defined(UI_TEST_SCENARIO) && (UI_TEST_SCENARIO == 10 || UI_TEST_SCENARIO == 11)
+    if (reply!=REPLY_HOME_ASSETS && copy_command<2) {
+        if (reply!=REPLY_OK) test_error=25;
+        if (!copy_command++) {
+            copy_message("Added to /Favourites. Original kept.");
+            return CMD_WARNING;
+        }
+        return CMD_MENU;
+    }
+#endif
     if (reply!=REPLY_HOME_ASSETS) return kff_send_reply_progress(reply);
     ++test_asset_count;
 #if defined(UI_TEST_SCENARIO) && UI_TEST_SCENARIO == 8
@@ -192,8 +218,26 @@ uint8_t __fastcall__ kff_send_reply(uint8_t reply)
     bank_pending=1;
     return CMD_NONE;
 }
-void kff_wait_for_sync(void) { test_error=5; }
-void wait_for_reset(void) { test_error=6; }
+void kff_wait_for_sync(void) {
+#if defined(UI_TEST_SCENARIO) && (UI_TEST_SCENARIO == 10 || UI_TEST_SCENARIO == 11)
+    ++test_copy_syncs;
+#else
+    test_error=5;
+#endif
+}
+void wait_for_reset(void) {
+#if defined(UI_TEST_SCENARIO) && (UI_TEST_SCENARIO == 10 || UI_TEST_SCENARIO == 11)
+    test_result=!test_error && test_copy_syncs==2 && copy_command==2;
+    ui_test_finished();
+#if UI_TEST_SCENARIO == 11
+    joy_uninstall();clrscr();
+    cputsxy(1,3,"VICE TEST COMPLETE. RESET TO REPEAT.");
+#endif
+    while(1);
+#else
+    test_error=6;
+#endif
+}
 uint8_t is_c128(void) { return 0; }
 void disk_mount_and_load(void) { test_error=7; }
 void ef3usb_load_and_run(void) { test_error=8; }
@@ -202,7 +246,9 @@ void ef3usb_load_and_run(void) { test_error=8; }
 #ifndef UI_TEST_SCENARIO
 #define UI_TEST_SCENARIO 1
 #endif
-#if UI_TEST_SCENARIO == 9
+#if UI_TEST_SCENARIO == 10
+static const uint8_t keys[] = {'b',CH_F2,'q'};
+#elif UI_TEST_SCENARIO == 9
 static const uint8_t keys[] = {CH_ENTER,CH_ENTER};
 #elif UI_TEST_SCENARIO == 1
 static const uint8_t keys[] = {
@@ -240,8 +286,14 @@ uint8_t ui_test_key(void)
 {
 #ifdef UI_TEST_AUTORUN
     volatile uint16_t delay;
+#endif
+#ifdef UI_TEST_AUTORUN
     /* Give VICE time to draw a complete frame before each checkpoint. */
     for (delay=0;delay<5000;++delay);
+#if UI_TEST_SCENARIO == 10
+    test_copy_stage=2+test_key_index;
+    ui_copy_stop();
+#endif
     ui_test_checkpoint();
 #if UI_TEST_SCENARIO == 9
     if (test_seen==5 || test_seen==6) ui_uniform_checkpoint();
@@ -260,6 +312,14 @@ int main(void)
 {
     uint8_t command;
     ui_test_init();
+#if defined(UI_TEST_SCENARIO) && (UI_TEST_SCENARIO == 10 || UI_TEST_SCENARIO == 11)
+    /* Real outer dispatcher, warning, waitKey, Home and browser. Only ARM I/O
+     * and the following directory contents are supplied by this fixture. */
+    home_enter(1);home_leave();
+    copy_message("Copying to /Favourites. Please wait.");
+    *(uint8_t*)0xde01=CMD_FLASH_MESSAGE;
+    ui_copy_run();
+#endif
 #if defined(UI_TEST_SCENARIO) && UI_TEST_SCENARIO == 9
     ui_test_uniform();
 #endif

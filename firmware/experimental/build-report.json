@@ -11,12 +11,12 @@
   "arm_binary_bytes": 77620,
   "launcher_offset": 114688,
   "launcher_bytes": 16384,
-  "launcher_rom_free": 630,
+  "launcher_rom_free": 627,
   "blank_region_preserved": true,
   "initial_sp": "0x20020000",
   "reset_vector": "0x80002b1",
-  "sha256": "531ea196a6b762218d07fafe37c29f26c7cf7133e2cec43c5acf6aa63343d558",
-  "launcher_sha256": "34fc8c6cbff2e561818d6a4a953b31cf17d758b1c82c11f12b1100bb8cdd737d",
+  "sha256": "2d7456f99b3864578da30b0da6280bd0a9ed26ba9e78034f38bb7841253ee402",
+  "launcher_sha256": "e4f3685847ae99c3df9c151d40580aa293c0cc9785ef442105d81d50beac2cb5",
   "vice_harness_matches_build": true,
   "ui_bank_sha256": "fdd9172d8a2b5d3db2ec4a42983fb01802ae987cc8b964a98108693e9b338724",
   "arm_supplied_home_font_bank": true,
@@ -53,7 +53,8 @@
     "stm32h7b0xx/c64_interface.h:465:41: warning: array subscript 0 is outside array bounds of 'u32[0]' {aka 'long unsigned int[]'} [-Warray-bounds]",
     "stm32h7b0xx/c64_interface.h:468:17: warning: array subscript 0 is outside array bounds of 'u32[0]' {aka 'long unsigned int[]'} [-Warray-bounds]"
   ],
-  "package_version": "2.G7.0.2",
+  "package_version": "2.G7.0.3",
   "favourites_acknowledgement_sync": true,
-  "favourites_result_returns_home": true
+  "favourites_result_returns_home": true,
+  "copy_result_one_key_vice": true
 }

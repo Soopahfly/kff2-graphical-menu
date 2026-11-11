@@ -103,6 +103,7 @@ void ui_test_init(void) {
 }
 uint8_t ui_test_menu(void) { return menuLoop(); }
 uint8_t ui_test_row(void) { return dir->selected; }
+void ui_copy_run(void) { mainLoopKFF(); }
 """
     patched += '\n#if defined(UI_TEST_SCENARIO) && UI_TEST_SCENARIO == 9\n#include "uniform_checks.inc"\n#endif\n'
     # The mock definitions affect only this copied test header.
@@ -132,16 +133,23 @@ uint8_t ui_test_row(void) { return dir->selected; }
     config=config.replace('    ZEROPAGE: load = ZP,       type = zp;',
                           '    MOCK_ASSET: load = MOCK, type = ro;\n    MOCK_CODE: load = MOCK, type = ro, optional = yes;\n    ZEROPAGE: load = ZP,       type = zp;')
     harness_cfg.write_text(config)
-    for scenario in range(10):
+    for scenario in range(12):
         output=work/('interactive' if scenario==0 else 'scenario-'+str(scenario))
         output.mkdir()
-        flags=[] if scenario==0 else ['-DUI_TEST_AUTORUN','-DUI_TEST_SCENARIO='+str(scenario)]
+        flags=[] if scenario==0 else ['-DUI_TEST_SCENARIO='+str(scenario)]
+        if scenario not in (0,11): flags.append('-DUI_TEST_AUTORUN')
         input_expr='c = kbhit() ? cgetc() : getJoy();'
         code=patched if scenario==0 else patched.replace(input_expr,'c = ui_test_key();')
+        if scenario in (10,11):
+            code=code.replace('cmd = KFF_GET_COMMAND()','cmd = CMD_FLASH_MESSAGE')
         if scenario==9:
             code=code.replace('if (kbhit())','if (1)').replace('c = cgetc();','c = ui_test_key();')
         (test/'main.c').write_text(code)
         base_code=(launcher/'base.c').read_text()
+        if scenario in (10,11):
+            base_code='#include "mock_backend.h"\n'+base_code
+            base_code=base_code.replace('    while (1)\n    {\n        if (kbhit())',
+                '    ui_copy_prompt();\n    while (1)\n    {\n        if (kbhit())',1)
         if scenario==9:
             base_code=base_code.replace('void waitKey(void)\n{','void waitKey(void)\n{\n    ui_test_key(); return;')
             base_code='#include "mock_backend.h"\n'+base_code

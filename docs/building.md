@@ -27,6 +27,7 @@ Run from this repository's root, replacing the example paths:
 python3 tools/build_integrated_launcher.py --upstream /path/to/KungFuFlash2
 python3 tools/test_integrated_launcher.py --vice /path/to/x64sc --rom-dir /path/to/C64
 python3 tools/test_uniform_ui.py --vice /path/to/x64sc --rom-dir /path/to/C64
+python3 tools/test_copy_return.py --vice /path/to/x64sc --rom-dir /path/to/C64
 python3 tools/build_firmware.py --upstream /path/to/KungFuFlash2
 ```
 
@@ -36,9 +37,10 @@ The ROM directory must contain:
 - `basic-901226-01.bin`
 - `chargen-901225-01.bin`
 
-For the G7.0.2 hotfix, add `--package-version 2.G7.0.2` to the firmware-builder
+For the G7.0.3 hotfix, add `--package-version 2.G7.0.3` to the firmware-builder
 command. This changes the download filename and report package version while
-preserving the internal `2.G7` identifier and byte-identical C64 launcher. The
+preserving the internal `2.G7` identifier. G7.0.3 changes the C64 status-view
+cleanup; its new launcher must pass all VICE suites. The
 original G7 `.upd` remains alongside the new package.
 
 The default identifier is `2.G7`. The launcher builder also accepts `--version`;
@@ -52,7 +54,7 @@ Use each script's `--help` for the argument names.
 
 ## What packaging checks
 
-The firmware builder requires the navigation and shared-UI VICE reports to match
+The firmware builder requires the navigation, shared-UI and one-key copy-return VICE reports to match
 the exact native image/preview hashes. It then runs the Home/random, history,
 real FatFs, asset-transfer and G7 feature tests before compiling the ARM image.
 
@@ -62,7 +64,7 @@ These are software checks, not physical KFF2 emulation.
 
 Layout checks cover the 128 KB update, embedded 16 KB launcher, reset/stack vectors,
 ARM allocation and unchanged blank 16 KB region. The packaged G7 launcher has
-630 bytes free in its main allocation. Upstream zero-address vector-table compiler
+627 bytes free in its main allocation. Upstream zero-address vector-table compiler
 warnings remain visible; they are recorded in the build report.
 
 ## Outputs
@@ -71,7 +73,7 @@ warnings remain visible; they are recorded in the build report.
 | --- | --- |
 | `launcher/build/integration/` | Patched C64 source, native ROM, measurements, VICE harnesses/screenshots/results |
 | `launcher/build/arm-firmware/` | Patched ARM source, host-test log, compiler log and firmware artifacts |
-| `firmware/experimental/KungFuFlash_v2.G7.0.2.upd` | Current hotfix update |
+| `firmware/experimental/KungFuFlash_v2.G7.0.3.upd` | Current hotfix update |
 | `firmware/experimental/build-report.json` | Current package identity and measurements |
 | `firmware/experimental/SHA256SUMS` | Checksums for retained updates |
 

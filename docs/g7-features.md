@@ -5,13 +5,13 @@ G7 uses upstream **v2.07 plus one documentation commit**,
 `60b82792bd8275f4ca9e9c43300766e02b05dfcf`). It retains G6's graphical interface.
 It does not import a community fork or expand cartridge format support.
 
-**G7.0.2 hotfix:** completes the warning handshake and restores the SD menu
-context before issuing `CMD_MENU`. After dismissing a copy result, the launcher
-returns to **Home**, where the folder cards and B/Browse work normally. G7.0.1
-fixed only the initial wait; it could then show “Unexpected command: 9” because
-the outer launcher loop cannot accept directory data. It is superseded.
-The internal version remains `2.G7`. Software checks pass; hardware retesting
-is pending. The copier itself is unchanged.
+**G7.0.3 hotfix:** clears the saved status-screen mode when leaving it. G7.0.2
+already completed the command handshake and entered Home, but Home's key-release
+check could redraw the previous “Press a key” message over it. One keypress now
+visibly returns to Home. VICE reproduced the old fault and checks the corrected
+Home pixels plus B/F2 navigation. The copier and ARM-side return path are unchanged.
+The internal version remains `2.G7`; real-hardware retesting is pending.
+See the [runnable VICE tests](../experiments/copy-return/README.md).
 
 ## Copy to Favourites
 

@@ -18,7 +18,7 @@ def digest(data):return hashlib.sha256(data).hexdigest()
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--upstream',type=Path,required=True)
-    ap.add_argument('--package-version',help='Download version, e.g. 2.G7.0.1; internal launcher identifier stays unchanged')
+    ap.add_argument('--package-version',help='Download version, e.g. 2.G7.0.3; internal launcher identifier stays unchanged')
     ap.add_argument('--arm-bin',type=Path,help='Directory containing arm-none-eabi tools; defaults to PATH')
     ap.add_argument('--newlib-include',type=Path,help='Only needed for an unpacked toolchain without configured headers')
     ap.add_argument('--newlib-libdir',type=Path,help='Only needed for unpacked newlib archives')
@@ -42,6 +42,10 @@ def main():
     assert uniform['native_image_sha256']==digest(native),'Uniform UI checks do not match this launcher'
     assert len(uniform['screens'])==12 and all(r['passed'] for r in uniform['screens'])
     assert uniform['reader_forward_back'] and uniform['native_fallback']
+    copy_return=json.loads((ui/'copy-return-results.json').read_text())
+    assert copy_return['passed'] and copy_return['warning_dismissal_keys']==1
+    assert copy_return['native_image_sha256']==digest(native),'Copy-return VICE test does not match this launcher'
+    assert copy_return['manual_prg_sha256']==digest((ui/'scenario-11/kff2-integration-test.prg').read_bytes())
     env=os.environ.copy()
     if args.newlib_include:
         env['C_INCLUDE_PATH']=str(args.newlib_include.resolve())+(os.pathsep+env['C_INCLUDE_PATH'] if env.get('C_INCLUDE_PATH') else '')
@@ -109,6 +113,7 @@ def main():
         result['package_version']=package_version
     result['favourites_acknowledgement_sync']=True
     result['favourites_result_returns_home']=True
+    result['copy_result_one_key_vice']=True
     filename='KungFuFlash_v'+package_version+'.upd'
     (dest/filename).write_bytes(upd)
     (dest/'build-report.json').write_text(json.dumps(result,indent=2)+'\n')

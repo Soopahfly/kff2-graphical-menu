@@ -40,7 +40,7 @@ RAM segment at $9000, leaving the real graphics bank $4000-$7fff untouched.
 Its BSS is $8000-$8fff and C stack below $c000. None of these fixture relocations
 change the native cartridge memory layout.
 
-Native C64 image: 16 KB, 630 bytes free in its main allocation. Graphics/font bank:
+Native C64 image: 16 KB, 627 bytes free in its main allocation. Graphics/font bank:
 16 KB supplied by the existing ARM reply. Full update: 128 KB with the reserved
 16 KB gap preserved. Asset bytes and loader/emulation implementations are unchanged.
 

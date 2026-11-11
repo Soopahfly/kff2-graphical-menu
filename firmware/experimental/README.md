@@ -1,40 +1,39 @@
-# Experimental firmware G7.0.2, Favourites acknowledgement fix
+# Experimental firmware G7.0.3, one-key copy-result display fix
 
-[KungFuFlash_v2.G7.0.2.upd](KungFuFlash_v2.G7.0.2.upd) is a complete 128 KB KFF2 update.
+[KungFuFlash_v2.G7.0.3.upd](KungFuFlash_v2.G7.0.3.upd) is a complete 128 KB KFF2 update.
 It is an altered development build, not an official release. G7 has a positive
 hardware report for PRG/CRT loading, saving REU-size/autoboot preferences and
 returning to Home after reset with autoboot disabled. Favourites copying and
 actual REU operation remain unverified. See [dated hardware results](HARDWARE-TESTS.md)
 and the [current test checklist](../../docs/testing.md).
 
-## G7.0.2 hotfix, 11 November 2026
+## G7.0.3 hotfix, 11 November 2026
 
-Fixes both stages of the Copy to Favourites return path. G7.0.1 supplied the
-missing `CMD_SYNC`, but then sent `CMD_READ_DIR` (9) to the outer C64 dispatcher,
-which does not accept directory commands. G7.0.2 restores the previous SD menu
-context and returns `CMD_MENU` instead. Dismissing any copy result returns to
-**Home**; use Favourites or B/Browse to inspect the copy. The copier, configuration,
-C64 launcher and graphics are unchanged. There are no G8 features.
+Clears the saved native-terminal view in `browser_leave()`. In G7.0.2 the warning
+handshake completed and Home became active, but `waitRelease()` could redraw the
+old “Press a key” screen over Home. A second Return then selected Games. G7.0.3
+prevents that stale redraw. The copier, configuration and ARM-side `CMD_MENU`
+return remain unchanged. There are no G8 features.
 
-The download version is **G7.0.2**; the internal identifier remains `2.G7` to fit
-the existing launcher field. ARM code is 77,620 bytes, with 20,684 bytes available.
-RAM/BSS and the exact C64 launcher/graphics hashes are unchanged. Original
-[G7](KungFuFlash_v2.G7.upd) and [G7.0.1](KungFuFlash_v2.G7.0.1.upd) remain for
-traceability, but their Favourites acknowledgement/return paths are faulty.
-**G7.0.1 is superseded.**
+VICE reproduces the original G7.0.2 fault and verifies that one Return restores
+the exact Home pixels with the correction. B/F2/Q navigation, all eight existing
+navigation scenarios, real keyboard navigation, NTSC startup and twelve shared-UI
+checkpoints are rerun. [Standalone before-and-after PRGs](../../experiments/copy-return/README.md)
+let testers check the C64-side transition without SD access or flashing.
+**Physical G7.0.3 retesting remains pending.**
 
-Software checks pass. Regression checks derive allowed commands from the actual
-C64 outer dispatcher and reject both previous faults. Existing VICE evidence is
-reused for the byte-identical launcher; this is not physical ARM/C64 bus emulation.
-**G7.0.2 has not yet been retested on hardware.** After updating, copy a file,
-dismiss the result, confirm Home appears, then open Favourites and load the copy.
-Check the source remains and repeat with a complete game folder.
+The package is **G7.0.3**; the internal label remains `2.G7`. C64 code grows by
+**3 bytes**, leaving **627 bytes** free. The graphics/font bank is unchanged.
+The update is still 128 KB with the reserved 16 KB flash gap blank.
 
-The updater accepts this package despite the shared internal version, and rewrites
-all sixteen 8 KB sectors (128 KB). It does not skip unchanged bytes. We have not
-measured a reliable flash duration; a quick return alone cannot prove an update.
-Verify the SD file's checksum, select it, then select **Upgrade** on the confirmation
-screen and leave power connected until the launcher restarts.
+G7.0.1 fixed the initial missing sync but could trigger command 9. G7.0.2 fixed
+that command return but retained the stale display. Both are superseded; retained
+files are for traceability, not current downloads.
+
+The updater accepts the package despite the shared internal version and rewrites
+all sixteen 8 KB sectors (128 KB). It does not skip unchanged bytes. Flash duration
+has not been measured here; verify the SD file checksum and confirm **Upgrade**.
+Leave power connected until the launcher restarts.
 
 ![G7 Settings in VICE, example values](../../preview/g7-settings.png)
 
@@ -51,7 +50,7 @@ messages, warnings, progress and the text reader also keep the frame once assets
 are available. Early startup diagnostics retain native text. See
 [the screen map and implementation limits](../../docs/uniform-ui.md).
 
-The C64 launcher remains 16 KB, with **630 bytes spare** in its main allocation.
+The C64 launcher remains 16 KB, with **627 bytes spare** in its main allocation.
 The ARM graphics/font bank is unchanged. The complete update remains 131,072 bytes.
 The separate reserved 16 KB flash region is still blank.
 
@@ -103,9 +102,9 @@ ARM dispatcher, random/history, real FatFs and graphics-transfer host tests run
 before packaging. Layout checks cover update size, reset/stack vectors, embedded
 launcher and blank reserved space. Current numbers and SHA256 are in
 [build-report.json](build-report.json) and [SHA256SUMS](SHA256SUMS).
-The build report records the state at packaging time; its `hardware_tested: false`
-field predates these user reports. Post-build evidence is tracked separately in
-[HARDWARE-TESTS.md](HARDWARE-TESTS.md).
+The build report records the current package as `hardware_tested: false`. Earlier
+G7 hardware passes and the subsequent failure reports are tracked separately in
+[HARDWARE-TESTS.md](HARDWARE-TESTS.md); they are not a hardware pass for G7.0.3.
 
 The harness simulates cartridge packets. It does not validate physical bus timing,
 SD game loading, USB, REU or CRT readability. Test Settings changes and Save, both autoboot values, REU software at each

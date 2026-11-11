@@ -1,0 +1,9 @@
+{
+  "passed": true,
+  "old_bug_reproduced": false,
+  "warning_dismissal_keys": 1,
+  "syncs": 2,
+  "browser_and_home_navigation": true,
+  "native_image_sha256": "e4f3685847ae99c3df9c151d40580aa293c0cc9785ef442105d81d50beac2cb5",
+  "manual_prg_sha256": "de84adf082cd1c3e152d08663b168820edcdcd8d7b9fd6e80832831d7423b7d0"
+}

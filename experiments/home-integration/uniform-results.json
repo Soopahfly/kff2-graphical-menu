@@ -1,6 +1,6 @@
 {
   "version": "2.G7",
-  "native_image_sha256": "34fc8c6cbff2e561818d6a4a953b31cf17d758b1c82c11f12b1100bb8cdd737d",
+  "native_image_sha256": "e4f3685847ae99c3df9c151d40580aa293c0cc9785ef442105d81d50beac2cb5",
   "screens": [
     {
       "screen": "settings",

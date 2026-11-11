@@ -1,9 +1,9 @@
 # KFF2 Graphical Menu
 
 A graphical Home screen and shared menu style for **Kung Fu Flash 2**, inspired
-by EasyFlash 3. The current experimental build is **G7.0.2**.
+by EasyFlash 3. The current experimental build is **G7.0.3**.
 
-**[Download G7.0.2 firmware](https://github.com/Soopahfly/kff2-graphical-menu/raw/refs/heads/main/firmware/experimental/KungFuFlash_v2.G7.0.2.upd)** ·
+**[Download G7.0.3 firmware](https://github.com/Soopahfly/kff2-graphical-menu/raw/refs/heads/main/firmware/experimental/KungFuFlash_v2.G7.0.3.upd)** ·
 [Installation and SD setup](docs/getting-started.md) ·
 [Recovery](firmware/experimental/RECOVERY.md) ·
 [Hardware test checklist](docs/testing.md) ·
@@ -11,13 +11,14 @@ by EasyFlash 3. The current experimental build is **G7.0.2**.
 
 G7 is based on official **v2.07 plus one documentation commit**, `9c84d99`.
 `2.G7` is this project's internal version label, not an official upstream release.
-**G7.0.2 fixes the Copy to Favourites return path, returning to Home after
-acknowledgement.** G7.0.1 fixed only the initial wait and is superseded.
+**G7.0.3 restores Home visibly after one keypress on a copy-result screen.**
+G7.0.2 completed the command return but could redraw the old prompt over Home.
+[Before-and-after VICE tests](experiments/copy-return/README.md) reproduce and check the display fix.
 Its internal cartridge label remains `2.G7`; identify the hotfix by its filename and
 [checksum](firmware/experimental/SHA256SUMS). It contains no G8 features.
 Software checks pass. On real hardware, the project owner reports working G7
 PRG/CRT loading, saved REU-size/autoboot preferences and return to Home after reset
-with autoboot disabled. The original G7 copy-result screen was reported to freeze. G7.0.2 fixes that
+with autoboot disabled. The original G7 copy-result screen was reported to freeze. G7.0.3 fixes that
 handshake in software; hardware confirmation and actual REU operation still need
 verification. See [the dated hardware results](firmware/experimental/HARDWARE-TESTS.md).
 Earlier G5 Home/SD-browser rendering was photographed on an LCD.
@@ -78,7 +79,7 @@ files and multiple disks together. [Full setup guide](docs/getting-started.md)
 - Random chooses files, not recognised game titles or complete multi-disk sets.
   On-cart statistics and automatic history compaction are not implemented.
 
-The C64 launcher remains **16 KB, with 630 bytes free** in its main allocation.
+The C64 launcher remains **16 KB, with 627 bytes free** in its main allocation.
 The update is **128 KB** and the reserved 16 KB flash region stays blank.
 See the [build report](firmware/experimental/build-report.json) and
 [SHA-256 checksums](firmware/experimental/SHA256SUMS).

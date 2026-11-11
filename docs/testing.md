@@ -1,6 +1,20 @@
 # Current hardware checks, G7
 
-## G7.0.2 hotfix retest
+## G7.0.3 display-return retest
+
+The owner reports that the first key flashes and redraws “Press a key”, while the
+second opens the file manager. VICE reproduced this in G7.0.2: Home was active,
+but its key-release check redrew the stale terminal view. G7.0.3 clears that mode
+on leaving the status screen. A single buffered Return now restores the exact
+Home bank, and B/F2/Q navigation completes. All navigation/shared-UI VICE suites
+are rerun against the new launcher. Physical cartridge confirmation is pending.
+
+Use [the two standalone PRGs](../experiments/copy-return/README.md) to compare old
+and corrected C64-side behaviour without flashing. These do not test SD copying.
+On hardware, verify a single key visibly returns Home after success, repeat-copy,
+collision and failure results; then load the copy and confirm source retention.
+
+## Earlier G7.0.2 return-path fix (superseded)
 
 Original G7 was reported to remain on “Added to /Favourites. Original kept. /
 PRESS A KEY” after keypresses. A later report during the G7.0.1 update/test attempt
@@ -17,7 +31,7 @@ is pending. Copy contents and source retention still need independent checking.
 Retest a new file copy, then an identical repeat and a different file with the
 same destination name. Each result should dismiss to Home. Open Favourites,
 load the copy and confirm the source remains. Repeat with a complete game folder.
-The internal label still reads `2.G7`; use the `.0.2.upd` file and its checksum.
+The internal label still reads `2.G7`; use the current `.0.3.upd` file and its checksum for retesting.
 
 ## Hardware report, 11 November 2026
 

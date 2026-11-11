@@ -72,6 +72,8 @@ static void page(void)
 void browser_leave(void)
 {
     if (active) {home_leave();active=0;}
+    /* A later waitRelease() must not repaint the old terminal over Home. */
+    native_view=0;
 }
 void browser_line(uint8_t row,const char *value,uint8_t color)
 {

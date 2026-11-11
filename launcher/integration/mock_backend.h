@@ -20,4 +20,8 @@ void ui_mock_text(void);
 void ui_mock_cancel(void);
 void ui_test_uniform(void);
 void ui_uniform_checkpoint(void);
+void ui_copy_run(void);
+void ui_copy_prompt(void);
+void ui_copy_stop(void);
+extern uint8_t test_copy_stage,test_copy_syncs;
 #endif
