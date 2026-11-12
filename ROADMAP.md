@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated 11 November 2026. **G7.03 is the current experimental release package.** This roadmap
+Updated 12 November 2026. **G7.03 is the current experimental release package.** This roadmap
 sets proposed priorities and acceptance checks, not release dates or a claim that
 future features are implemented. G8/G9 are working milestone names.
 
@@ -25,7 +25,8 @@ Community changes will be reviewed and ported individually, with attribution.
 | Backlog | Library and file tools | Recent games, statistics, move/rename, browser sorting preferences | Not scheduled |
 | Research | Broader compatibility | exFAT, KERNAL/freezer extensions and selected CRT+REU combinations | Not scheduled; separate feasibility work |
 
-G8's two features should be developed and tested independently. If one is not
+G8 will tackle **multi-disk swapping first**, then optional Random preview.
+The two features should be developed and tested independently. If one is not
 ready, it should not delay a usable release of the other or be bundled untested.
 Later milestone order can change with tester results, measured space and demand.
 
