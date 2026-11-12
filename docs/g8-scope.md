@@ -14,11 +14,14 @@ configuration/history/Favourites compatibility.
 | Priority | Deliverable | Boundary |
 | --- | --- | --- |
 | 1 | Special-button D64 swapping | Explicit, bounded, same-folder disk sets only |
-| 2 | Optional Random preview | Existing immediate launch remains the default |
+| 2 | GMod2 loading and EEPROM saves (conditional) | Standard 512 KB images; release only after memory, save and hardware checks |
+| 3 | Optional Random preview | Existing immediate launch remains the default |
 
 Implement and test **multi-disk swapping first**, as requested on 12 November.
-A disk-swapping candidate can be tested before Random preview is ready. Keep the
-features independent; optional preview must not delay a usable disk-swapping build.
+Then assess and port GMod2 as a **conditional G8 target**, followed by optional
+Random preview. Keep the features independent. Neither unfinished GMod2 nor preview
+should delay a usable disk-swapping candidate. If GMod2 misses its size, reliability
+or hardware gates, keep it on a separate branch and carry it into G9.
 
 ## Before a combined G8 candidate
 
@@ -106,7 +109,47 @@ Source for review: [r107sl enhanced branch](https://codeberg.org/r107sl/KungFuFl
 Port the relevant code with attribution and targeted fixes; do not import its
 different configuration and memory layout wholesale.
 
-## Feature B: Random preview
+## Feature B: GMod2 and EEPROM save persistence (conditional)
+
+Scope: standard GMod2 CRT type 60, up to 512 KB ROM, plus its 2 KB M93C86 save
+memory. Reuse the existing cartridge buffer rather than introducing SD bank
+paging, compressed banks or larger-cartridge support.
+
+The inspected candidate is [lroby74's magicdesk16-gmod2 branch](https://codeberg.org/lroby74/KungFuFlash2/src/branch/magicdesk16-gmod2),
+commit `653e03d779220841acd31c22ad46403c2696b402` (1 November 2026). It shares our
+upstream base, but its complete diff is about 2,500 added lines spanning cartridge
+caching, DMA and SD writes. The GMod2 module itself is about 490 lines. Isolate
+that feature and its genuinely required hooks; preserve licensing and attribution.
+Do not import the whole branch to obtain one cartridge type.
+
+### Implementation and acceptance gates
+
+- Add CRT recognition, ROM banking and the serial EEPROM protocol. Cover both
+  default erased saves and supported EEPROM CHIP packets embedded at $DE00.
+- Store per-game EEPROM data in a documented companion save file. Define save
+  timing across Menu, reset and power-off; do not promise instant persistence
+  before the actual write/sync lifecycle is verified.
+- Review SD-write concurrency and C64 hold/release. The donor can write from a
+  live EEPROM buffer or hold the C64; these paths require review, stable save
+  snapshots or equivalent protection, and fault tests in our build.
+- Bound paths and validate missing, short, corrupt, read-only and unwritable save
+  files. Preserve the original CRT and handle errors without hanging the C64.
+- Reconcile open save handles with launching another cartridge, Menu, reset,
+  Favourites copies and disk-set state cleanup. No simultaneous CRT+REU support.
+- Compare banking/protocol traces with reference behaviour; test real FatFs
+  persistence and injected failures, then representative GMod2 games on hardware.
+- Measure ARM flash, BSS, stack and any C64 growth after isolation and again after
+  integration. No claim of fit until the combined candidate is compiled.
+
+The source candidate does not implement actual flash-chip programming. Physical
+GMod2 flashing utilities are outside this game-loading feature. Larger cartridges,
+compressed/paged bank caches and automatic conversion of other cartridge formats
+remain separate work.
+
+GMod2 is not a mandatory dependency of the first G8 disk-swapping candidate.
+Keep G7.03 unchanged as the released regression baseline while testing.
+
+## Feature C: Random preview
 
 ### User behaviour
 
@@ -155,7 +198,7 @@ Do not claim that the presence of a disk-set list makes Random choose disk one.
 
 ## Explicitly out of scope
 
-GMod2/EEPROM, larger-cartridge bank caching, REU image loading/saving, exFAT,
+Larger-cartridge bank caching and flash-chip programming tools, REU image loading/saving, exFAT,
 simultaneous CRT+REU, KERNAL/freezer extensions, move/rename, recent-games/statistics
 screens, automatic disk-set inference, in-cart list editing and D71/D81 swapping.
 Normal loading of existing supported formats must remain available.
@@ -167,14 +210,16 @@ Normal loading of existing supported formats must remain available.
 | 1. Compatibility and size audit | Disk-image/handle ownership and memory budget first; audit preview configuration/state before that later feature | No unplanned layout/protocol change; fit is plausible |
 | 2. Disk-set parsing | Bounded read-only parser and mount-time activation | Real FatFs tests cover valid/invalid sets, paths and resource cleanup |
 | 3. Safe swapping | Button state machine, handover, write/read-only/error handling and LED feedback | Host disk-service tests pass, old-media preservation demonstrated |
-| 4. Optional Random preview | Settings callback, selection/launch separation, pending-origin handling and tests | Host/VICE checks pass; immediate mode unchanged |
-| 5. Integration | Disk-first candidate or combined build, updated guides and exact checksum | All G7 regression suites and new tests pass; measured limits satisfied |
-| 6. Hardware candidate | Targeted test firmware with known limits | Tester results cover enabled G8 features and retained G7.03 functionality |
+| 4. Isolate GMod2 | Bounded CRT/EEPROM port and reviewed SD-write hooks | Standalone size/protocol/FatFs tests pass |
+| 5. GMod2 integration gate | Combined-memory measurements, save/reset/error handling and cartridge regressions | Retain only if safe fit and targeted hardware tests pass; otherwise defer to G9 |
+| 6. Optional Random preview | Settings callback, selection/launch separation, pending-origin handling and tests | Host/VICE checks pass; immediate mode unchanged |
+| 7. Integration | Disk-first candidate or combined build, updated guides and exact checksum | All G7 regression suites and new tests pass; measured limits satisfied |
+| 8. Hardware candidate | Targeted test firmware with known limits | Tester results cover enabled G8 features and retained G7.03 functionality |
 
 Prefer ARM-side changes and existing commands/rendering. G7.03 starts with 627 bytes
 free in the C64 ROM allocation and 20,684 bytes in its existing ARM flash allocation.
 Account for list storage, pending paths, temporary image state, BSS and stack too.
-If either feature needs substantial C64 growth, stop and review the design/fit
+If any feature needs substantial C64 growth, stop and review the design/fit
 before expanding the scope or using the reserved flash gap.
 
 ## Required validation

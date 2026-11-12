@@ -18,16 +18,17 @@ Community changes will be reviewed and ported individually, with attribution.
 | Order | Milestone | Scope | Status |
 | --- | --- | --- | --- |
 | 1 | G7.03 experimental release package | Package working copy-screen fix; continue Favourites and REU hardware coverage | Published as an experimental pre-release; remaining hardware checks recorded |
-| 2 | G8 everyday-use improvements | D64 disk swapping and optional Random preview | Upstream ideas/code reviewed; not integrated |
-| 3 | G9 GMod2 | Native cartridge loading and EEPROM save persistence | Community implementation identified; not integrated |
+| 2 | G8 improvements and cartridge compatibility | D64 swapping first, conditional GMod2 second, optional Random preview third | Sources reviewed; not integrated |
+| 3 | G9 fallback / next milestone | GMod2 if it misses G8 acceptance gates; later scope to be reviewed | GMod2 is a conditional G8 target, not yet integrated |
 | 4 | Larger cartridges | Magic Desk 16 images up to 2 MB | Separate banking/timing investigation |
 | 5 | REU images | Load/save `.reu` files and optional autoload | Community implementation identified; configuration/memory design needed |
 | Backlog | Library and file tools | Recent games, statistics, move/rename, browser sorting preferences | Not scheduled |
 | Research | Broader compatibility | exFAT, KERNAL/freezer extensions and selected CRT+REU combinations | Not scheduled; separate feasibility work |
 
-G8 will tackle **multi-disk swapping first**, then optional Random preview.
-The two features should be developed and tested independently. If one is not
-ready, it should not delay a usable release of the other or be bundled untested.
+G8 will tackle **multi-disk swapping first**, then conditional GMod2 support,
+then optional Random preview. Develop and test each separately. Unfinished GMod2
+or preview must not delay a usable disk-swapping candidate. GMod2 falls back to
+G9 if memory, save reliability or hardware tests are not satisfactory.
 Later milestone order can change with tester results, measured space and demand.
 
 ## 1. Finish G7 and publish the tested build
@@ -55,7 +56,7 @@ Broader USB, C128, PAL/NTSC/board coverage and CRT readability remain explicit
 testing requests. They are not silently promoted to confirmed compatibility.
 See [the current checklist](docs/testing.md).
 
-## 2. G8: disk swapping and optional Random preview
+## 2. G8: disk swapping, conditional GMod2 and optional Random preview
 
 See the [G8 scope and implementation plan](docs/g8-scope.md) for proposed controls,
 disk-list format, configuration compatibility, work breakdown and release checks.
@@ -104,11 +105,15 @@ picks again. Reuse the existing Games scope and recent-game rules.
 
 Related request: [Random game #44](https://codeberg.org/KimJorgensen/KungFuFlash2/issues/44).
 
-## 3. G9: native GMod2 and EEPROM saves
+## Conditional G8 target: native GMod2 and EEPROM saves (G9 fallback)
 
 **Benefit:** support native GMod2 editions of games and their EEPROM save data.
 Some games already have usable EasyFlash editions; this expands format support
 rather than making every such title newly playable.
+
+Target GMod2 after multi-disk swapping, before optional Random preview. Its inclusion
+in a G8 release depends on measured memory fit, reliable saves and hardware tests.
+A disk-swapping candidate can ship without it; unfinished work falls back to G9.
 
 Port GMod2 separately from larger-cartridge caching wherever practical. Review
 the current source, including EEPROM CHIP packets, rather than copying the first
