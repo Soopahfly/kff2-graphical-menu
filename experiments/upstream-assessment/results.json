@@ -1,0 +1,131 @@
+{
+  "baseline": "9c84d999f4e2f5b2c7688cbc37a127069f5401b0",
+  "community": "da19c9a892f6e12a40b943a7006e25d413968570",
+  "gmod_donor": "653e03d779220841acd31c22ad46403c2696b402",
+  "hardware_benchmark": false,
+  "parser": {
+    "cases": 219,
+    "baseline_misparses_skipped_payload": true,
+    "skip_alone_accepts_incomplete_rom": true,
+    "fail_fast_passed": true
+  },
+  "copy_cases": 131720,
+  "host_benchmark_only": [
+    {
+      "bytes": 64,
+      "offset": 0,
+      "byte_seconds": 0.013923,
+      "word_seconds": 0.005881,
+      "ratio": 2.367
+    },
+    {
+      "bytes": 64,
+      "offset": 1,
+      "byte_seconds": 0.013366,
+      "word_seconds": 0.01497,
+      "ratio": 0.893
+    },
+    {
+      "bytes": 512,
+      "offset": 0,
+      "byte_seconds": 0.014064,
+      "word_seconds": 0.004848,
+      "ratio": 2.901
+    },
+    {
+      "bytes": 512,
+      "offset": 1,
+      "byte_seconds": 0.013824,
+      "word_seconds": 0.013536,
+      "ratio": 1.021
+    },
+    {
+      "bytes": 4096,
+      "offset": 0,
+      "byte_seconds": 0.012656,
+      "word_seconds": 0.004666,
+      "ratio": 2.712
+    },
+    {
+      "bytes": 4096,
+      "offset": 1,
+      "byte_seconds": 0.012735,
+      "word_seconds": 0.013557,
+      "ratio": 0.939
+    },
+    {
+      "bytes": 16384,
+      "offset": 0,
+      "byte_seconds": 0.012502,
+      "word_seconds": 0.004635,
+      "ratio": 2.697
+    },
+    {
+      "bytes": 16384,
+      "offset": 1,
+      "byte_seconds": 0.012497,
+      "word_seconds": 0.012948,
+      "ratio": 0.965
+    }
+  ],
+  "arm_copy_function_bytes": {
+    "byte_copy": 18,
+    "alias_copy": 74,
+    "word_copy": 74
+  },
+  "configuration_layout": {
+    "original": {
+      "size": 1024,
+      "flags": 6,
+      "reserved": 7,
+      "path": 18,
+      "file": 768
+    },
+    "community": {
+      "size": 1044,
+      "flags": 6,
+      "reserved": 8,
+      "path": 404,
+      "file": 916
+    }
+  },
+  "program_option": {
+    "truth_table_cases": 18,
+    "hook": "startup before menu_loop, not manual load/RUN",
+    "configuration_layout_compatible": false
+  },
+  "arm_builds": {
+    "baseline": {
+      "arm_bytes": 77620,
+      "arm_bss_bytes": 25976,
+      "sha256": "531b330829732de7d669fe47be758f53b1968c8d17e11e4a493665e46d088f0a"
+    },
+    "reject_only": {
+      "arm_bytes": 77620,
+      "arm_bss_bytes": 25976,
+      "sha256": "7f7dac6be8dca661d72c1d083396781be44303c9b9ad307ed5e23e47f493daac"
+    },
+    "copy_only": {
+      "arm_bytes": 77664,
+      "arm_bss_bytes": 25976,
+      "sha256": "0f648fa73128bfb8301b7c54ff9ae18d032e196b882df43d0c31dd98419f0561"
+    },
+    "combined": {
+      "arm_bytes": 77664,
+      "arm_bss_bytes": 25976,
+      "sha256": "e442b4c23bd4763cce91b377a115854126fb00e147cdb8d9273f04436addbd1d"
+    },
+    "alias_copy_only": {
+      "arm_bytes": 77664,
+      "arm_bss_bytes": 25976,
+      "sha256": "0f648fa73128bfb8301b7c54ff9ae18d032e196b882df43d0c31dd98419f0561"
+    },
+    "reject_and_alias": {
+      "arm_bytes": 77664,
+      "arm_bss_bytes": 25976,
+      "sha256": "e442b4c23bd4763cce91b377a115854126fb00e147cdb8d9273f04436addbd1d"
+    }
+  },
+  "released_upd_sha256": "2d7456f99b3864578da30b0da6280bd0a9ed26ba9e78034f38bb7841253ee402",
+  "baseline_matches_released_arm": true
+}

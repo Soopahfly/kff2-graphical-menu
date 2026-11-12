@@ -1,0 +1,35 @@
+--- a/firmware/runtime.c
++++ b/firmware/runtime.c
+@@ -41,11 +41,28 @@
+ 
+ EXPORT void *memcpy(void *dst, const void *src, size_t len)
+ {
+-    size_t pos = 0;
++    typedef u32 copy_word __attribute__((__may_alias__));
++    u8 *dst8 = (u8 *)dst;
++    const u8 *src8 = (const u8 *)src;
+ 
+-    while (pos < len) {
+-        ((char *)dst)[pos] = ((const char *)src)[pos];
+-        pos++;
++    if (!(len < 4 || (uintptr_t)dst & 3 || (uintptr_t)src & 3)) {
++        copy_word *dst32 = (copy_word *)dst;
++        const copy_word *src32 = (const copy_word *)src;
++
++        // Copy one long word at a time if possible
++        while (len >= 4) {
++            // Prevent gcc from turning this into a memcpy() call
++            __asm__ volatile("");
++            *dst32++ = *src32++;
++            len -= 4;
++        }
++
++        // Copy residual bytes
++        dst8 = (u8 *)dst32;
++        src8 = (u8 *)src32;
++    }
++    while (len--) {
++        *dst8++ = *src8++;
+     }
+     return dst;
+ }

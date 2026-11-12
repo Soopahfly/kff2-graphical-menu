@@ -1,0 +1,11 @@
+--- a/firmware/loader.c
++++ b/firmware/loader.c
+@@ -290,7 +290,7 @@
+         {
+             wrn("No room for CRT chip bank %u at $%x",
+                 header.bank, header.start_address);
+-            continue;   // Skip image
++            return 0;   // Reject incomplete cartridge; do not parse skipped payload.
+         }
+ 
+         if (banks_in_use < (header.bank + 1))
