@@ -2,10 +2,10 @@
 
 Planning baseline: G7.03, based on official v2.07 plus documentation commit `9c84d99`.
 Updated 17 November 2026. **The feature scope remains a plan.** An isolated
-[CRT parser development candidate](../firmware/development/G8-parser-01/README.md)
-is now implemented on `g8-development`; multi-disk, GMod2 and preview remain pending. Features
-can be simplified, deferred or dropped because of coding complexity, available
-skills/time, hardware limits or insufficient test evidence.
+[CRT parser development candidate](https://github.com/Soopahfly/kff2-graphical-menu/blob/g8-development/firmware/development/G8-parser-01/README.md)
+is implemented on `g8-development`; multi-disk, GMod2 and preview remain pending.
+Features can be simplified, deferred or dropped because of coding complexity,
+available skills/time, hardware limits or insufficient test evidence.
 
 ## Goal
 
@@ -24,6 +24,10 @@ Then assess and port GMod2 as a **conditional G8 target**, followed by optional
 Random preview. Keep the features independent. Neither unfinished GMod2 nor preview
 should delay a usable disk-swapping candidate. If GMod2 misses its size, reliability
 or hardware gates, keep it on a separate branch and carry it into G9.
+
+Core features must also work with the original launcher. Keep disk swapping,
+GMod2 and generic fixes in independent branches/patch series; add graphical-only
+integration separately. See [upstream contribution boundaries](upstream-contributions.md).
 
 ## Before a combined G8 candidate
 

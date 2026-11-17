@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated 12 November 2026. **G7.03 is the current experimental release package.** This roadmap
+Updated 17 November 2026. **G7.03 is the current experimental release package.** This roadmap
 sets proposed priorities and acceptance checks, not release dates or a claim that
 future features are implemented. G8/G9 are working milestone names.
 
@@ -12,13 +12,17 @@ reliably. Inclusion here is an idea for consideration, not a promise of delivery
 
 The project keeps its graphical interface and pinned official v2.07-based source.
 Community changes will be reviewed and ported individually, with attribution.
+Disk swapping, GMod2 and core fixes must remain separate from the graphical UI,
+with independent patches and tests suitable for possible upstream review.
+See [the contribution boundaries](docs/upstream-contributions.md). No upstream
+submission is authorised by this roadmap.
 
 ## At a glance
 
 | Order | Milestone | Scope | Status |
 | --- | --- | --- | --- |
 | 1 | G7.03 experimental release package | Package working copy-screen fix; continue Favourites and REU hardware coverage | Published as an experimental pre-release; remaining hardware checks recorded |
-| 2 | G8 improvements and cartridge compatibility | D64 swapping first, conditional GMod2 second, optional Random preview third | Sources reviewed; not integrated |
+| 2 | G8 improvements and cartridge compatibility | D64 swapping first, conditional GMod2 second, optional Random preview third | Parser fix built separately; disk swapping, GMod2 and preview pending |
 | 3 | G9 fallback / next milestone | GMod2 if it misses G8 acceptance gates; later scope to be reviewed | GMod2 is a conditional G8 target, not yet integrated |
 | 4 | Larger cartridges | Magic Desk 16 images up to 2 MB | Separate banking/timing investigation |
 | 5 | REU images | Load/save `.reu` files and optional autoload | Community implementation identified; configuration/memory design needed |
@@ -31,7 +35,20 @@ or preview must not delay a usable disk-swapping candidate. GMod2 falls back to
 G9 if memory, save reliability or hardware tests are not satisfactory.
 Later milestone order can change with tester results, measured space and demand.
 
-## 1. Finish G7 and publish the tested build
+## G8 development status, 17 November 2026
+
+**G7.03 remains the published experimental pre-release.** The separate
+[G8-parser-01 test build](https://github.com/Soopahfly/kff2-graphical-menu/blob/g8-development/firmware/development/G8-parser-01/README.md)
+adds only the unsupported CRT bank rejection fix. Its update is named
+`KungFuFlash_v2.G7.03.1.upd`; it retains the internal `2.G7` label.
+
+The candidate passed 219 parser checks and the existing ARM-side regressions.
+ARM flash and BSS sizes are unchanged. Its C64 launcher is byte-identical to
+G7.03, with matching earlier VICE reports; VICE was not rerun for this ARM-only
+change. Physical cartridge testing of the candidate remains pending.
+Multi-disk swapping, GMod2 and optional Random preview are still planned.
+
+## 1. Continue G7 hardware verification
 
 **Already user-reported working on real hardware:** PRG/CRT loading, saving
 REU-size/autoboot preferences and return to Home after reset with autoboot disabled.
@@ -47,10 +64,11 @@ The [hardware log](firmware/experimental/HARDWARE-TESTS.md) records the scope.
 
 ### Release package
 
-Once those pass, prepare a **GitHub experimental/pre-release** tied to the exact
-tested source and firmware: `.upd`, SHA-256 checksum, release notes, installation,
-rollback/recovery instructions and confirmed hardware results. If fixes change
-the candidate, identify the new checksum and repeat affected tests before tagging.
+The **G7.03 experimental pre-release is already published**, with its `.upd`,
+checksum, release notes and setup/recovery instructions. The remaining checks
+above are still open. Record explicit results before claiming broader hardware
+validation. If fixes change a candidate, identify its new checksum and repeat
+affected tests before tagging.
 
 Broader USB, C128, PAL/NTSC/board coverage and CRT readability remain explicit
 testing requests. They are not silently promoted to confirmed compatibility.
