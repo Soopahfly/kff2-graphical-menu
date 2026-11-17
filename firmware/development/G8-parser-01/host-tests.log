@@ -1,0 +1,8 @@
+PASS: 10000 selection seeds, nested/hidden/non-game files, error cleanup, all five launch paths, C128 guard, image exits and F3 context
+PASS: persistent counts, origins, recent window, torn/corrupt tails, exact loader hook ordering, automatic boots, mount-only, IO failures
+PASS: independent PC report matches journal counts and launch origin
+PASS: real FatFs FAT32 create/append/sync/remount, truncated-tail repair and read-only media
+PASS: exported real-FatFs journal matches independent PC decoder
+ARM assets: actual reply handler, 16384 bytes, KFF pointer reset and buffer bounds passed
+PASS: G7 config layout/defaults/downgrade, REU sizes, real FAT32 file/folder copies, companions, no-overwrite, interrupted copy, read-only, depth and I/O failures, copy-result handshake and actual launcher outer-command compatibility
+PASS: actual REU read/write/swap/verify callbacks wrap at 256/512/1024 KB and preserve fixed-address transfers

@@ -1,0 +1,8 @@
+{
+  "cases": 219,
+  "baseline_misparses_skipped_payload": true,
+  "skip_alone_accepts_incomplete_rom": true,
+  "fail_fast_passed": true,
+  "prepared_source_tested": true,
+  "address_and_undefined_sanitizers": true
+}

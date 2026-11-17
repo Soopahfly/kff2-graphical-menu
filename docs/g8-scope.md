@@ -1,7 +1,9 @@
 # G8 scope and implementation plan
 
 Planning baseline: G7.03, based on official v2.07 plus documentation commit `9c84d99`.
-Updated 12 November 2026. **This is a plan, not an implemented G8 build.** Features
+Updated 17 November 2026. **The feature scope remains a plan.** An isolated
+[CRT parser development candidate](../firmware/development/G8-parser-01/README.md)
+is now implemented on `g8-development`; multi-disk, GMod2 and preview remain pending. Features
 can be simplified, deferred or dropped because of coding complexity, available
 skills/time, hardware limits or insufficient test evidence.
 

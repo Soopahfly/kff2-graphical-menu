@@ -89,3 +89,13 @@ then rebuild and repeat the relevant graphics and navigation checks.
 
 For implementation details, see [integration](../experiments/home-integration/README.md),
 [browser](browser.md), [shared appearance](uniform-ui.md) and [G7](g7-features.md).
+
+## G8 parser development candidate
+
+On `g8-development`, add `--crt-parser-fix`, `--package-version 2.G7.03.1` and
+`--output-dir firmware/development/G8-parser-01` to the firmware build command.
+This applies the parser fix after the G7 patches and tests the actual prepared
+loader before compiling. It reuses the byte-identical G7.03 C64 launcher and
+matching VICE reports. See the [candidate notes](../firmware/development/G8-parser-01/README.md)
+for its identity, checks and remaining hardware tests. The published G7.03 package
+is not replaced. Without the flag the original build path remains unchanged.

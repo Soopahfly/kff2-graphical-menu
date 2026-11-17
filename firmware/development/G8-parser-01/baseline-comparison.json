@@ -1,0 +1,9 @@
+{
+  "g7_baseline_reproduced_byte_for_byte": true,
+  "g7_release_sha256": "2d7456f99b3864578da30b0da6280bd0a9ed26ba9e78034f38bb7841253ee402",
+  "candidate_sha256": "fcfbe09127f1531b69f702b1031d435f5011823d19a2954803a96bc17edc2376",
+  "reserved_region_and_launcher_identical": true,
+  "candidate_arm_matches_assessed_fail_fast_binary": true,
+  "parser_test_rejects_unpatched_build": true,
+  "changed_update_bytes": 1
+}

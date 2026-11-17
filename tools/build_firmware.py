@@ -19,11 +19,19 @@ def main():
     ap=argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--upstream',type=Path,required=True)
     ap.add_argument('--package-version',help='Download version, e.g. 2.G7.0.3; internal launcher identifier stays unchanged')
+    ap.add_argument('--crt-parser-fix',action='store_true',help='Enable the G8 unsupported CRT bank rejection candidate')
+    ap.add_argument('--output-dir',type=Path,help='Separate package directory, required for development candidates')
     ap.add_argument('--arm-bin',type=Path,help='Directory containing arm-none-eabi tools; defaults to PATH')
     ap.add_argument('--newlib-include',type=Path,help='Only needed for an unpacked toolchain without configured headers')
     ap.add_argument('--newlib-libdir',type=Path,help='Only needed for unpacked newlib archives')
     args=ap.parse_args()
     root=Path(__file__).resolve().parents[1]
+    if args.crt_parser_fix and not args.output_dir:
+        ap.error('--crt-parser-fix requires a separate --output-dir')
+    dest=args.output_dir.resolve() if args.output_dir else root/'firmware/experimental'
+    if args.crt_parser_fix:
+        protected=[root/'firmware/experimental',root/'firmware/releases']
+        assert not any(dest==p or p in dest.parents for p in protected),'Development builds must not overwrite release packages'
     ui=root/'launcher/build/integration'
     metadata=json.loads((ui/'native-measurements.json').read_text())
     tests=json.loads((ui/'test-results.json').read_text())
@@ -60,6 +68,10 @@ def main():
     run(['patch','--batch','--forward','--fuzz=0','-p1','-i',root/'experiments/home-integration/browser-arm.patch'],env,cwd=work)
     run(['patch','--batch','--forward','--fuzz=0','-p1','-i',root/'experiments/home-integration/bitmap-assets-arm.patch'],env,cwd=work)
     run(['patch','--batch','--forward','--fuzz=0','-p1','-i',root/'experiments/home-integration/g7-features.patch'],env,cwd=work)
+    if args.crt_parser_fix:
+        run(['patch','--batch','--forward','--fuzz=0','-p1','-i',root/'experiments/g8-parser/loader.patch'],env,cwd=work)
+        parser_tests=run([sys.executable,root/'tools/test_crt_parser.py','--upstream',args.upstream.resolve(),'--source',source],env)
+        (work/'crt-parser-tests.json').write_text(parser_tests)
     assert digest((ui/'ui-assets/bank.bin').read_bytes())==metadata['ui_bank_sha256']
     shutil.copy(ui/'ui-assets/ui_assets.h',source/'ui_assets.h')
     for name in ['random_game.c','menu_home.c','launch_history.c','g7_settings.c','g7_menu_settings.inc','favourites.c','menu_favourites.c']:
@@ -107,13 +119,17 @@ def main():
         'upstream_release':'v2.07','upstream_commits_after_release':1,'favourites_copy':True,'reu_sizes_kb':[256,512,1024],'autoboot_toggle':True,'config_layout_unchanged':True,
         'home_graphics_lossless':True,'random_game_f4':True,'persistent_history':True,'history_real_fatfs_tested':True,'recent_distinct_window':10,'menu_context_regressions_tested':True,'arm_folder_dispatch_host_tested':True,
         'compiler_warning_kinds':sorted(set(line.strip() for line in log.splitlines() if 'warning:' in line))}
-    dest=root/'firmware/experimental'
     dest.mkdir(parents=True,exist_ok=True)
     if package_version!=version:
         result['package_version']=package_version
     result['favourites_acknowledgement_sync']=True
     result['favourites_result_returns_home']=True
     result['copy_result_one_key_vice']=True
+    if args.crt_parser_fix:
+        result['development_candidate']='G8-parser-01'
+        result['crt_unsupported_bank_rejected']=True
+        result['crt_parser_tests']=json.loads(parser_tests)
+        result['g7_launcher_reused']=True
     filename='KungFuFlash_v'+package_version+'.upd'
     (dest/filename).write_bytes(upd)
     (dest/'build-report.json').write_text(json.dumps(result,indent=2)+'\n')
