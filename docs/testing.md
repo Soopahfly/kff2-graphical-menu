@@ -5,6 +5,24 @@ reports the copy-screen fix working, but did not specify whether this was in VIC
 or on the cartridge. That confirmation does not close the remaining hardware checks.
 See [release notes](../firmware/releases/G7.03/RELEASE-NOTES.md).
 
+## G8 development status, 17 November 2026
+
+**G7.03 remains the published experimental pre-release.** The separate
+[G8-parser-01 test build](https://github.com/Soopahfly/kff2-graphical-menu/blob/g8-development/firmware/development/G8-parser-01/README.md)
+adds only the unsupported CRT bank rejection fix. Its update is named
+`KungFuFlash_v2.G7.03.1.upd`; it retains the internal `2.G7` label.
+
+The candidate passed 219 parser checks and the existing ARM-side regressions.
+ARM flash and BSS sizes are unchanged. Its C64 launcher is byte-identical to
+G7.03, with matching earlier VICE reports; VICE was not rerun for this ARM-only
+change. Physical cartridge testing of the candidate remains pending.
+Multi-disk swapping, GMod2 and optional Random preview are still planned.
+
+The owner reported no new issues raised as of 17 November. This is feedback,
+not an additional hardware test pass. Candidate hardware checks are listed in
+its linked notes: working CRTs, clean rejection of unsupported images, and
+ordinary PRG/D64 and Favourites regressions.
+
 ## G7.0.3 display-return retest
 
 The owner reports that the first key flashes and redraws “Press a key”, while the
@@ -36,7 +54,8 @@ is pending. Copy contents and source retention still need independent checking.
 Retest a new file copy, then an identical repeat and a different file with the
 same destination name. Each result should dismiss to Home. Open Favourites,
 load the copy and confirm the source remains. Repeat with a complete game folder.
-The internal label still reads `2.G7`; use the current `.0.3.upd` file and its checksum for retesting.
+The internal label still reads `2.G7`; use `KungFuFlash_v2.G7.03.upd` and its checksum for G7 retesting.
+The separate parser candidate is `KungFuFlash_v2.G7.03.1.upd`.
 
 ## Hardware report, 11 November 2026
 

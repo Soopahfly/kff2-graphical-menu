@@ -28,6 +28,19 @@ Earlier G5 Home/SD-browser rendering was photographed on an LCD.
 
 ![Graphical Home, VICE with simulated cartridge data](preview/integration-home.png)
 
+## G8 development status, 17 November 2026
+
+**G7.03 remains the published experimental pre-release.** The separate
+[G8-parser-01 test build](https://github.com/Soopahfly/kff2-graphical-menu/blob/g8-development/firmware/development/G8-parser-01/README.md)
+adds only the unsupported CRT bank rejection fix. Its update is named
+`KungFuFlash_v2.G7.03.1.upd`; it retains the internal `2.G7` label.
+
+The candidate passed 219 parser checks and the existing ARM-side regressions.
+ARM flash and BSS sizes are unchanged. Its C64 launcher is byte-identical to
+G7.03, with matching earlier VICE reports; VICE was not rerun for this ARM-only
+change. Physical cartridge testing of the candidate remains pending.
+Multi-disk swapping, GMod2 and optional Random preview are still planned.
+
 ## Features
 
 - **Games, Tools, Utilities and Favourites** shortcuts to ordinary SD folders.
@@ -101,6 +114,7 @@ See the [build report](firmware/releases/G7.03/build-report.json) and
 | Build requirements and commands | [Building](docs/building.md) |
 | Proposed features and acceptance checks | [Roadmap](ROADMAP.md) |
 | Next milestone boundaries and work breakdown | [G8 scope](docs/g8-scope.md) |
+| Independent core features for upstream review | [Contribution boundaries](docs/upstream-contributions.md) |
 | Earlier prototypes and ROM measurements | [Development history](docs/development-history.md) |
 
 ## VICE preview
