@@ -20,16 +20,18 @@ def main():
     ap.add_argument('--upstream',type=Path,required=True)
     ap.add_argument('--package-version',help='Download version, e.g. 2.G7.0.3; internal launcher identifier stays unchanged')
     ap.add_argument('--crt-parser-fix',action='store_true',help='Enable the G8 unsupported CRT bank rejection candidate')
+    ap.add_argument('--disk-swapping',action='store_true',help='Enable D64 disk sets and Special-button swapping')
     ap.add_argument('--output-dir',type=Path,help='Separate package directory, required for development candidates')
     ap.add_argument('--arm-bin',type=Path,help='Directory containing arm-none-eabi tools; defaults to PATH')
     ap.add_argument('--newlib-include',type=Path,help='Only needed for an unpacked toolchain without configured headers')
     ap.add_argument('--newlib-libdir',type=Path,help='Only needed for unpacked newlib archives')
     args=ap.parse_args()
     root=Path(__file__).resolve().parents[1]
-    if args.crt_parser_fix and not args.output_dir:
-        ap.error('--crt-parser-fix requires a separate --output-dir')
+    development = args.crt_parser_fix or args.disk_swapping
+    if development and not args.output_dir:
+        ap.error('Development features require a separate --output-dir')
     dest=args.output_dir.resolve() if args.output_dir else root/'firmware/experimental'
-    if args.crt_parser_fix:
+    if development:
         protected=[root/'firmware/experimental',root/'firmware/releases']
         assert not any(dest==p or p in dest.parents for p in protected),'Development builds must not overwrite release packages'
     ui=root/'launcher/build/integration'
@@ -72,6 +74,10 @@ def main():
         run(['patch','--batch','--forward','--fuzz=0','-p1','-i',root/'experiments/g8-parser/loader.patch'],env,cwd=work)
         parser_tests=run([sys.executable,root/'tools/test_crt_parser.py','--upstream',args.upstream.resolve(),'--source',source],env)
         (work/'crt-parser-tests.json').write_text(parser_tests)
+    if args.disk_swapping:
+        run(['patch','--batch','--forward','--fuzz=0','-p1','-i',root/'experiments/d64-swapping/d64-swapping.patch'],env,cwd=work)
+        swap_tests=run([sys.executable,work/'tests/test_disk_set.py',source],env)
+        (work/'disk-swap-tests.log').write_text(swap_tests)
     assert digest((ui/'ui-assets/bank.bin').read_bytes())==metadata['ui_bank_sha256']
     shutil.copy(ui/'ui-assets/ui_assets.h',source/'ui_assets.h')
     for name in ['random_game.c','menu_home.c','launch_history.c','g7_settings.c','g7_menu_settings.inc','favourites.c','menu_favourites.c']:
@@ -129,6 +135,11 @@ def main():
         result['development_candidate']='G8-parser-01'
         result['crt_unsupported_bank_rejected']=True
         result['crt_parser_tests']=json.loads(parser_tests)
+        result['g7_launcher_reused']=True
+    if args.disk_swapping:
+        result['development_candidate']='G8-disk-swap-01'
+        result['d64_disk_swapping']=True
+        result['disk_swap_tests']=swap_tests.strip()
         result['g7_launcher_reused']=True
     filename='KungFuFlash_v'+package_version+'.upd'
     (dest/filename).write_bytes(upd)

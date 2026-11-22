@@ -28,7 +28,7 @@ Earlier G5 Home/SD-browser rendering was photographed on an LCD.
 
 ![Graphical Home, VICE with simulated cartridge data](preview/integration-home.png)
 
-## G8 development status, 17 November 2026
+## G8 development status, 22 November 2026
 
 **G7.03 remains the published experimental pre-release.** The separate
 [G8-parser-01 test build](https://github.com/Soopahfly/kff2-graphical-menu/blob/g8-development/firmware/development/G8-parser-01/README.md)
@@ -39,7 +39,9 @@ The candidate passed 219 parser checks and the existing ARM-side regressions.
 ARM flash and BSS sizes are unchanged. Its C64 launcher is byte-identical to
 G7.03, with matching earlier VICE reports; VICE was not rerun for this ARM-only
 change. Physical cartridge testing of the candidate remains pending.
-Multi-disk swapping, GMod2 and optional Random preview are still planned.
+The [G8 disk swapping candidate](firmware/development/G8-disk-swap-01/README.md)
+adds D64 disk sets and Special-button swapping. Hardware testing is pending.
+GMod2 and optional Random preview remain planned.
 
 ## Features
 

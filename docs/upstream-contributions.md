@@ -4,8 +4,7 @@ Updated 17 November 2026. Core firmware enhancements should remain independently
 reviewable and usable with the original Kung Fu Flash 2 menu. Their inclusion in
 our graphical G8 build must not make the graphical launcher a prerequisite.
 
-This is an implementation policy, not a claim that disk swapping or GMod2 is
-already implemented. Offering a feature does not guarantee upstream acceptance.
+This policy applies to the disk-swapping patch and future features. Offering a feature does not guarantee upstream acceptance.
 Do not open issues, submit patches or contact the original developer until the
 project owner asks.
 
@@ -67,7 +66,9 @@ save support complete. Neither feature should depend on the other.
 
 ## Current position
 
-The parser fix is implemented in the isolated G8 test candidate. Disk swapping
-remains the next major feature, with GMod2 conditional after that. The copy
+The parser fix is implemented in the isolated G8 test candidate. The separate
+[D64 disk swapping patch](../experiments/d64-swapping/README.md) builds with the
+original launcher and is included in a graphical test candidate. GMod2 remains
+conditional. The copy
 optimisation is still a candidate awaiting physical timing checks. No submission
 or upstream acceptance is recorded.

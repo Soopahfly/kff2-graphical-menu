@@ -1,0 +1,723 @@
+From 08f9e0b0ff3fdaabcde084b0721c2d1d783426e3 Mon Sep 17 00:00:00 2001
+From: Soopahfly <Soopahfly@users.noreply.github.com>
+Date: Sun, 22 Nov 2026 20:33:19 +0000
+Subject: [PATCH] Support safe D64 disk-set swaps with the Special button
+
+---
+ firmware/d64.c         |   8 +-
+ firmware/disk_drive.c  |  82 +++++++++++-
+ firmware/disk_set.c    | 235 +++++++++++++++++++++++++++++++++
+ tests/test_disk_set.c  | 288 +++++++++++++++++++++++++++++++++++++++++
+ tests/test_disk_set.py |  30 +++++
+ 5 files changed, 640 insertions(+), 3 deletions(-)
+ create mode 100644 firmware/disk_set.c
+ create mode 100644 tests/test_disk_set.c
+ create mode 100644 tests/test_disk_set.py
+
+diff --git a/firmware/d64.c b/firmware/d64.c
+index 33c64ad..6dfa191 100644
+--- a/firmware/d64.c
++++ b/firmware/d64.c
+@@ -974,5 +974,11 @@ static bool d64_open(D64_IMAGE *image, const char *filename)
+         return false;
+     }
+
+-    return d64_read_header(image);
++    if (!d64_read_header(image))
++    {
++        file_close(&image->file);
++        return false;
++    }
++
++    return true;
+ }
+diff --git a/firmware/disk_drive.c b/firmware/disk_drive.c
+index 9c41bf8..0832d51 100644
+--- a/firmware/disk_drive.c
++++ b/firmware/disk_drive.c
+@@ -20,6 +20,7 @@
+  */
+
+ #include "fs_drive.c"
++#include "disk_set.c"
+
+ static inline void put_u8(u8 **ptr, u8 value)
+ {
+@@ -1244,7 +1245,59 @@ static void disk_receive_filename(char *filename)
+     *filename = 0;
+ }
+
+-static u8 disk_send_command(u8 cmd, DISK_CHANNEL*channels)
++typedef struct
++{
++    DISK_SET_BUTTON button;
++    D64_IMAGE *image;
++    D64_IMAGE *spare;
++    bool enabled;
++    bool busy;
++    unsigned flashes;
++    u32 feedback_start;
++} DISK_SWAP_STATE;
++
++static DISK_SET disk_set;
++static D64_IMAGE disk_set_spare;
++
++static void disk_swap_clock_start(void)
++{
++    /* APB1 is HCLK/2. Its timer clock is HCLK with the default TIMPRE. */
++    SET_BIT(RCC->APB1LENR, RCC_APB1LENR_TIM2EN);
++    (void)RCC->APB1LENR;
++    SET_BIT(RCC->APB1LRSTR, RCC_APB1LRSTR_TIM2RST);
++    CLEAR_BIT(RCC->APB1LRSTR, RCC_APB1LRSTR_TIM2RST);
++    TIM2->PSC = SystemCoreClock / 10000 - 1;
++    TIM2->EGR = TIM_EGR_UG;
++    TIM2->CR1 = TIM_CR1_CEN;
++}
++
++static void disk_poll_swap(DISK_SWAP_STATE *swap, u8 cmd, DISK_CHANNEL *channels)
++{
++    /* The prescaler ticks at 10 kHz. Use unsigned tick differences across wrap. */
++    u32 now = TIM2->CNT;
++    unsigned action = disk_set_button(&swap->button,
++        (C64_CONTROL_READ() & SPECIAL_BTN) != 0, now);
++    if (action)
++    {
++        bool ok = cmd == CMD_NONE && !swap->busy && disk_swap_channels_idle(channels);
++        if (ok)
++        {
++            D64_IMAGE *old = swap->image;
++            ok = disk_set_swap(&disk_set, &swap->image, &swap->spare, action);
++            if (ok && old != swap->image)
++            {
++                disk_init_all_channels(swap->image, channels);
++                disk_last_error = DISK_STATUS_OK;
++            }
++        }
++
++        swap->flashes = ok ? 1 : 3;
++        swap->feedback_start = TIM2->CNT;
++        timer_start_ms(175);  // SD I/O uses the shared SysTick timer.
++    }
++}
++
++static u8 disk_send_command(u8 cmd, DISK_CHANNEL *channels, DISK_SWAP_STATE *swap)
+ {
+     c64_set_command(cmd);
+
+@@ -1264,6 +1317,21 @@ static u8 disk_send_command(u8 cmd, DISK_CHANNEL*channels)
+     u8 reply;
+     while (!c64_get_reply(cmd, &reply))
+     {
++        if (swap->enabled)
++        {
++            disk_poll_swap(swap, cmd, channels);
++        }
++        if (swap->flashes)
++        {
++            unsigned phase = (TIM2->CNT - swap->feedback_start) / 1000;
++            if (phase < swap->flashes * 2)
++            {
++                C64_CRT_CONTROL(phase & 1 ? STATUS_LED_OFF : STATUS_LED_ON);
++                continue;
++            }
++            swap->flashes = 0;
++            C64_CRT_CONTROL(led_status);
++        }
+         if (timer_elapsed())
+         {
+             if (disk_last_error > DISK_STATUS_SCRATCHED &&
+@@ -1290,12 +1358,22 @@ static void disk_loop(void)
+     disk_init_all_channels(image, channels);
+
+     disk_last_error = DISK_STATUS_INIT;
++    DISK_SWAP_STATE swap = {.image = image, .spare = &disk_set_spare};
++    if (cfg_file.img.mode == DISK_MODE_D64 && image->type == D64_TYPE_D64)
++    {
++        swap.enabled = disk_set_load(&disk_set, cfg_file.file);
++        if (swap.enabled)
++        {
++            disk_swap_clock_start();
++        }
++    }
+
+     // BASIC commands to run are placed in KFF_BUF
+     u8 cmd = CMD_MOUNT_DISK;
+     while (true)
+     {
+-        u8 reply = disk_send_command(cmd, channels);
++        swap.busy = talk || listen;
++        u8 reply = disk_send_command(cmd, channels, &swap);
+         cmd = CMD_NONE;
+
+         switch (reply)
+diff --git a/firmware/disk_set.c b/firmware/disk_set.c
+new file mode 100644
+index 0000000..8f10257
+--- /dev/null
++++ b/firmware/disk_set.c
+@@ -0,0 +1,235 @@
++/* D64 disk-set support for Kung Fu Flash 2. See the project LICENSE. */
++
++#define DISK_SET_MAX 16
++#define DISK_SET_NAME_MAX 255
++#define DISK_SET_FILE_MAX 8192
++#define DISK_SET_DEBOUNCE_TICKS 200
++#define DISK_SET_HOLD_TICKS 7500
++
++typedef struct
++{
++    char names[DISK_SET_MAX][DISK_SET_NAME_MAX + 1];
++    unsigned count;
++    unsigned current;
++} DISK_SET;
++
++typedef struct
++{
++    bool raw;
++    bool stable;
++    u32 changed_at;
++    u32 pressed_at;
++} DISK_SET_BUTTON;
++
++static bool disk_set_name_equal(const char *left, const char *right)
++{
++    while (*left && *right)
++    {
++        DWORD a = ff_oem2uni((u8)*left++, FF_CODE_PAGE);
++        DWORD b = ff_oem2uni((u8)*right++, FF_CODE_PAGE);
++        if (ff_wtoupper(a) != ff_wtoupper(b))
++        {
++            return false;
++        }
++    }
++
++    return *left == *right;
++}
++
++static bool disk_set_add(DISK_SET *set, char *name, unsigned length)
++{
++    if (!length)
++    {
++        return true;
++    }
++
++    name[length] = 0;
++    if (set->count == DISK_SET_MAX || length <= 4 || name[0] == ' ' ||
++        !disk_set_name_equal(name + length - 4, ".d64"))
++    {
++        return false;
++    }
++
++    for (unsigned i = 0; i < set->count; i++)
++    {
++        if (disk_set_name_equal(set->names[i], name))
++        {
++            return false;
++        }
++    }
++
++    memcpy(set->names[set->count++], name, length + 1);
++    return true;
++}
++
++static bool disk_set_parse(DISK_SET *set, FIL *file)
++{
++    FSIZE_t remaining = f_size(file);
++    if (remaining > DISK_SET_FILE_MAX)
++    {
++        return false;
++    }
++
++    char name[DISK_SET_NAME_MAX + 1];
++    unsigned length = 0;
++    bool carriage_return = false;
++    bool first = true;
++
++    while (remaining)
++    {
++        u8 chunk[256];
++        unsigned size = remaining < sizeof(chunk) ? remaining : sizeof(chunk);
++        if (file_read(file, chunk, size) != size)
++        {
++            return false;
++        }
++        remaining -= size;
++
++        unsigned start = 0;
++        if (first && size >= 3 && chunk[0] == 0xef && chunk[1] == 0xbb && chunk[2] == 0xbf)
++        {
++            start = 3;
++        }
++        first = false;
++
++        for (unsigned i = start; i < size; i++)
++        {
++            u8 c = chunk[i];
++            if (c == '\n')
++            {
++                if (!disk_set_add(set, name, length))
++                {
++                    return false;
++                }
++                length = 0;
++                carriage_return = false;
++            }
++            else if (carriage_return)
++            {
++                return false;
++            }
++            else if (c == '\r')
++            {
++                carriage_return = true;
++            }
++            else if (length == DISK_SET_NAME_MAX || c < 32 || c == 127 ||
++                     strchr("\"*/:<>?\\|", c))
++            {
++                return false;
++            }
++            else
++            {
++                name[length++] = (char)c;
++            }
++        }
++    }
++
++    return !carriage_return && disk_set_add(set, name, length) && set->count != 0;
++}
++
++static bool disk_set_load(DISK_SET *set, const char *mounted)
++{
++    set->count = 0;
++    FIL list;
++    if (f_open(&list, "disks.lst", FA_READ) != FR_OK)
++    {
++        return false;
++    }
++
++    bool parsed = disk_set_parse(set, &list);
++    if (!file_close(&list) || !parsed)
++    {
++        wrn("Invalid disks.lst; disk swapping disabled");
++        return false;
++    }
++
++    FILINFO info;
++    if (!file_stat(mounted, &info))
++    {
++        return false;
++    }
++
++    bool found = false;
++    for (unsigned i = 0; i < set->count; i++)
++    {
++        if ((!disk_set_name_equal(set->names[i], info.fname)) &&
++            (!info.altname[0] || !disk_set_name_equal(set->names[i], info.altname)))
++        {
++            continue;
++        }
++        if (found)
++        {
++            wrn("Duplicate mounted image in disks.lst");
++            return false;
++        }
++        set->current = i;
++        found = true;
++    }
++
++    return found;
++}
++
++/* Return 1 for next disk, 2 for the first disk, or 0 for no action. */
++static unsigned disk_set_button(DISK_SET_BUTTON *button, bool pressed, u32 now)
++{
++    if (button->raw != pressed)
++    {
++        button->raw = pressed;
++        button->changed_at = now;
++    }
++    if (pressed == button->stable || now - button->changed_at < DISK_SET_DEBOUNCE_TICKS)
++    {
++        return 0;
++    }
++
++    button->stable = pressed;
++    if (pressed)
++    {
++        button->pressed_at = button->changed_at;
++        return 0;
++    }
++
++    return button->changed_at - button->pressed_at >= DISK_SET_HOLD_TICKS ? 2 : 1;
++}
++
++static bool disk_swap_channels_idle(const DISK_CHANNEL *channels)
++{
++    for (unsigned i = 0; i < 15; i++)
++    {
++        if (channels[i].buf_mode != DISK_BUF_USE || channels[i].buf_len)
++        {
++            return false;
++        }
++    }
++    return channels[15].buf2_ptr == 0;
++}
++
++/* The two slots keep FatFs FIL objects at stable addresses for their lifetime. */
++static bool disk_set_swap(DISK_SET *set, D64_IMAGE **active, D64_IMAGE **spare, unsigned action)
++{
++    unsigned target = action == 2 ? 0 : (set->current + 1) % set->count;
++    if (target == set->current)
++    {
++        return true;
++    }
++
++    D64_IMAGE *old = *active;
++    D64_IMAGE *next = *spare;
++    if (f_error(&old->file) || !d64_sync(old) || !d64_open(next, set->names[target]))
++    {
++        return false;
++    }
++
++    /* A short and long FAT filename can refer to the same image. */
++    if (next->type != D64_TYPE_D64 || next->file.obj.sclust == old->file.obj.sclust ||
++        !d64_close(old))
++    {
++        d64_close(next);
++        return false;
++    }
++
++    *active = next;
++    *spare = old;
++    set->current = target;
++    return true;
++}
+diff --git a/tests/test_disk_set.c b/tests/test_disk_set.c
+new file mode 100644
+index 0000000..ddb78f1
+--- /dev/null
++++ b/tests/test_disk_set.c
+@@ -0,0 +1,288 @@
++#include <assert.h>
++#include <stdbool.h>
++#include <stdint.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include "ff.h"
++#include "diskio.h"
++
++typedef uint8_t u8;
++typedef uint16_t u16;
++typedef uint32_t u32;
++typedef int8_t s8;
++typedef int16_t s16;
++typedef DIR DIR_t;
++#define ARRAY_COUNT(array) (sizeof(array) / sizeof((array)[0]))
++#define log(...) ((void)0)
++#define dbg(...) ((void)0)
++#define wrn(...) ((void)0)
++#define SECTORS 131072u
++static BYTE *volume;
++static bool fail_writes;
++static bool fail_candidate_reads;
++static FIL *candidate_file;
++
++DSTATUS disk_initialize(BYTE drive)
++{
++    return drive ? STA_NOINIT : 0;
++}
++
++DSTATUS disk_status(BYTE drive)
++{
++    return disk_initialize(drive);
++}
++
++DRESULT disk_read(BYTE drive, BYTE *buffer, LBA_t sector, UINT count)
++{
++    if (drive || sector >= SECTORS || count > SECTORS - sector)
++    {
++        return RES_PARERR;
++    }
++    memcpy(buffer, volume + (size_t)sector * 512, (size_t)count * 512);
++    return RES_OK;
++}
++
++DRESULT disk_write(BYTE drive, const BYTE *buffer, LBA_t sector, UINT count)
++{
++    if (drive || sector >= SECTORS || count > SECTORS - sector)
++    {
++        return RES_PARERR;
++    }
++    if (fail_writes)
++    {
++        return RES_ERROR;
++    }
++    memcpy(volume + (size_t)sector * 512, buffer, (size_t)count * 512);
++    return RES_OK;
++}
++
++DRESULT disk_ioctl(BYTE drive, BYTE command, void *buffer)
++{
++    if (drive)
++    {
++        return RES_PARERR;
++    }
++    switch (command)
++    {
++        case CTRL_SYNC: return RES_OK;
++        case GET_SECTOR_COUNT: *(LBA_t *)buffer = SECTORS; return RES_OK;
++        case GET_SECTOR_SIZE: *(WORD *)buffer = 512; return RES_OK;
++        case GET_BLOCK_SIZE: *(DWORD *)buffer = 1; return RES_OK;
++        default: return RES_PARERR;
++    }
++}
++
++static bool file_open(FIL *file, const char *name, BYTE mode)
++{
++    return f_open(file, name, mode) == FR_OK;
++}
++
++static bool file_close(FIL *file)
++{
++    return f_close(file) == FR_OK;
++}
++
++static bool file_stat(const char *name, FILINFO *info)
++{
++    return f_stat(name, info) == FR_OK;
++}
++
++static bool file_sync(FIL *file)
++{
++    return f_sync(file) == FR_OK;
++}
++
++static bool file_seek(FIL *file, FSIZE_t offset)
++{
++    return f_lseek(file, offset) == FR_OK;
++}
++
++static u32 file_read(FIL *file, void *buffer, size_t size)
++{
++    UINT read;
++    if (fail_candidate_reads && file == candidate_file)
++    {
++        return 0;
++    }
++    return f_read(file, buffer, size, &read) == FR_OK ? read : 0;
++}
++
++static u32 file_write(FIL *file, void *buffer, size_t size)
++{
++    UINT written;
++    return f_write(file, buffer, size, &written) == FR_OK ? written : 0;
++}
++
++#include "d64.h"
++#include "disk_drive.h"
++#include "d64.c"
++#include "disk_set.c"
++
++static void write_list(const char *list)
++{
++    FIL file;
++    assert(file_open(&file, "disks.lst", FA_CREATE_ALWAYS | FA_WRITE));
++    assert(file_write(&file, (void *)list, strlen(list)) == strlen(list));
++    assert(file_close(&file));
++}
++
++static void make_image(const char *name, FSIZE_t size, u8 marker)
++{
++    FIL file;
++    assert(file_open(&file, name, FA_CREATE_ALWAYS | FA_WRITE));
++    assert(file_seek(&file, size - 1));
++    assert(file_write(&file, &marker, 1) == 1);
++    assert(file_seek(&file, d64_track_offset[17] * 256 + 2));
++    assert(file_write(&file, &marker, 1) == 1);
++    assert(file_close(&file));
++}
++
++static void expect_active(D64_IMAGE *image, u8 marker)
++{
++    u8 actual;
++    assert(file_seek(&image->file, d64_track_offset[17] * 256 + 2));
++    assert(file_read(&image->file, &actual, 1) == 1);
++    assert(actual == marker);
++}
++
++static void check_button(void)
++{
++    DISK_SET_BUTTON button = {0};
++    u32 start = UINT32_MAX - 300;
++    assert(disk_set_button(&button, true, start) == 0);
++    assert(disk_set_button(&button, false, start + 10) == 0);
++    assert(disk_set_button(&button, true, start + 50) == 0);
++    assert(disk_set_button(&button, true, start + 250) == 0);
++    assert(disk_set_button(&button, false, start + 400) == 0);
++    assert(disk_set_button(&button, false, start + 600) == 1);
++    assert(disk_set_button(&button, false, start + 700) == 0);
++    assert(disk_set_button(&button, true, 1000) == 0);
++    assert(disk_set_button(&button, true, 1200) == 0);
++    assert(disk_set_button(&button, true, 9000) == 0);
++    assert(disk_set_button(&button, false, 9100) == 0);
++    assert(disk_set_button(&button, false, 9300) == 2);
++
++    DISK_CHANNEL channels[16] = {0};
++    for (unsigned i = 0; i < 16; i++) channels[i].buf_mode = DISK_BUF_USE;
++    assert(disk_swap_channels_idle(channels));
++    channels[2].buf_mode = DISK_BUF_SAVE;
++    assert(!disk_swap_channels_idle(channels));
++    channels[2].buf_mode = DISK_BUF_NONE;
++    assert(!disk_swap_channels_idle(channels));
++    channels[2].buf_mode = DISK_BUF_USE;
++    channels[2].buf_len = 256;
++    assert(!disk_swap_channels_idle(channels));
++    channels[2].buf_len = 0;
++    channels[15].buf2_ptr = 1;
++    assert(!disk_swap_channels_idle(channels));
++}
++
++int main(void)
++{
++    BYTE work[4096];
++    FATFS fs;
++    MKFS_PARM options = {.fmt = FM_FAT32, .au_size = 512};
++    volume = calloc(SECTORS, 512);
++    assert(volume && f_mkfs("", &options, work, sizeof(work)) == FR_OK);
++    assert(f_mount(&fs, "", 1) == FR_OK && fs.fs_type == FS_FAT32);
++    assert(f_mkdir("/Game") == FR_OK && f_chdir("/Game") == FR_OK);
++
++    DISK_SET set = {0};
++    D64_IMAGE slot[2] = {0};
++    D64_IMAGE *active = &slot[0];
++    D64_IMAGE *spare = &slot[1];
++    make_image("Disk One.d64", 174848, 1);
++    make_image("Disk Two.d64", 174848, 2);
++    make_image("wrong.d64", 349696, 3);
++    assert(f_chmod("Disk Two.d64", AM_RDO, AM_RDO) == FR_OK);
++    assert(d64_open(active, "disk one.D64"));
++    assert(!disk_set_load(&set, "Disk One.d64"));
++
++    const char *invalid[] = {
++        "", "../Disk One.d64\n", "/Disk One.d64\n", "0:Disk One.d64\n",
++        "Disk One.d64\nDisk One.D64", "Disk One.d64\nBad.d81",
++        "Disk One.d64\rDisk Two.d64", " Disk One.d64", "Disk One.d64 ",
++        "Disk One.d64\nOther\\Disk Two.d64", "Disk One.d64\nBad?.d64",
++    };
++    for (unsigned i = 0; i < sizeof(invalid) / sizeof(invalid[0]); i++)
++    {
++        write_list(invalid[i]);
++        assert(!disk_set_load(&set, "Disk One.d64"));
++    }
++    char long_list[8300];
++    memset(long_list, 'x', sizeof(long_list) - 1);
++    long_list[sizeof(long_list) - 1] = 0;
++    write_list(long_list);
++    assert(!disk_set_load(&set, "Disk One.d64"));
++    long_list[260] = 0;
++    write_list(long_list);
++    assert(!disk_set_load(&set, "Disk One.d64"));
++
++    char many[300] = "Disk One.d64\n";
++    for (unsigned i = 1; i <= 16; i++)
++    {
++        size_t used = strlen(many);
++        snprintf(many + used, sizeof(many) - used, "D%02u.d64\n", i);
++        write_list(many);
++        assert(disk_set_load(&set, "Disk One.d64") == (i < 16));
++    }
++
++    write_list("\xef\xbb\xbf" "Disk One.d64\r\n\r\ndisk two.D64");
++    assert(!disk_set_load(&set, "wrong.d64"));
++    assert(disk_set_load(&set, "disk two.D64") && set.current == 1);
++    assert(disk_set_load(&set, "Disk One.d64") && set.current == 0 && set.count == 2);
++    expect_active(active, 1);
++
++    u8 saved = 0x5a;
++    assert(file_seek(&active->file, 0));
++    assert(file_write(&active->file, &saved, 1) == 1);
++    fail_writes = true;
++    assert(!disk_set_swap(&set, &active, &spare, 1));
++    assert(active == &slot[0] && set.current == 0);
++    fail_writes = false;
++
++    candidate_file = &spare->file;
++    fail_candidate_reads = true;
++    assert(!disk_set_swap(&set, &active, &spare, 1));
++    assert(!spare->file.obj.fs);
++    assert(active == &slot[0] && set.current == 0);
++    fail_candidate_reads = false;
++    expect_active(active, 1);
++
++    assert(disk_set_swap(&set, &active, &spare, 1));
++    assert(active == &slot[1] && set.current == 1 && !spare->file.obj.fs);
++    expect_active(active, 2);
++    assert(file_write(&active->file, &saved, 1) == 0);  /* Read-only fallback. */
++    assert(disk_set_swap(&set, &active, &spare, 1));
++    expect_active(active, 1);
++    assert(file_seek(&active->file, 0));
++    u8 actual;
++    assert(file_read(&active->file, &actual, 1) == 1 && actual == saved);
++    assert(disk_set_swap(&set, &active, &spare, 1));
++    assert(disk_set_swap(&set, &active, &spare, 2) && set.current == 0);
++    assert(disk_set_swap(&set, &active, &spare, 2) && set.current == 0);
++
++    write_list("Disk One.d64\nmissing.d64\n");
++    assert(disk_set_load(&set, "Disk One.d64"));
++    assert(!disk_set_swap(&set, &active, &spare, 1) && set.current == 0);
++    expect_active(active, 1);
++    write_list("Disk One.d64\nwrong.d64\n");
++    assert(disk_set_load(&set, "Disk One.d64"));
++    assert(!disk_set_swap(&set, &active, &spare, 1) && !spare->file.obj.fs);
++    expect_active(active, 1);
++
++    FILINFO info;
++    assert(file_stat("Disk One.d64", &info) && info.altname[0]);
++    char aliases[300];
++    snprintf(aliases, sizeof(aliases), "Disk One.d64\n%s\n", info.altname);
++    write_list(aliases);
++    assert(!disk_set_load(&set, "Disk One.d64"));
++
++    check_button();
++    assert(d64_close(active));
++    assert(f_mount(NULL, "", 0) == FR_OK);
++    free(volume);
++    puts("PASS: D64 disk-set parsing, FAT32 handover, write sync, read-only media, failure retention and button timing");
++    return 0;
++}
+diff --git a/tests/test_disk_set.py b/tests/test_disk_set.py
+new file mode 100644
+index 0000000..baa120e
+--- /dev/null
++++ b/tests/test_disk_set.py
+@@ -0,0 +1,30 @@
++#!/usr/bin/env python3
++"""Compile the real D64 disk-set code and FatFs with a RAM-backed test card."""
++import os
++from pathlib import Path
++import shutil
++import subprocess
++import sys
++import tempfile
++
++root = Path(__file__).resolve().parents[1]
++firmware = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else root / "firmware"
++with tempfile.TemporaryDirectory(prefix="kff2-disk-set-") as temp:
++    work = Path(temp)
++    fs = work / "fatfs"
++    shutil.copytree(firmware / "fatfs", fs)
++    conf = fs / "ffconf.h"
++    conf.write_text(conf.read_text().replace("#define FF_USE_MKFS\t\t0", "#define FF_USE_MKFS\t\t1"))
++    conf.write_text(conf.read_text().replace("#define FF_USE_CHMOD\t0", "#define FF_USE_CHMOD\t1"))
++    env = os.environ.copy()
++    env.pop("C_INCLUDE_PATH", None)
++    env["ASAN_OPTIONS"] = "detect_leaks=0"
++    executable = work / "disk-set"
++    subprocess.run([
++        "gcc", "-std=c11", "-O1", "-g", "-Wall", "-Wextra", "-Werror",
++        "-Wno-unused-function", "-Wno-unused-variable", "-Wno-unused-parameter",
++        "-fsanitize=address,undefined", "-no-pie",
++        "-I", str(fs), "-I", str(firmware), str(Path(__file__).with_suffix(".c")),
++        str(fs / "ff.c"), str(fs / "ffunicode.c"), "-o", str(executable),
++    ], env=env, check=True)
++    subprocess.run([executable], env=env, check=True)

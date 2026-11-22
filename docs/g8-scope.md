@@ -1,9 +1,12 @@
 # G8 scope and implementation plan
 
 Planning baseline: G7.03, based on official v2.07 plus documentation commit `9c84d99`.
-Updated 17 November 2026. **The feature scope remains a plan.** An isolated
+Updated 22 November 2026. An isolated
 [CRT parser development candidate](https://github.com/Soopahfly/kff2-graphical-menu/blob/g8-development/firmware/development/G8-parser-01/README.md)
-is implemented on `g8-development`; multi-disk, GMod2 and preview remain pending.
+is implemented on `g8-development`. The [D64 disk swapping candidate](../firmware/development/G8-disk-swap-01/README.md)
+has passed software checks and awaits cartridge testing. The controls and limits
+below describe the plan. Refer to the candidate notes for actual behavior.
+GMod2 and Random preview remain pending.
 Features can be simplified, deferred or dropped because of coding complexity,
 available skills/time, hardware limits or insufficient test evidence.
 
