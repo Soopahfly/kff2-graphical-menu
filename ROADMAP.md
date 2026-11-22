@@ -200,6 +200,13 @@ These need an entry-point/UI design and space measurements before receiving a
 release target. Keep the existing four Home tiles and consistent frame unless
 a revised design is reviewed separately.
 
+## Diagnostic timing firmware
+
+Plan an optional firmware build that captures PRG, CRT and D64 loading timings
+on the cartridge and exports reports over USB serial. See the
+[diagnostic timing plan](docs/diagnostic-timing.md) for timing points, USB
+handover constraints and hardware checks.
+
 ## Research, not committed features
 
 - **exFAT:** audit FatFs configuration, directory sorting and wider file-size types;
