@@ -19,18 +19,15 @@ G7.0.2 completed the command return but could redraw the old prompt over Home.
 [Before-and-after VICE tests](experiments/copy-return/README.md) reproduce and check the display fix.
 Its internal cartridge label remains `2.G7`; identify the hotfix by its filename and
 [checksum](firmware/releases/G7.03/SHA256SUMS). It contains no G8 features.
-Software checks pass. On real hardware, the project owner reports working G7
-PRG/CRT loading, saved REU-size/autoboot preferences and return to Home after reset
-with autoboot disabled. The original G7 copy-result screen was reported to freeze. The copy-screen
-fix is now reported working; the confirmation did not specify VICE or hardware.
-Full copy integrity and actual REU operation still need explicit verification. See [the dated hardware results](firmware/experimental/HARDWARE-TESTS.md).
+On 23 November 2026, the project owner confirmed that all G7 features had been tested and no issues had been reported. Individual hardware configurations were not specified.
+See [the dated test results](firmware/experimental/HARDWARE-TESTS.md).
 Earlier G5 Home/SD-browser rendering was photographed on an LCD.
 
 ![Graphical Home, VICE with simulated cartridge data](preview/integration-home.png)
 
 ## G8 development status, 22 November 2026
 
-**G7.03 remains the published experimental pre-release.** The separate
+**G7.03 remains the current stable release.** The separate
 [G8-parser-01 test build](https://github.com/Soopahfly/kff2-graphical-menu/blob/g8-development/firmware/development/G8-parser-01/README.md)
 adds only the unsupported CRT bank rejection fix. Its update is named
 `KungFuFlash_v2.G7.03.1.upd`; it retains the internal `2.G7` label.
@@ -86,8 +83,7 @@ files and multiple disks together. [Full setup guide](docs/getting-started.md)
 
 ## Limits and test status
 
-- G7 has limited positive hardware reports, not full compatibility validation.
-  Favourites copying and REU operation at each capacity remain unverified.
+- The owner reports testing all G7 features. Compatibility across hardware configurations varies.
   VICE fixtures simulate cartridge packets; they do not emulate the STM32 or REU bus timing.
 - Physical CRT readability remains untested. LCD photos of G5 confirm only the
   Home and folder-browser presentation.

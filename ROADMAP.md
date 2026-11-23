@@ -1,6 +1,6 @@
 # Roadmap
 
-Updated 22 November 2026. **G7.03 is the current experimental release package.** This roadmap
+Updated 23 November 2026. **G7.03 is the current stable release.** This roadmap
 sets proposed priorities and acceptance checks, not release dates or a claim that
 future features are implemented. G8/G9 are working milestone names.
 
@@ -21,7 +21,7 @@ submission is authorised by this roadmap.
 
 | Order | Milestone | Scope | Status |
 | --- | --- | --- | --- |
-| 1 | G7.03 experimental release package | Package working copy-screen fix; continue Favourites and REU hardware coverage | Published as an experimental pre-release; remaining hardware checks recorded |
+| 1 | G7.03 stable release | Graphical menu and copy-screen fix | Promoted on 23 November after the owner reported testing all G7 features with no issues reported |
 | 2 | G8 improvements and cartridge compatibility | D64 swapping first, conditional GMod2 second, optional Random preview third | Parser fix and D64 swap development builds available; cartridge testing pending |
 | 3 | G9 fallback / next milestone | GMod2 if it misses G8 acceptance gates; later scope to be reviewed | GMod2 is a conditional G8 target, not yet integrated |
 | 4 | Larger cartridges | Magic Desk 16 images up to 2 MB | Separate banking/timing investigation |
@@ -37,7 +37,7 @@ Later milestone order can change with tester results, measured space and demand.
 
 ## G8 development status, 22 November 2026
 
-**G7.03 remains the published experimental pre-release.** The separate
+**G7.03 remains the current stable release.** The separate
 [G8-parser-01 test build](https://github.com/Soopahfly/kff2-graphical-menu/blob/g8-development/firmware/development/G8-parser-01/README.md)
 adds only the unsupported CRT bank rejection fix. Its update is named
 `KungFuFlash_v2.G7.03.1.upd`; it retains the internal `2.G7` label.
@@ -49,31 +49,11 @@ change. Physical cartridge testing of the candidate remains pending.
 The [D64 disk swapping candidate](firmware/development/G8-disk-swap-01/README.md)
 has passed software checks. GMod2 and optional Random preview remain planned.
 
-## 1. Continue G7 hardware verification
+## 1. G7.03 stable release
 
-**Already user-reported working on real hardware:** PRG/CRT loading, saving
-REU-size/autoboot preferences and return to Home after reset with autoboot disabled.
-The [hardware log](firmware/experimental/HARDWARE-TESTS.md) records the scope.
-
-### Remaining release checks
-
-- Copy a file to Favourites, load the copy and confirm the original remains.
-- Copy a whole game folder and verify companion files/additional disks work.
-- Repeat a copy and try an existing destination name; verify no overwrite.
-- Use REU software to detect and exercise 256 KB, 512 KB and 1 MB. Saving the
-  preference is already reported working, but is not an REU transfer test.
-
-### Release package
-
-The **G7.03 experimental pre-release is already published**, with its `.upd`,
-checksum, release notes and setup/recovery instructions. The remaining checks
-above are still open. Record explicit results before claiming broader hardware
-validation. If fixes change a candidate, identify its new checksum and repeat
-affected tests before tagging.
-
-Broader USB, C128, PAL/NTSC/board coverage and CRT readability remain explicit
-testing requests. They are not silently promoted to confirmed compatibility.
-See [the current checklist](docs/testing.md).
+On 23 November 2026, the project owner confirmed that all G7 features had been tested and no issues had been reported. Individual hardware configurations were not specified.
+See the [release notes](firmware/releases/G7.03/RELEASE-NOTES.md) and
+[regression checklist](docs/testing.md).
 
 ## 2. G8: disk swapping, conditional GMod2 and optional Random preview
 

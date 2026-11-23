@@ -8,7 +8,7 @@ v2.07 plus documentation commit `9c84d99`. The original G7 SHA256 is
 
 This log records hardware reports received after packaging. It does not change
 the firmware or retrospectively alter the build report's `hardware_tested: false`
-snapshot. G7.03 is the current experimental release package; broad compatibility
+snapshot. G7.03 is the current stable release; broad compatibility
 and remaining hardware checks are not implied by that release name.
 
 ## 11 November 2026, project owner report
