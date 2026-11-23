@@ -1,7 +1,6 @@
 # G7.03: KFF2 Graphical Menu
 
-Experimental release package, 11 November 2026. G7.03 replaces G7 as the primary
-download. It contains the exact firmware previously packaged as G7.0.3; only the
+Promoted to the project's first stable release on 23 November 2026. It contains the exact firmware previously packaged as G7.0.3; only the
 package name changes. The firmware bytes and SHA256 are identical. No new flash
 is needed if you already installed the working G7.0.3 build.
 
@@ -37,15 +36,7 @@ Software checks pass: eight VICE navigation scenarios, real keyboard navigation,
 NTSC startup, twelve shared-screen checkpoints, one-key copy-result regression,
 and host tests of copying, settings, REU callbacks, history, FatFs and assets.
 VICE reproduced the G7.0.2 stale-screen fault and verifies the corrected Home bank.
-The owner then reported “that's working”. Whether that confirmation referred to
-the VICE test or the physical cartridge was not specified. It is recorded as a
-reported fix confirmation, not a blanket hardware pass.
-
-Earlier original-G7 hardware reports cover PRG/CRT loading, preference saving and
-reset with autoboot disabled. Broader file/folder copy integrity, loading copied
-games, collision handling and actual REU use at all three capacities still need
-explicit hardware coverage. USB, C128, further video/board setups, physical CRT
-readability and recovery procedures also remain incompletely tested.
+On 23 November 2026, the project owner confirmed that all G7 features had been tested and no issues had been reported. Individual hardware configurations were not specified.
 
 [Detailed test status](https://github.com/Soopahfly/kff2-graphical-menu/blob/main/docs/testing.md)
 [Runnable VICE tests](https://github.com/Soopahfly/kff2-graphical-menu/tree/main/experiments/copy-return)

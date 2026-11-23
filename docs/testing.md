@@ -1,13 +1,11 @@
-# Current checks, G7.03
+# G7.03 test status
 
-G7.03 is the release package name for the unchanged G7.0.3 firmware. The owner
-reports the copy-screen fix working, but did not specify whether this was in VICE
-or on the cartridge. That confirmation does not close the remaining hardware checks.
+On 23 November 2026, the project owner confirmed that all G7 features had been tested and no issues had been reported. Individual hardware configurations were not specified.
 See [release notes](../firmware/releases/G7.03/RELEASE-NOTES.md).
 
 ## G8 development status, 17 November 2026
 
-**G7.03 remains the published experimental pre-release.** The separate
+**G7.03 remains the current stable release.** The separate
 [G8-parser-01 test build](https://github.com/Soopahfly/kff2-graphical-menu/blob/g8-development/firmware/development/G8-parser-01/README.md)
 adds only the unsupported CRT bank rejection fix. Its update is named
 `KungFuFlash_v2.G7.03.1.upd`; it retains the internal `2.G7` label.
@@ -23,7 +21,7 @@ not an additional hardware test pass. Candidate hardware checks are listed in
 its linked notes: working CRTs, clean rejection of unsupported images, and
 ordinary PRG/D64 and Favourites regressions.
 
-## G7.0.3 display-return retest
+## Historical G7.0.3 display-return retest
 
 The owner reports that the first key flashes and redraws “Press a key”, while the
 second opens the file manager. VICE reproduced this in G7.0.2: Home was active,
@@ -72,7 +70,7 @@ These are user-reported hardware results, separate from the automated tests.
 Exact C64 board/model, video standard and REU test programs were not supplied
 with this report. See the [release hardware log](../firmware/experimental/HARDWARE-TESTS.md).
 
-**Remaining hardware coverage:** verify file/folder copies to Favourites, loading
+**Earlier hardware checklist:** verify file/folder copies to Favourites, loading
 the copies and no-overwrite behaviour; verify REU software detects and uses each
 selected capacity. Saving a capacity setting alone does not establish REU operation.
 
@@ -111,7 +109,7 @@ Use [Getting started](getting-started.md) for installation and SD folders.
 | Copy a small game folder with companion files | All files/subfolders present and usable |
 | Repeat a file copy / try an existing folder name | Already-present message or collision, no overwrite |
 | Change REU size, then Cancel | Stored setting remains unchanged |
-| Change REU size, Save and restart | Preference persistence reported working; software detection/use at each capacity remains unverified |
+| Change REU size, Save and restart | Settings persist and REU software can use the selected capacity |
 | Set autoboot no, Save, launch a game and reset | Return to Home reported working; repeat on additional setups |
 | Set autoboot yes, Save, launch a game and reset | Existing saved-selection behaviour resumes |
 | Load PRG and CRT examples | Reported working; additional titles/cartridge types welcome |
